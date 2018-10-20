@@ -1,0 +1,36 @@
+{
+    "name": "innmind/operating-system",
+    "type": "library",
+    "description": "Abstraction for the whole system the script is operating in",
+    "keywords": ["operating system", "abstraction"],
+    "homepage": "http://github.com/Innmind/OperatingSystem",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Baptiste Langlade",
+            "email": "langlade.baptiste@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "http://github.com/Innmind/OperatingSystem/issues"
+    },
+    "require": {
+        "php": "~7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Innmind\\OperatingSystem\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Innmind\\OperatingSystem\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always"
+    }
+}
