@@ -15,7 +15,8 @@
         "issues": "http://github.com/Innmind/OperatingSystem/issues"
     },
     "require": {
-        "php": "~7.2"
+        "php": "~7.2",
+        "innmind/time-continuum": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -31,7 +32,6 @@
         "phpunit/phpunit": "~7.0",
         "innmind/server-status": "^1.1",
         "innmind/server-control": "^2.6",
-        "innmind/time-continuum": "^1.2",
         "innmind/filesystem": "^3.2",
         "innmind/socket": "^1.2",
         "innmind/url": "^2.0",
