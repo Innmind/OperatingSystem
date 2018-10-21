@@ -11,7 +11,14 @@ use Innmind\Socket\{
 
 interface Sockets
 {
+    /**
+     * This method will fail if the socket already exist
+     */
     public function open(Unix $address): Server;
+
+    /**
+     * This will take control of the socket if it already exist (use carefully)
+     */
     public function takeOver(Unix $address): Server;
     public function connectTo(Unix $address): Client;
 }
