@@ -22,6 +22,7 @@ use Innmind\Socket\{
     Server\Internet as InternetServer,
 };
 use Innmind\IP\IPv4;
+use Innmind\HttpTransport\Transport as HttpTransport;
 use PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
@@ -92,5 +93,16 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(Internet::class, $socket);
         $server->close();
         $socket->close();
+    }
+
+    public function testHttp()
+    {
+        $remote = new Generic(
+            $this->createMock(Server::class)
+        );
+
+        $http = $remote->http();
+
+        $this->assertInstanceOf(HttpTransport::class, $http);
     }
 }

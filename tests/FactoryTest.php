@@ -7,7 +7,10 @@ use Innmind\OperatingSystem\{
     Factory,
     OperatingSystem\Unix,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\{
+    TimeContinuumInterface,
+    TimeContinuum\Earth,
+};
 use PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
@@ -20,5 +23,12 @@ class FactoryTest extends TestCase
 
         $this->assertInstanceOf(Unix::class, $os);
         $this->assertSame($clock, $os->clock());
+    }
+
+    public function testClockIsOptional()
+    {
+        $os = Factory::build();
+
+        $this->assertInstanceOf(Earth::class, $os->clock());
     }
 }

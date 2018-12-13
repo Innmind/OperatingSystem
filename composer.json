@@ -35,7 +35,8 @@
         "innmind/filesystem": "^3.2",
         "innmind/socket": "^1.2",
         "innmind/url": "^2.0",
-        "innmind/ip": "^1.0"
+        "innmind/ip": "^1.0",
+        "innmind/http-transport": "^3.3"
     },
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"
@@ -45,6 +46,7 @@
         "innmind/server-control": "To control the os",
         "innmind/time-continuum": "To access the system clock",
         "innmind/filesystem": "To access the os filesystem",
-        "innmind/socket": "To open ports or sockets"
+        "innmind/socket": "To open ports or sockets",
+        "innmind/http-transport": "To do http calls"
     }
 }
