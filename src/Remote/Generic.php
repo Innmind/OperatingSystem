@@ -17,6 +17,8 @@ use Innmind\Url\{
     AuthorityInterface,
     Authority\NullPort,
 };
+use Innmind\HttpTransport\Transport as HttpTransport;
+use function Innmind\HttpTransport\bootstrap as http;
 
 final class Generic implements Remote
 {
@@ -46,5 +48,14 @@ final class Generic implements Remote
     public function socket(Transport $transport, AuthorityInterface $authority): Client
     {
         return new Client\Internet($transport, $authority);
+    }
+
+    public function http(): HttpTransport
+    {
+        $transports = http();
+
+        return $transports['catch_guzzle_exceptions'](
+            $transports['guzzle']()
+        );
     }
 }

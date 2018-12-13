@@ -23,7 +23,7 @@ As this package is a combination af other packages and you may not need all of t
 * `OperatingSystem::control()`: `innmind/server-control`
 * `OperatingSystem::ports()`: `innmind/socket`
 * `OperatingSystem::sockets()`: `innmind/socket`
-* `OperatingSystem::remote()`: `innmind/socket` and `innmind/server-control`
+* `OperatingSystem::remote()`: `innmind/socket`, `innmind/server-control` and `innmind/http-transport`
 
 ## Usage
 
@@ -117,3 +117,23 @@ $process = $os
 ```
 
 `$process` is an instance of [`Innmind\Server\Control\Server\Process`](https://github.com/innmind/servercontrol#usage).
+
+### Want to do a http call ?
+
+```php
+use Innmind\Http\{
+    Message\Request\Request,
+    Message\Method\Method,
+    ProtocolVersion\ProtocolVersion,
+};
+use Innmind\Url\Url;
+
+$response = $os
+    ->remote()
+    ->http()
+    ->fulfill(new Request(
+        Url::fromString('http://example.com'),
+        Method::get(),
+        new ProtocolVersion(2, 0)
+    ));
+```
