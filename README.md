@@ -29,9 +29,8 @@ As this package is a combination af other packages and you may not need all of t
 
 ```php
 use Innmind\OperatingSystem\Factory;
-use Innmind\TimeContinuum\TimeContinuum\Earth;
 
-$os = Factory::build(new Earth);
+$os = Factory::build();
 ```
 
 ### Want to access the system clock ?
