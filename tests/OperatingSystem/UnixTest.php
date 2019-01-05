@@ -10,6 +10,7 @@ use Innmind\OperatingSystem\{
     Ports,
     Sockets,
     Remote,
+    CurrentProcess,
 };
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
@@ -32,11 +33,13 @@ class UnixTest extends TestCase
         $this->assertInstanceOf(Ports\Unix::class, $os->ports());
         $this->assertInstanceOf(Sockets\Unix::class, $os->sockets());
         $this->assertInstanceOf(Remote\Generic::class, $os->remote());
+        $this->assertInstanceOf(CurrentProcess\Generic::class, $os->process());
         $this->assertSame($os->filesystem(), $os->filesystem());
         $this->assertSame($os->status(), $os->status());
         $this->assertSame($os->control(), $os->control());
         $this->assertSame($os->ports(), $os->ports());
         $this->assertSame($os->sockets(), $os->sockets());
         $this->assertSame($os->remote(), $os->remote());
+        $this->assertSame($os->process(), $os->process());
     }
 }

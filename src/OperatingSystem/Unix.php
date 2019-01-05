@@ -9,6 +9,7 @@ use Innmind\OperatingSystem\{
     Ports,
     Sockets,
     Remote,
+    CurrentProcess,
 };
 use Innmind\Server\Status\{
     Server as ServerStatus,
@@ -29,6 +30,7 @@ final class Unix implements OperatingSystem
     private $ports;
     private $sockets;
     private $remote;
+    private $process;
 
     public function __construct(TimeContinuumInterface $clock)
     {
@@ -68,5 +70,10 @@ final class Unix implements OperatingSystem
     public function remote(): Remote
     {
         return $this->remote ?? $this->remote = new Remote\Generic($this->control());
+    }
+
+    public function process(): CurrentProcess
+    {
+        return $this->process ?? $this->process = new CurrentProcess\Generic;
     }
 }

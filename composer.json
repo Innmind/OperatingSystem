@@ -36,7 +36,8 @@
         "innmind/socket": "^1.2",
         "innmind/url": "^2.0",
         "innmind/ip": "^1.0",
-        "innmind/http-transport": "^3.3"
+        "innmind/http-transport": "^4.0",
+        "giorgiosironi/eris": "^0.11.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"

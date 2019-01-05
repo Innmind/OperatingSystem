@@ -52,10 +52,6 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        $transports = http();
-
-        return $transports['catch_guzzle_exceptions'](
-            $transports['guzzle']()
-        );
+        return http()['default']();
     }
 }

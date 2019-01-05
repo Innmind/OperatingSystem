@@ -16,4 +16,5 @@ interface OperatingSystem
     public function ports(): Ports;
     public function sockets(): Sockets;
     public function remote(): Remote;
+    public function process(): CurrentProcess;
 }
