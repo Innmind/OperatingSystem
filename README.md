@@ -24,6 +24,7 @@ As this package is a combination af other packages and you may not need all of t
 * `OperatingSystem::ports()`: `innmind/socket`
 * `OperatingSystem::sockets()`: `innmind/socket`
 * `OperatingSystem::remote()`: `innmind/socket`, `innmind/server-control` and `innmind/http-transport`
+* `OperatingSystem::process()`: `innmind/server-status`
 
 ## Usage
 
@@ -135,4 +136,34 @@ $response = $os
         Method::get(),
         new ProtocolVersion(2, 0)
     ));
+```
+
+### Want to access current process id ?
+
+```php
+$os->process()->id();
+```
+
+### Want to fork the current process ?
+
+```php
+use Innmind\OperatingSystem\Exception\ForkFailed;
+
+try {
+    $side = $os->process()->fork();
+
+    if ($side->parent()) {
+        $childPid = $side->child();
+    } else {
+        try {
+            // do something in the child process
+            exit(0);
+        } catch (\Throwable $e) {
+            exit(1);
+        }
+    }
+
+} catch (ForkFailed $e) {
+    // handle the exception
+}
 ```
