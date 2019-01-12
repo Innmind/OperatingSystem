@@ -34,7 +34,8 @@ class ChildTest extends TestCase
         $child = new Child($side->child());
 
         $this->assertTrue($child->running());
-        sleep(2);
+        sleep(1);
+        $child->wait();
         $this->assertFalse($child->running());
     }
 
@@ -73,9 +74,8 @@ class ChildTest extends TestCase
 
         $this->assertTrue($child->running());
         $this->assertNull($child->kill());
-        usleep(1000);
-        $this->assertFalse($child->running());
         $exitCode = $child->wait();
+        $this->assertFalse($child->running());
         $this->assertSame(0, $exitCode->toInt());
     }
 
