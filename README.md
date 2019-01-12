@@ -167,3 +167,14 @@ try {
     // handle the exception
 }
 ```
+
+### Want to wait for child process to finish ?
+
+```php
+$side = $os->process()->fork();
+
+if ($side->parent()) {
+    // do some thing
+    $os->process()->children()->wait();
+}
+```
