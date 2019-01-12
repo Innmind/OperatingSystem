@@ -5,6 +5,7 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
+    CurrentProcess\Children,
     CurrentProcess,
 };
 use Innmind\Server\Status\Server\Process\Pid;
@@ -41,5 +42,22 @@ class GenericTest extends TestCase
             // (otherwise it will result in a weird output)
             exit(0);
         }
+    }
+
+    public function testChildren()
+    {
+        $process = new Generic;
+
+        $side = $process->fork();
+
+        if (!$side->parent()) {
+            $code = $process->children()->has($process->id()) ? 1 : 0;
+            exit($code);
+        }
+
+        $this->assertInstanceOf(Children::class, $process->children());
+        $this->assertTrue($process->children()->has($side->child()));
+        $child = $process->children()->get($side->child());
+        $this->assertSame(0, $child->wait()->toInt());
     }
 }
