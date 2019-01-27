@@ -104,5 +104,6 @@ class GenericTest extends TestCase
         $http = $remote->http();
 
         $this->assertInstanceOf(HttpTransport::class, $http);
+        $this->assertSame($http, $remote->http());
     }
 }
