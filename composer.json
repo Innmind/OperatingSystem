@@ -37,7 +37,8 @@
         "innmind/url": "^2.0",
         "innmind/ip": "^1.0",
         "innmind/http-transport": "^4.0",
-        "giorgiosironi/eris": "^0.11.0"
+        "giorgiosironi/eris": "^0.11.0",
+        "innmind/time-warp": "^1.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"
@@ -48,6 +49,7 @@
         "innmind/time-continuum": "To access the system clock",
         "innmind/filesystem": "To access the os filesystem",
         "innmind/socket": "To open ports or sockets",
-        "innmind/http-transport": "To do http calls"
+        "innmind/http-transport": "To do http calls",
+        "innmind/time-warp": "To pause the program execution"
     }
 }

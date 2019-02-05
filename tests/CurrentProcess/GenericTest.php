@@ -9,18 +9,32 @@ use Innmind\OperatingSystem\{
     CurrentProcess,
 };
 use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\TimeContinuum\{
+    TimeContinuumInterface,
+    PeriodInterface,
+};
+use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(CurrentProcess::class, new Generic);
+        $this->assertInstanceOf(
+            CurrentProcess::class,
+            new Generic(
+                $this->createMock(TimeContinuumInterface::class),
+                $this->createMock(Halt::class)
+            )
+        );
     }
 
     public function testId()
     {
-        $process = new Generic;
+        $process = new Generic(
+            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Halt::class)
+        );
 
         $this->assertInstanceOf(Pid::class, $process->id());
         $this->assertSame($process->id()->toInt(), $process->id()->toInt());
@@ -28,7 +42,10 @@ class GenericTest extends TestCase
 
     public function testFork()
     {
-        $process = new Generic;
+        $process = new Generic(
+            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Halt::class)
+        );
 
         $parentId = $process->id()->toInt();
 
@@ -46,7 +63,10 @@ class GenericTest extends TestCase
 
     public function testChildren()
     {
-        $process = new Generic;
+        $process = new Generic(
+            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Halt::class)
+        );
 
         $side = $process->fork();
 
@@ -59,5 +79,20 @@ class GenericTest extends TestCase
         $this->assertTrue($process->children()->has($side->child()));
         $child = $process->children()->get($side->child());
         $this->assertSame(0, $child->wait()->toInt());
+    }
+
+    public function testHalt()
+    {
+        $process = new Generic(
+            $clock = $this->createMock(TimeContinuumInterface::class),
+            $halt = $this->createMock(Halt::class)
+        );
+        $period = $this->createMock(PeriodInterface::class);
+        $halt
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($clock, $period);
+
+        $this->assertNull($process->halt($period));
     }
 }
