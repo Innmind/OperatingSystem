@@ -178,3 +178,11 @@ if ($side->parent()) {
     $os->process()->children()->wait();
 }
 ```
+
+### Want to pause the current process ?
+
+```php
+use Innmind\TimeContinuum\Period\Earth\Minute;
+
+$os->process()->halt(new Minute(1));
+```

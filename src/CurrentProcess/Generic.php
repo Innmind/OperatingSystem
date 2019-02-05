@@ -8,14 +8,23 @@ use Innmind\OperatingSystem\{
     Exception\ForkFailed,
 };
 use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\TimeContinuum\{
+    TimeContinuumInterface,
+    PeriodInterface,
+};
+use Innmind\TimeWarp\Halt;
 use Innmind\Immutable\Set;
 
 final class Generic implements CurrentProcess
 {
+    private $clock;
+    private $halt;
     private $children;
 
-    public function __construct()
+    public function __construct(TimeContinuumInterface $clock, Halt $halt)
     {
+        $this->clock = $clock;
+        $this->halt = $halt;
         $this->children = Set::of(Child::class);
     }
 
@@ -45,5 +54,10 @@ final class Generic implements CurrentProcess
     public function children(): Children
     {
         return new Children(...$this->children);
+    }
+
+    public function halt(PeriodInterface $period): void
+    {
+        ($this->halt)($this->clock, $period);
     }
 }

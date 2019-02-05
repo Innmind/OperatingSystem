@@ -20,6 +20,7 @@ use Innmind\Server\Control\{
     Servers\Unix as UnixControl,
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeWarp\Halt\Usleep;
 
 final class Unix implements OperatingSystem
 {
@@ -74,6 +75,9 @@ final class Unix implements OperatingSystem
 
     public function process(): CurrentProcess
     {
-        return $this->process ?? $this->process = new CurrentProcess\Generic;
+        return $this->process ?? $this->process = new CurrentProcess\Generic(
+            $this->clock(),
+            new Usleep
+        );
     }
 }
