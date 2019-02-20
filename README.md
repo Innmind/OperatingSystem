@@ -16,16 +16,6 @@ The goal is to deal with the operating system in a more abstract way (instead of
 composer require innmind/operating-system
 ```
 
-As this package is a combination af other packages and you may not need all of them, this package doesn't require all of them. So if you need to access part of the system you'll need to require the underlying dependency in your project.
-
-* `OperatingSystem::filesystem()`: `innmind/filesystem`
-* `OperatingSystem::status()`: `innmind/server-status`
-* `OperatingSystem::control()`: `innmind/server-control`
-* `OperatingSystem::ports()`: `innmind/socket`
-* `OperatingSystem::sockets()`: `innmind/socket`
-* `OperatingSystem::remote()`: `innmind/socket`, `innmind/server-control` and `innmind/http-transport`
-* `OperatingSystem::process()`: `innmind/server-status`
-
 ## Usage
 
 ```php
