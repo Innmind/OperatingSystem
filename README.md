@@ -176,3 +176,17 @@ use Innmind\TimeContinuum\Period\Earth\Minute;
 
 $os->process()->halt(new Minute(1));
 ```
+
+### Want to listen for a signal ?
+
+```php
+use Innmind\Signals\Signal;
+
+$os->process()->signals()->listen(Signal::terminate(), function() {
+    // handle the signal here
+});
+```
+
+**Note**: when forking the process the child will have all listeners resetted to avoid having the listener called twice (in the parent and the child).
+
+**Important**: beware when sending a signal right after a fork, there is a [case](tests/CurrentProcess/GenericTest.php#L134) where the listeners can still be called in the child.

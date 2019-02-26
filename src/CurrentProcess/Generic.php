@@ -13,6 +13,7 @@ use Innmind\TimeContinuum\{
     PeriodInterface,
 };
 use Innmind\TimeWarp\Halt;
+use Innmind\Signals\Handler;
 use Innmind\Immutable\Set;
 
 final class Generic implements CurrentProcess
@@ -20,6 +21,8 @@ final class Generic implements CurrentProcess
     private $clock;
     private $halt;
     private $children;
+    private $signalsHandler;
+    private $signals;
 
     public function __construct(TimeContinuumInterface $clock, Halt $halt)
     {
@@ -46,6 +49,8 @@ final class Generic implements CurrentProcess
             );
         } else {
             $this->children = $this->children->clear();
+            $this->signals = null;
+            $this->signalsHandler = $this->signalsHandler ? $this->signalsHandler->reset() : null;
         }
 
         return $side;
@@ -54,6 +59,13 @@ final class Generic implements CurrentProcess
     public function children(): Children
     {
         return new Children(...$this->children);
+    }
+
+    public function signals(): Signals
+    {
+        return $this->signals ?? $this->signals = new Signals\Wrapper(
+            $this->signalsHandler = new Handler
+        );
     }
 
     public function halt(PeriodInterface $period): void

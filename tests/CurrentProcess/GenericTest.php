@@ -6,6 +6,7 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
     CurrentProcess\Children,
+    CurrentProcess\Signals,
     CurrentProcess,
 };
 use Innmind\Server\Status\Server\Process\Pid;
@@ -14,6 +15,7 @@ use Innmind\TimeContinuum\{
     PeriodInterface,
 };
 use Innmind\TimeWarp\Halt;
+use Innmind\Signals\Signal;
 use PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
@@ -94,5 +96,51 @@ class GenericTest extends TestCase
             ->with($clock, $period);
 
         $this->assertNull($process->halt($period));
+    }
+
+    public function testSignals()
+    {
+        $process = new Generic(
+            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Halt::class)
+        );
+
+        $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
+        $this->assertSame($process->signals(), $process->signals());
+    }
+
+    public function testSignalsAreResettedInForkChild()
+    {
+        $process = new Generic(
+            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Halt::class)
+        );
+        $signals = $process->signals();
+        $signals->listen(Signal::terminate(), function(...$args) {
+            exit(1);
+        });
+
+        $side = $process->fork();
+
+        if (!$side->parent()) {
+            if ($process->signals() === $signals) {
+                exit(2);
+            }
+
+            sleep(2);
+            exit(0);
+        }
+
+        // for some reason if we don't wait the signal handlers are still active
+        // in the child process, the current guess is that without this sleep the
+        // terminate all below is done before the child is correctly initialized
+        // and had the chance to reset the signal handler
+        // the intriguing thing is that instead of a sleep we do a (symfony)
+        // dump(true) it have the time to remove the child signal handler
+        sleep(1);
+
+        $child = $process->children()->get($side->child());
+        $child->terminate(); // should not trigger the listener in the child
+        $this->assertSame(0, $child->wait()->toInt());
     }
 }

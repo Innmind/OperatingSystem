@@ -6,6 +6,7 @@ namespace Innmind\OperatingSystem;
 use Innmind\OperatingSystem\{
     CurrentProcess\ForkSide,
     CurrentProcess\Children,
+    CurrentProcess\Signals,
     Exception\ForkFailed,
 };
 use Innmind\Server\Status\Server\Process\Pid;
@@ -20,5 +21,6 @@ interface CurrentProcess
      */
     public function fork(): ForkSide;
     public function children(): Children;
+    public function signals(): Signals;
     public function halt(PeriodInterface $period): void;
 }
