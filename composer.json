@@ -22,7 +22,8 @@
         "innmind/filesystem": "^3.2",
         "innmind/socket": "^2.0",
         "innmind/http-transport": "^4.0",
-        "innmind/time-warp": "^1.0"
+        "innmind/time-warp": "^1.0",
+        "innmind/signals": "^1.0"
     },
     "autoload": {
         "psr-4": {
