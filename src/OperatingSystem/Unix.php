@@ -45,7 +45,11 @@ final class Unix implements OperatingSystem
 
     public function filesystem(): Filesystem
     {
-        return $this->filesystem ??= new Filesystem\Generic;
+        return $this->filesystem ??= new Filesystem\Generic(
+            $this->control()->processes(),
+            new Usleep,
+            $this->clock,
+        );
     }
 
     public function status(): ServerStatus
