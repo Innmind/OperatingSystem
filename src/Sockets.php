@@ -8,6 +8,8 @@ use Innmind\Socket\{
     Server,
     Client,
 };
+use Innmind\TimeContinuum\ElapsedPeriod;
+use Innmind\Stream\Watch;
 
 interface Sockets
 {
@@ -21,4 +23,5 @@ interface Sockets
      */
     public function takeOver(Unix $address): Server;
     public function connectTo(Unix $address): Client;
+    public function watch(ElapsedPeriod $timeout): Watch;
 }

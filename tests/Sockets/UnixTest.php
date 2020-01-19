@@ -12,6 +12,8 @@ use Innmind\Socket\{
     Server,
     Client,
 };
+use Innmind\TimeContinuum\ElapsedPeriod;
+use Innmind\Stream\Watch;
 use PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
@@ -61,5 +63,15 @@ class UnixTest extends TestCase
         $this->assertInstanceOf(Client\Unix::class, $client);
         $client->close();
         $server->close();
+    }
+
+    public function testWatch()
+    {
+        $sockets = new Unix;
+
+        $this->assertInstanceOf(
+            Watch::class,
+            $sockets->watch($this->createMock(ElapsedPeriod::class)),
+        );
     }
 }
