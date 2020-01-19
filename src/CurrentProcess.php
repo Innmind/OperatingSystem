@@ -9,7 +9,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Signals,
     Exception\ForkFailed,
 };
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\TimeContinuum\Period;
 
 interface CurrentProcess

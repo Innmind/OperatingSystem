@@ -9,7 +9,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Signals,
     CurrentProcess,
 };
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\TimeContinuum\{
     Clock,
     Period,

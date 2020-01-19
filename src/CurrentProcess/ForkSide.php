@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\OperatingSystem\Exception\ForkFailed;
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 
 final class ForkSide
 {

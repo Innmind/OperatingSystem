@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\CurrentProcess\{
     Child,
     Generic,
 };
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
