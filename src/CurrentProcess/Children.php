@@ -26,7 +26,7 @@ final class Children
         );
     }
 
-    public function has(Pid $pid): bool
+    public function contains(Pid $pid): bool
     {
         return $this->children->contains($pid->toInt());
     }

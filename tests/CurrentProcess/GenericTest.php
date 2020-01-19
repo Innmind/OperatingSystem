@@ -74,12 +74,12 @@ class GenericTest extends TestCase
         $side = $process->fork();
 
         if (!$side->parent()) {
-            $code = $process->children()->has($process->id()) ? 1 : 0;
+            $code = $process->children()->contains($process->id()) ? 1 : 0;
             exit($code);
         }
 
         $this->assertInstanceOf(Children::class, $process->children());
-        $this->assertTrue($process->children()->has($side->child()));
+        $this->assertTrue($process->children()->contains($side->child()));
         $child = $process->children()->get($side->child());
         $this->assertSame(0, $child->wait()->toInt());
     }
