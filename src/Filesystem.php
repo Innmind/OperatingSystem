@@ -9,4 +9,5 @@ use Innmind\Url\Path;
 interface Filesystem
 {
     public function mount(Path $path): Adapter;
+    public function contains(Path $path): bool;
 }
