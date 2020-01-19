@@ -13,11 +13,8 @@ use Innmind\IP\IP;
 
 final class Unix implements Ports
 {
-    public function open(
-        Transport $transport,
-        IP $ip,
-        Port $port
-    ): Server {
+    public function open(Transport $transport, IP $ip, Port $port): Server
+    {
         return new Server\Internet($transport, $ip, $port);
     }
 }

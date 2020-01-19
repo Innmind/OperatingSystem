@@ -12,9 +12,5 @@ use Innmind\IP\IP;
 
 interface Ports
 {
-    public function open(
-        Transport $transport,
-        IP $ip,
-        Port $port
-    ): Server;
+    public function open(Transport $transport, IP $ip, Port $port): Server;
 }
