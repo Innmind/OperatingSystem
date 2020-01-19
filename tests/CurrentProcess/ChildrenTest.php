@@ -54,6 +54,6 @@ class ChildrenTest extends TestCase
 
         $this->assertNull($children->wait());
         $delta = microtime(true) - $start;
-        $this->assertEquals(3, $delta, '', 0.05);
+        $this->assertEqualsWithDelta(3, $delta, 0.05);
     }
 }
