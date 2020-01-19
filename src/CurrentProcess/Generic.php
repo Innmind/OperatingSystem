@@ -18,11 +18,11 @@ use Innmind\Immutable\Set;
 
 final class Generic implements CurrentProcess
 {
-    private $clock;
-    private $halt;
-    private $children;
-    private $signalsHandler;
-    private $signals;
+    private TimeContinuumInterface $clock;
+    private Halt $halt;
+    private Set $children;
+    private ?Handler $signalsHandler = null;
+    private ?Signals\Wrapper $signals = null;
 
     public function __construct(TimeContinuumInterface $clock, Halt $halt)
     {
@@ -63,8 +63,8 @@ final class Generic implements CurrentProcess
 
     public function signals(): Signals
     {
-        return $this->signals ?? $this->signals = new Signals\Wrapper(
-            $this->signalsHandler = new Handler
+        return $this->signals ??= new Signals\Wrapper(
+            $this->signalsHandler = new Handler,
         );
     }
 

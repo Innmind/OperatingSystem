@@ -8,7 +8,7 @@ use Innmind\Server\Status\Server\Process\Pid;
 
 final class ForkSide
 {
-    private $child;
+    private ?Pid $child;
 
     private function __construct(Pid $child = null)
     {

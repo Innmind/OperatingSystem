@@ -8,7 +8,7 @@ use Innmind\Server\Control\Server\Process\ExitCode;
 
 final class Child
 {
-    private $pid;
+    private Pid $pid;
 
     public function __construct(Pid $pid)
     {

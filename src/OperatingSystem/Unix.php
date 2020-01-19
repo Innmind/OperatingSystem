@@ -24,14 +24,14 @@ use Innmind\TimeWarp\Halt\Usleep;
 
 final class Unix implements OperatingSystem
 {
-    private $clock;
-    private $filesystem;
-    private $status;
-    private $control;
-    private $ports;
-    private $sockets;
-    private $remote;
-    private $process;
+    private TimeContinuumInterface $clock;
+    private ?Filesystem $filesystem = null;
+    private ?ServerStatus $status = null;
+    private ?ServerControl $control = null;
+    private ?Ports $ports = null;
+    private ?Sockets $sockets = null;
+    private ?Remote $remote = null;
+    private ?CurrentProcess $process = null;
 
     public function __construct(TimeContinuumInterface $clock)
     {
@@ -45,39 +45,39 @@ final class Unix implements OperatingSystem
 
     public function filesystem(): Filesystem
     {
-        return $this->filesystem ?? $this->filesystem = new Filesystem\Generic;
+        return $this->filesystem ??= new Filesystem\Generic;
     }
 
     public function status(): ServerStatus
     {
-        return $this->status ?? $this->status = ServerFactory::build($this->clock());
+        return $this->status ??= ServerFactory::build($this->clock());
     }
 
     public function control(): ServerControl
     {
-        return $this->control ?? $this->control = new UnixControl;
+        return $this->control ??= new UnixControl;
     }
 
     public function ports(): Ports
     {
-        return $this->ports ?? $this->ports = new Ports\Unix;
+        return $this->ports ??= new Ports\Unix;
     }
 
     public function sockets(): Sockets
     {
-        return $this->sockets ?? $this->sockets = new Sockets\Unix;
+        return $this->sockets ??= new Sockets\Unix;
     }
 
     public function remote(): Remote
     {
-        return $this->remote ?? $this->remote = new Remote\Generic($this->control());
+        return $this->remote ??= new Remote\Generic($this->control());
     }
 
     public function process(): CurrentProcess
     {
-        return $this->process ?? $this->process = new CurrentProcess\Generic(
+        return $this->process ??= new CurrentProcess\Generic(
             $this->clock(),
-            new Usleep
+            new Usleep,
         );
     }
 }

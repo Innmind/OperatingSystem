@@ -22,8 +22,8 @@ use function Innmind\HttpTransport\bootstrap as http;
 
 final class Generic implements Remote
 {
-    private $server;
-    private $http;
+    private Server $server;
+    private ?HttpTransport $http = null;
 
     public function __construct(Server $server)
     {
@@ -53,6 +53,6 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        return $this->http ?? $this->http = http()['default']();
+        return $this->http ??= http()['default']();
     }
 }

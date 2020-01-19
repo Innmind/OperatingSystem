@@ -12,7 +12,7 @@ use Innmind\Immutable\{
 
 final class Children
 {
-    private $children;
+    private Map $children;
 
     public function __construct(Child ...$children)
     {
