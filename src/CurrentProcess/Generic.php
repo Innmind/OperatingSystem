@@ -22,6 +22,7 @@ final class Generic implements CurrentProcess
 {
     private Clock $clock;
     private Halt $halt;
+    /** @var Set<Child> */
     private Set $children;
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
@@ -30,6 +31,7 @@ final class Generic implements CurrentProcess
     {
         $this->clock = $clock;
         $this->halt = $halt;
+        /** @var Set<Child> */
         $this->children = Set::of(Child::class);
     }
 

@@ -53,6 +53,6 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        return $this->http ??= http()['default']();
+        return $this->http ??= http()['default'](null);
     }
 }

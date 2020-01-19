@@ -11,10 +11,12 @@ use Innmind\Immutable\{
 
 final class Children
 {
+    /** @var Map<int, Child> */
     private Map $children;
 
     public function __construct(Child ...$children)
     {
+        /** @var Map<int, Child> */
         $this->children = Sequence::mixed(...$children)->toMapOf(
             'int',
             Child::class,

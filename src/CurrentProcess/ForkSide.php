@@ -37,8 +37,10 @@ final class ForkSide
         return $this->child instanceof Pid;
     }
 
+    /** @psalm-suppress InvalidNullableReturnType */
     public function child(): Pid
     {
+        /** @psalm-suppress NullableReturnStatement */
         return $this->child;
     }
 }

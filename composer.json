@@ -40,7 +40,8 @@
         "phpunit/phpunit": "~8.0",
         "giorgiosironi/eris": "^0.11.0",
         "innmind/url": "~3.0",
-        "innmind/ip": "~2.0"
+        "innmind/ip": "~2.0",
+        "vimeo/psalm": "~3.7.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"
