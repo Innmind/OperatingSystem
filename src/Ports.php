@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Url\Authority\PortInterface;
+use Innmind\Url\Authority\Port;
 use Innmind\Socket\{
     Internet\Transport,
     Server,
@@ -15,6 +15,6 @@ interface Ports
     public function open(
         Transport $transport,
         IP $ip,
-        PortInterface $port
+        Port $port
     ): Server;
 }

@@ -10,7 +10,7 @@ use Innmind\OperatingSystem\{
     Exception\ForkFailed,
 };
 use Innmind\Server\Status\Server\Process\Pid;
-use Innmind\TimeContinuum\PeriodInterface;
+use Innmind\TimeContinuum\Period;
 
 interface CurrentProcess
 {
@@ -22,5 +22,5 @@ interface CurrentProcess
     public function fork(): ForkSide;
     public function children(): Children;
     public function signals(): Signals;
-    public function halt(PeriodInterface $period): void;
+    public function halt(Period $period): void;
 }

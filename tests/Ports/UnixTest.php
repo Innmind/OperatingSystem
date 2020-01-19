@@ -29,7 +29,7 @@ class UnixTest extends TestCase
         $socket = $ports->open(
             Transport::tlsv12(),
             IPv4::localhost(),
-            new Port(1234)
+            Port::of(1234)
         );
 
         $this->assertInstanceOf(Internet::class, $socket);

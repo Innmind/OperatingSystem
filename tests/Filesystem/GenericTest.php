@@ -7,7 +7,7 @@ use Innmind\OperatingSystem\{
     Filesystem\Generic,
     Filesystem,
 };
-use Innmind\Filesystem\Adapter\FilesystemAdapter;
+use Innmind\Filesystem\Adapter\Filesystem as FilesystemAdapter;
 use Innmind\Url\Path;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +22,7 @@ class GenericTest extends TestCase
     {
         $filesystem = new Generic;
 
-        $adapter = $filesystem->mount(new Path('/tmp'));
+        $adapter = $filesystem->mount(Path::of('/tmp/'));
 
         $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
     }

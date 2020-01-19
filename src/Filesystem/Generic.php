@@ -5,12 +5,12 @@ namespace Innmind\OperatingSystem\Filesystem;
 
 use Innmind\OperatingSystem\Filesystem;
 use Innmind\Filesystem\Adapter;
-use Innmind\Url\PathInterface;
+use Innmind\Url\Path;
 
 final class Generic implements Filesystem
 {
-    public function mount(PathInterface $path): Adapter
+    public function mount(Path $path): Adapter
     {
-        return new Adapter\FilesystemAdapter((string) $path);
+        return new Adapter\Filesystem($path);
     }
 }

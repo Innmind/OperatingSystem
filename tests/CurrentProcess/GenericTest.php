@@ -11,8 +11,8 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Status\Server\Process\Pid;
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
-    PeriodInterface,
+    Clock,
+    Period,
 };
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Signal;
@@ -25,7 +25,7 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(
             CurrentProcess::class,
             new Generic(
-                $this->createMock(TimeContinuumInterface::class),
+                $this->createMock(Clock::class),
                 $this->createMock(Halt::class)
             )
         );
@@ -34,7 +34,7 @@ class GenericTest extends TestCase
     public function testId()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 
@@ -45,7 +45,7 @@ class GenericTest extends TestCase
     public function testFork()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 
@@ -66,7 +66,7 @@ class GenericTest extends TestCase
     public function testChildren()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 
@@ -86,10 +86,10 @@ class GenericTest extends TestCase
     public function testHalt()
     {
         $process = new Generic(
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             $halt = $this->createMock(Halt::class)
         );
-        $period = $this->createMock(PeriodInterface::class);
+        $period = $this->createMock(Period::class);
         $halt
             ->expects($this->once())
             ->method('__invoke')
@@ -101,7 +101,7 @@ class GenericTest extends TestCase
     public function testSignals()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 
@@ -112,7 +112,7 @@ class GenericTest extends TestCase
     public function testSignalsAreResettedInForkChild()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
         $signals = $process->signals();

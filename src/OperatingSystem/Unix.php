@@ -19,12 +19,12 @@ use Innmind\Server\Control\{
     Server as ServerControl,
     Servers\Unix as UnixControl,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 
 final class Unix implements OperatingSystem
 {
-    private TimeContinuumInterface $clock;
+    private Clock $clock;
     private ?Filesystem $filesystem = null;
     private ?ServerStatus $status = null;
     private ?ServerControl $control = null;
@@ -33,12 +33,12 @@ final class Unix implements OperatingSystem
     private ?Remote $remote = null;
     private ?CurrentProcess $process = null;
 
-    public function __construct(TimeContinuumInterface $clock)
+    public function __construct(Clock $clock)
     {
         $this->clock = $clock;
     }
 
-    public function clock(): TimeContinuumInterface
+    public function clock(): Clock
     {
         return $this->clock;
     }

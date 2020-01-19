@@ -9,22 +9,23 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Status\Server\Process\Pid;
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
-    PeriodInterface,
+    Clock,
+    Period,
 };
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
 use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 
 final class Generic implements CurrentProcess
 {
-    private TimeContinuumInterface $clock;
+    private Clock $clock;
     private Halt $halt;
     private Set $children;
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
 
-    public function __construct(TimeContinuumInterface $clock, Halt $halt)
+    public function __construct(Clock $clock, Halt $halt)
     {
         $this->clock = $clock;
         $this->halt = $halt;
@@ -58,7 +59,7 @@ final class Generic implements CurrentProcess
 
     public function children(): Children
     {
-        return new Children(...$this->children);
+        return new Children(...unwrap($this->children));
     }
 
     public function signals(): Signals
@@ -68,7 +69,7 @@ final class Generic implements CurrentProcess
         );
     }
 
-    public function halt(PeriodInterface $period): void
+    public function halt(Period $period): void
     {
         ($this->halt)($this->clock, $period);
     }

@@ -9,7 +9,7 @@ use Innmind\OperatingSystem\CurrentProcess\{
     Generic,
 };
 use Innmind\Server\Status\Server\Process\Pid;
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +32,7 @@ class ChildrenTest extends TestCase
     public function testWait()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 

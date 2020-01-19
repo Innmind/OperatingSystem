@@ -5,7 +5,6 @@ namespace Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\Server\Status\Server\Process\Pid;
 use Innmind\Immutable\{
-    MapInterface,
     Map,
     Sequence,
 };
@@ -16,14 +15,12 @@ final class Children
 
     public function __construct(Child ...$children)
     {
-        $this->children = Sequence::of(...$children)->reduce(
-            Map::of('int', Child::class),
-            static function(MapInterface $children, Child $child): MapInterface {
-                return $children->put(
-                    $child->id()->toInt(),
-                    $child
-                );
-            }
+        $this->children = Sequence::mixed(...$children)->toMapOf(
+            'int',
+            Child::class,
+            static function(Child $child): \Generator {
+                yield $child->id()->toInt() => $child;
+            },
         );
     }
 

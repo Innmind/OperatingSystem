@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Ports;
 
 use Innmind\OperatingSystem\Ports;
-use Innmind\Url\Authority\PortInterface;
+use Innmind\Url\Authority\Port;
 use Innmind\Socket\{
     Internet\Transport,
     Server,
@@ -16,7 +16,7 @@ final class Unix implements Ports
     public function open(
         Transport $transport,
         IP $ip,
-        PortInterface $port
+        Port $port
     ): Server {
         return new Server\Internet($transport, $ip, $port);
     }

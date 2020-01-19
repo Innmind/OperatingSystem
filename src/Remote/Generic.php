@@ -13,9 +13,9 @@ use Innmind\Socket\{
     Client,
 };
 use Innmind\Url\{
-    UrlInterface,
-    AuthorityInterface,
-    Authority\NullPort,
+    Url,
+    Authority,
+    Authority\Port,
 };
 use Innmind\HttpTransport\Transport as HttpTransport;
 use function Innmind\HttpTransport\bootstrap as http;
@@ -30,11 +30,11 @@ final class Generic implements Remote
         $this->server = $server;
     }
 
-    public function ssh(UrlInterface $server): Server
+    public function ssh(Url $server): Server
     {
         $port = null;
 
-        if (!$server->authority()->port() instanceof NullPort) {
+        if ($server->authority()->port()->value() !== Port::none()->value()) {
             $port = $server->authority()->port();
         }
 
@@ -46,7 +46,7 @@ final class Generic implements Remote
         );
     }
 
-    public function socket(Transport $transport, AuthorityInterface $authority): Client
+    public function socket(Transport $transport, Authority $authority): Client
     {
         return new Client\Internet($transport, $authority);
     }
