@@ -46,7 +46,7 @@ final class Generic implements CurrentProcess
 
         if ($side->parent()) {
             $this->children = $this->children->add(
-                new Child($side->child())
+                new Child($side->child()),
             );
         } else {
             $this->children = $this->children->clear();

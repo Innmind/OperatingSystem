@@ -42,7 +42,7 @@ final class Generic implements Remote
             $this->server,
             $server->authority()->userInformation()->user(),
             $server->authority()->host(),
-            $port
+            $port,
         );
     }
 
