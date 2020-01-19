@@ -1,10 +1,9 @@
 # OperatingSystem
 
-| `master` | `develop` |
-|----------|-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/?branch=master) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/build-status/master) | [![Build Status](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/OperatingSystem/build-status/develop) |
+| `develop` |
+|-----------|
+| [![codecov](https://codecov.io/gh/Innmind/OperatingSystem/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/OperatingSystem) |
+| [![Build Status](https://github.com/Innmind/OperatingSystem/workflows/CI/badge.svg)](https://github.com/Innmind/OperatingSystem/actions?query=workflow%3ACI) |
 
 Abstraction for most of the operating system the PHP code run on.
 
