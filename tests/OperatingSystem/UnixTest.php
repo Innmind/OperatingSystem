@@ -14,14 +14,14 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 use PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
 {
     public function testInterface()
     {
-        $clock = $this->createMock(TimeContinuumInterface::class);
+        $clock = $this->createMock(Clock::class);
 
         $os = new Unix($clock);
 

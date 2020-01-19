@@ -3,12 +3,14 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\Server\Status\Server\Process\Pid;
-use Innmind\Server\Control\Server\Process\ExitCode;
+use Innmind\Server\Control\Server\Process\{
+    Pid,
+    ExitCode,
+};
 
 final class Child
 {
-    private $pid;
+    private Pid $pid;
 
     public function __construct(Pid $pid)
     {

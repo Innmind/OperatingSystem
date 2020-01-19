@@ -50,10 +50,10 @@ class GenericTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function($command): bool {
-                return (string) $command === "ssh '-p' '42' 'user@my-vps' 'ls'";
+                return $command->toString() === "ssh '-p' '42' 'user@my-vps' 'ls'";
             }));
 
-        $remoteServer = $remote->ssh(Url::fromString('ssh://user@my-vps:42/'));
+        $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
         $this->assertInstanceOf(Servers\Remote::class, $remoteServer);
         $remoteServer->processes()->execute(Command::foreground('ls'));
@@ -72,10 +72,10 @@ class GenericTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function($command): bool {
-                return (string) $command === "ssh 'user@my-vps' 'ls'";
+                return $command->toString() === "ssh 'user@my-vps' 'ls'";
             }));
 
-        $remoteServer = $remote->ssh(Url::fromString('ssh://user@my-vps/'));
+        $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
 
         $this->assertInstanceOf(Servers\Remote::class, $remoteServer);
         $remoteServer->processes()->execute(Command::foreground('ls'));
@@ -86,9 +86,9 @@ class GenericTest extends TestCase
         $remote = new Generic(
             $this->createMock(Server::class)
         );
-        $server = new InternetServer(Transport::tcp(), IPv4::localhost(), new Port(1234));
+        $server = new InternetServer(Transport::tcp(), IPv4::localhost(), Port::of(1234));
 
-        $socket = $remote->socket(Transport::tcp(), Url::fromString('tcp://127.0.0.1:1234')->authority());
+        $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority());
 
         $this->assertInstanceOf(Internet::class, $socket);
         $server->close();

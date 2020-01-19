@@ -8,8 +8,8 @@ use Innmind\OperatingSystem\CurrentProcess\{
     Child,
     Generic,
 };
-use Innmind\Server\Status\Server\Process\Pid;
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +22,9 @@ class ChildrenTest extends TestCase
             $child2 = new Child(new Pid(20))
         );
 
-        $this->assertTrue($children->has(new Pid(10)));
-        $this->assertTrue($children->has(new Pid(20)));
-        $this->assertFalse($children->has(new Pid(30)));
+        $this->assertTrue($children->contains(new Pid(10)));
+        $this->assertTrue($children->contains(new Pid(20)));
+        $this->assertFalse($children->contains(new Pid(30)));
         $this->assertSame($child1, $children->get(new Pid(10)));
         $this->assertSame($child2, $children->get(new Pid(20)));
     }
@@ -32,7 +32,7 @@ class ChildrenTest extends TestCase
     public function testWait()
     {
         $process = new Generic(
-            $this->createMock(TimeContinuumInterface::class),
+            $this->createMock(Clock::class),
             $this->createMock(Halt::class)
         );
 
@@ -54,6 +54,6 @@ class ChildrenTest extends TestCase
 
         $this->assertNull($children->wait());
         $delta = microtime(true) - $start;
-        $this->assertEquals(3, $delta, '', 0.05);
+        $this->assertEqualsWithDelta(3, $delta, 0.1);
     }
 }

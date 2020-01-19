@@ -12,6 +12,8 @@ use Innmind\Socket\{
     Server,
     Client,
 };
+use Innmind\TimeContinuum\ElapsedPeriod;
+use Innmind\Stream\Watch;
 use PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
@@ -25,7 +27,7 @@ class UnixTest extends TestCase
     {
         $sockets = new Unix;
 
-        $socket = $sockets->open(new Address('/tmp/foo'));
+        $socket = $sockets->open(Address::of('/tmp/foo'));
 
         $this->assertInstanceOf(Server\Unix::class, $socket);
 
@@ -33,7 +35,7 @@ class UnixTest extends TestCase
         $this->expectException(\Exception::class);
 
         try {
-            $sockets->open(new Address('/tmp/foo'));
+            $sockets->open(Address::of('/tmp/foo'));
         } finally {
             $socket->close();
         }
@@ -43,8 +45,8 @@ class UnixTest extends TestCase
     {
         $sockets = new Unix;
 
-        $socket = $sockets->open(new Address('/tmp/foo'));
-        $socket2 = $sockets->takeOver(new Address('/tmp/foo'));
+        $socket = $sockets->open(Address::of('/tmp/foo'));
+        $socket2 = $sockets->takeOver(Address::of('/tmp/foo'));
 
         $this->assertInstanceOf(Server\Unix::class, $socket2);
         $this->assertNotSame($socket, $socket2);
@@ -55,11 +57,21 @@ class UnixTest extends TestCase
     {
         $sockets = new Unix;
 
-        $server = $sockets->open(new Address('/tmp/foo'));
-        $client = $sockets->connectTo(new Address('/tmp/foo'));
+        $server = $sockets->open(Address::of('/tmp/foo'));
+        $client = $sockets->connectTo(Address::of('/tmp/foo'));
 
         $this->assertInstanceOf(Client\Unix::class, $client);
         $client->close();
         $server->close();
+    }
+
+    public function testWatch()
+    {
+        $sockets = new Unix;
+
+        $this->assertInstanceOf(
+            Watch::class,
+            $sockets->watch($this->createMock(ElapsedPeriod::class)),
+        );
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\OperatingSystem\Exception\ForkFailed;
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 
 final class ForkSide
 {
-    private $child;
+    private ?Pid $child;
 
     private function __construct(Pid $child = null)
     {
@@ -37,8 +37,10 @@ final class ForkSide
         return $this->child instanceof Pid;
     }
 
+    /** @psalm-suppress InvalidNullableReturnType */
     public function child(): Pid
     {
+        /** @psalm-suppress NullableReturnStatement */
         return $this->child;
     }
 }

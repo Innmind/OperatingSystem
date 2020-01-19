@@ -8,8 +8,8 @@ use Innmind\OperatingSystem\{
     OperatingSystem\Unix,
 };
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
-    TimeContinuum\Earth,
+    Clock,
+    Earth,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +17,7 @@ class FactoryTest extends TestCase
 {
     public function testBuild()
     {
-        $clock = $this->createMock(TimeContinuumInterface::class);
+        $clock = $this->createMock(Clock::class);
 
         $os = Factory::build($clock);
 
@@ -29,6 +29,6 @@ class FactoryTest extends TestCase
     {
         $os = Factory::build();
 
-        $this->assertInstanceOf(Earth::class, $os->clock());
+        $this->assertInstanceOf(Earth\Clock::class, $os->clock());
     }
 }

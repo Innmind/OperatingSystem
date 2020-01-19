@@ -11,7 +11,7 @@ use Innmind\Signals\{
 
 final class Wrapper implements Signals
 {
-    private $handler;
+    private Handler $handler;
 
     public function __construct(Handler $handler)
     {

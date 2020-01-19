@@ -9,6 +9,8 @@ use Innmind\Socket\{
     Server,
     Client,
 };
+use Innmind\TimeContinuum\ElapsedPeriod;
+use Innmind\Stream\Watch;
 
 final class Unix implements Sockets
 {
@@ -25,5 +27,10 @@ final class Unix implements Sockets
     public function connectTo(Address $address): Client
     {
         return new Client\Unix($address);
+    }
+
+    public function watch(ElapsedPeriod $timeout): Watch
+    {
+        return new Watch\Select($timeout);
     }
 }

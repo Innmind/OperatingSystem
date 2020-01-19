@@ -7,7 +7,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess\ForkSide,
     Exception\ForkFailed,
 };
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\Pid;
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -37,6 +37,7 @@ class ForkSideTest extends TestCase
     {
         $this
             ->forAll(Generator\pos())
+            ->when(fn($status): bool => $status > 1) // 1 is a reserved pid for the system root process
             ->then(function($status): void {
                 $side = ForkSide::of($status);
 

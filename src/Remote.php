@@ -9,14 +9,14 @@ use Innmind\Socket\{
     Client,
 };
 use Innmind\Url\{
-    UrlInterface,
-    AuthorityInterface,
+    Url,
+    Authority,
 };
 use Innmind\HttpTransport\Transport as HttpTransport;
 
 interface Remote
 {
-    public function ssh(UrlInterface $server): Server;
-    public function socket(Transport $transport, AuthorityInterface $authority): Client;
+    public function ssh(Url $server): Server;
+    public function socket(Transport $transport, Authority $authority): Client;
     public function http(): HttpTransport;
 }
