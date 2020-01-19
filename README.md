@@ -32,14 +32,14 @@ $os = Factory::build();
 ```php
 use Innmind\Url\Path;
 
-$adapter = $os->filesystem()->mount(new Path('/var/data'));
+$adapter = $os->filesystem()->mount(Path::of('/var/data'));
 ```
 
 `$adater` is an instance of [`Innmind\Filesystem\Adapter`](https://github.com/innmind/filesystem#filesystem).
 
 ### Want to list processes running on the system ?
 
-`$os->status()->processes()->all()` will return a map of [`Inmmind\Immutable\MapInterface<int, Innmind\Server\Status\Server\Process>`](https://github.com/innmind/serverstatus#usage).
+`$os->status()->processes()->all()` will return a map of [`Inmmind\Immutable\Map<int, Innmind\Server\Status\Server\Process>`](https://github.com/innmind/serverstatus#usage).
 
 ### Want to run a command on the system ?
 
@@ -66,7 +66,7 @@ $server = $os
     ->open(
         Transport::tcp(),
         IPv4::localhost(),
-        new Port(1337)
+        Port::of(1337),
     );
 ```
 
@@ -78,7 +78,7 @@ $server = $os
 # process A
 use Innmind\Socket\Address\Unix;
 
-$server = $os->sockets()->open(new Unix('/tmp/foo.sock'));
+$server = $os->sockets()->open(Unix::of('/tmp/foo.sock'));
 ```
 
 `$server` is an instance of [`Innmind\Socket\Server`](https://github.com/innmind/socket#unix-socket).
@@ -87,7 +87,7 @@ $server = $os->sockets()->open(new Unix('/tmp/foo.sock'));
 # process B
 use Innmind\Socket\Address\Unix;
 
-$client = $os->sockets()->connectTo(new Unix('/tmp/foo.sock'));
+$client = $os->sockets()->connectTo(Unix::of('/tmp/foo.sock'));
 ```
 
 `$client` is an instance of `Innmind\Socket\Client`.
@@ -100,7 +100,7 @@ use Innmind\Server\Control\Server\Command;
 
 $process = $os
     ->remote()
-    ->ssh(Url::fromString('ssh://user@server-address:1337'))
+    ->ssh(Url::of('ssh://user@server-address:1337'))
     ->processes()
     ->execute(Command::foreground('ls'));
 ```
@@ -112,8 +112,8 @@ $process = $os
 ```php
 use Innmind\Http\{
     Message\Request\Request,
-    Message\Method\Method,
-    ProtocolVersion\ProtocolVersion,
+    Message\Method,
+    ProtocolVersion,
 };
 use Innmind\Url\Url;
 
@@ -121,9 +121,9 @@ $response = $os
     ->remote()
     ->http()
     ->fulfill(new Request(
-        Url::fromString('http://example.com'),
+        Url::of('http://example.com'),
         Method::get(),
-        new ProtocolVersion(2, 0)
+        new ProtocolVersion(2, 0),
     ));
 ```
 
@@ -171,7 +171,7 @@ if ($side->parent()) {
 ### Want to pause the current process ?
 
 ```php
-use Innmind\TimeContinuum\Period\Earth\Minute;
+use Innmind\TimeContinuum\Earth\Period\Minute;
 
 $os->process()->halt(new Minute(1));
 ```
