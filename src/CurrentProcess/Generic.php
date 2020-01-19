@@ -8,6 +8,7 @@ use Innmind\OperatingSystem\{
     Exception\ForkFailed,
 };
 use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\{
     Clock,
     Period,
@@ -72,5 +73,10 @@ final class Generic implements CurrentProcess
     public function halt(Period $period): void
     {
         ($this->halt)($this->clock, $period);
+    }
+
+    public function memory(): Bytes
+    {
+        return new Bytes(\memory_get_usage());
     }
 }

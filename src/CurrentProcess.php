@@ -10,6 +10,7 @@ use Innmind\OperatingSystem\{
     Exception\ForkFailed,
 };
 use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 
 interface CurrentProcess
@@ -23,4 +24,5 @@ interface CurrentProcess
     public function children(): Children;
     public function signals(): Signals;
     public function halt(Period $period): void;
+    public function memory(): Bytes;
 }

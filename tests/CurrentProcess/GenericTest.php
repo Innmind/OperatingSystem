@@ -10,6 +10,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess,
 };
 use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\{
     Clock,
     Period,
@@ -142,5 +143,16 @@ class GenericTest extends TestCase
         $child = $process->children()->get($side->child());
         $child->terminate(); // should not trigger the listener in the child
         $this->assertSame(0, $child->wait()->toInt());
+    }
+
+    public function testMemory()
+    {
+        $process = new Generic(
+            $this->createMock(Clock::class),
+            $this->createMock(Halt::class)
+        );
+
+        $this->assertInstanceOf(Bytes::class, $process->memory());
+        $this->assertTrue($process->memory()->toInt() > 6000000); // ~5MB
     }
 }
