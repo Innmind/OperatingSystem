@@ -9,14 +9,14 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class ForkSideTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testFailure()
     {
@@ -36,8 +36,7 @@ class ForkSideTest extends TestCase
     public function testParent()
     {
         $this
-            ->forAll(Generator\pos())
-            ->when(fn($status): bool => $status > 1) // 1 is a reserved pid for the system root process
+            ->forAll(Set\Integers::above(2)) // 1 is a reserved pid for the system root process
             ->then(function($status): void {
                 $side = ForkSide::of($status);
 
