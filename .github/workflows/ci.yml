@@ -31,7 +31,7 @@ jobs:
       - name: Install Dependencies
         run: composer install
       - name: PHPUnit
-        run: vendor/bin/phpunit --coverage-clover=coverage.clover
+        run: php -dmemory_limit=-1 vendor/bin/phpunit --coverage-clover=coverage.clover
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
