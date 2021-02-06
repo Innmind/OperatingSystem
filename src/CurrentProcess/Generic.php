@@ -40,9 +40,6 @@ final class Generic implements CurrentProcess
         return new Pid(\getmypid());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function fork(): ForkSide
     {
         $side = ForkSide::of(\pcntl_fork());

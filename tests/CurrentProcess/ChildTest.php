@@ -34,14 +34,15 @@ class ChildTest extends TestCase
         $side = $process->fork();
 
         if ($side->parent() === false) {
-            usleep(5000);
+            \usleep(5000);
+
             exit(0);
         }
 
         $child = new Child($side->child());
 
         $this->assertTrue($child->running());
-        sleep(1);
+        \sleep(1);
         $child->wait();
         $this->assertFalse($child->running());
     }
@@ -56,7 +57,8 @@ class ChildTest extends TestCase
         $side = $process->fork();
 
         if ($side->parent() === false) {
-            usleep(5000);
+            \usleep(5000);
+
             exit(42);
         }
 
@@ -79,7 +81,8 @@ class ChildTest extends TestCase
         $side = $process->fork();
 
         if ($side->parent() === false) {
-            usleep(5000);
+            \usleep(5000);
+
             exit(42);
         }
 
@@ -102,7 +105,8 @@ class ChildTest extends TestCase
         $side = $process->fork();
 
         if ($side->parent() === false) {
-            usleep(5000);
+            \usleep(5000);
+
             exit(42);
         }
 

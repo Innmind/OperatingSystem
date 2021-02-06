@@ -36,24 +36,24 @@ class ChildrenTest extends TestCase
             $this->createMock(Halt::class)
         );
 
-        $start = microtime(true);
+        $start = \microtime(true);
         $children = [];
 
-        foreach (range(2, 3) as $i) {
+        foreach (\range(2, 3) as $i) {
             $side = $process->fork();
 
             if (!$side->parent()) {
-                sleep($i);
+                \sleep($i);
+
                 exit(0);
-            } else {
-                $children[] = new Child($side->child());
             }
+            $children[] = new Child($side->child());
         }
 
         $children = new Children(...$children);
 
         $this->assertNull($children->wait());
-        $delta = microtime(true) - $start;
+        $delta = \microtime(true) - $start;
         $this->assertEqualsWithDelta(3, $delta, 0.1);
     }
 }

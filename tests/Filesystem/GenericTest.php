@@ -51,9 +51,9 @@ class GenericTest extends TestCase
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/foo')));
-        file_put_contents('/tmp/foo', 'data');
+        \file_put_contents('/tmp/foo', 'data');
         $this->assertTrue($filesystem->contains(Path::of('/tmp/foo')));
-        unlink('/tmp/foo');
+        \unlink('/tmp/foo');
     }
 
     public function testContainsDirectory()
@@ -65,9 +65,9 @@ class GenericTest extends TestCase
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/some-dir/')));
-        mkdir('/tmp/some-dir/');
+        \mkdir('/tmp/some-dir/');
         $this->assertTrue($filesystem->contains(Path::of('/tmp/some-dir/')));
-        rmdir('/tmp/some-dir/');
+        \rmdir('/tmp/some-dir/');
     }
 
     public function testWatch()

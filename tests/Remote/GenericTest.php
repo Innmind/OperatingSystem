@@ -49,7 +49,7 @@ class GenericTest extends TestCase
         $processes
             ->expects($this->once())
             ->method('execute')
-            ->with($this->callback(function($command): bool {
+            ->with($this->callback(static function($command): bool {
                 return $command->toString() === "ssh '-p' '42' 'user@my-vps' 'ls'";
             }));
 
@@ -71,7 +71,7 @@ class GenericTest extends TestCase
         $processes
             ->expects($this->once())
             ->method('execute')
-            ->with($this->callback(function($command): bool {
+            ->with($this->callback(static function($command): bool {
                 return $command->toString() === "ssh 'user@my-vps' 'ls'";
             }));
 
