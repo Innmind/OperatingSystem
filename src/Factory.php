@@ -13,7 +13,7 @@ final class Factory
 {
     public static function build(Clock $clock = null): OperatingSystem
     {
-        switch (PHP_OS) {
+        switch (\PHP_OS) {
             case 'Darwin':
             case 'Linux':
                 return new OperatingSystem\Unix($clock ?? new Earth\Clock);

@@ -42,7 +42,7 @@ class WrapperTest extends TestCase
             ++$count;
         });
 
-        sleep(2); // wait for child to stop
+        \sleep(2); // wait for child to stop
 
         $this->assertSame(2, $count);
         $this->assertSame(['first', 'second'], $order);
@@ -69,7 +69,7 @@ class WrapperTest extends TestCase
         });
         $this->assertNull($signals->remove($first));
 
-        sleep(2); // wait for child to stop
+        \sleep(2); // wait for child to stop
 
         $this->assertSame(1, $count);
         $this->assertSame(['second'], $order);
@@ -78,7 +78,8 @@ class WrapperTest extends TestCase
     private function fork()
     {
         if (\pcntl_fork() === 0) {
-            sleep(1);
+            \sleep(1);
+
             exit;
         }
     }

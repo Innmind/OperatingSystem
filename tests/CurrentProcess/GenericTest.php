@@ -75,6 +75,7 @@ class GenericTest extends TestCase
 
         if (!$side->parent()) {
             $code = $process->children()->contains($process->id()) ? 1 : 0;
+
             exit($code);
         }
 
@@ -117,7 +118,7 @@ class GenericTest extends TestCase
             $this->createMock(Halt::class)
         );
         $signals = $process->signals();
-        $signals->listen(Signal::terminate(), function(...$args) {
+        $signals->listen(Signal::terminate(), static function(...$args) {
             exit(1);
         });
 
@@ -128,7 +129,8 @@ class GenericTest extends TestCase
                 exit(2);
             }
 
-            sleep(2);
+            \sleep(2);
+
             exit(0);
         }
 
@@ -138,7 +140,7 @@ class GenericTest extends TestCase
         // and had the chance to reset the signal handler
         // the intriguing thing is that instead of a sleep we do a (symfony)
         // dump(true) it have the time to remove the child signal handler
-        sleep(1);
+        \sleep(1);
 
         $child = $process->children()->get($side->child());
         $child->terminate(); // should not trigger the listener in the child
