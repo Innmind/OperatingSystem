@@ -1,9 +1,8 @@
 # OperatingSystem
 
-| `develop` |
-|-----------|
-| [![codecov](https://codecov.io/gh/Innmind/OperatingSystem/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/OperatingSystem) |
-| [![Build Status](https://github.com/Innmind/OperatingSystem/workflows/CI/badge.svg)](https://github.com/Innmind/OperatingSystem/actions?query=workflow%3ACI) |
+[![Build Status](https://github.com/innmind/operatingsystem/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/operatingsystem/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/innmind/operatingsystem/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/operatingsystem)
+[![Type Coverage](https://shepherd.dev/github/innmind/operatingsystem/coverage.svg)](https://shepherd.dev/github/innmind/operatingsystem)
 
 Abstraction for most of the operating system the PHP code run on.
 
