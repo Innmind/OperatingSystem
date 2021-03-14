@@ -118,8 +118,7 @@ use Innmind\Url\Url;
 
 $response = $os
     ->remote()
-    ->http()
-    ->fulfill(new Request(
+    ->http()(new Request(
         Url::of('http://example.com'),
         Method::get(),
         new ProtocolVersion(2, 0),
