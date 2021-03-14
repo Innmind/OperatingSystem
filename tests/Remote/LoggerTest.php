@@ -13,16 +13,14 @@ use Innmind\Socket\{
     Internet\Transport,
     Client,
 };
+use Innmind\Url\Url;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     Set,
 };
-use Fixtures\Innmind\Url\{
-    Url,
-    Authority,
-};
+use Fixtures\Innmind\Url\Url as FUrl;
 
 class LoggerTest extends TestCase
 {
@@ -42,7 +40,7 @@ class LoggerTest extends TestCase
     public function testSsh()
     {
         $this
-            ->forAll(Url::any())
+            ->forAll(FUrl::any())
             ->then(function($url) {
                 $inner = $this->createMock(Remote::class);
                 $inner
@@ -68,7 +66,13 @@ class LoggerTest extends TestCase
                     Transport::tlsv11(),
                     Transport::tlsv12(),
                 ),
-                Authority::any()->filter(static fn($authority) => $authority->toString() !== ''),
+                Set\Elements::of(
+                    // using fix set of authorities to show the log is not
+                    // hardcoded but not using the authority Set as it can
+                    // contain characters that messes up with preg_match
+                    Url::of('foo://user:pwd@example:8080')->authority(),
+                    Url::of('foo://127.0.0.1:2495')->authority(),
+                ),
             )
             ->then(function($transport, $authority) {
                 $inner = $this->createMock(Remote::class);
