@@ -1,0 +1,152 @@
+:root {
+    --border-color: grey;
+    --light-border-color: rgba(128, 128, 128, 0.4);
+    --padding: 10px;
+    --background-color: white;
+    --text-color: black;
+    --link: rgb(0, 0, 238);
+    --link-visited: rgb(85, 26, 139);
+    --quote-background: rgba(41, 44, 51, 0.31);
+    --selected-menu-background: rgba(41, 44, 51, 0.31);
+    --block-radius: 5px;
+    --inline-background: rgb(41, 44, 51);
+}
+body {
+    margin: 0;
+    display: grid;
+    grid-template-areas:
+        "header main"
+        "aside main"
+        "footer main";
+    grid-template-rows: 50px 1fr 50px;
+    grid-template-columns: 20% 1fr;
+    min-height: 100vh;
+    font-family: "Helvetica";
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 25px;
+}
+header, aside > ul > li, main {
+    padding: var(--padding);
+}
+header {
+    grid-area: header;
+    border-bottom: 1px solid var(--border-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 22px;
+}
+header h2 {
+    margin: 0;
+}
+aside {
+    grid-area: aside;
+}
+aside > ul {
+    margin: 0;
+    padding: 0;
+}
+aside > ul > li {
+    border-bottom: 1px solid var(--border-color);
+}
+aside > ul > li > a {
+    margin-left: 21px;
+}
+aside a {
+    text-decoration: none;
+}
+aside details ul {
+    list-style: none;
+    padding-left: 20px;
+}
+aside > ul > li.current {
+    background-color: var(--selected-menu-background);
+}
+li.current a {
+    color: var(--text-color);
+}
+.sub-item {
+    margin-top: var(--padding);
+    padding: 4px 10px;
+}
+.sub-item.current {
+    background-color: var(--selected-menu-background);
+    border-radius: var(--block-radius);
+}
+footer {
+    grid-area: footer;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main {
+    grid-area: main;
+    border-left: 1px solid var(--border-color);
+    padding: var(--padding) 40px;
+}
+main pre code.hljs {
+    padding: 20px;
+}
+h1, h2, h3, h4, h5, h6 {
+    padding-bottom: var(--padding);
+    border-bottom: 1px solid var(--light-border-color);
+}
+h1 .anchor, h2 .anchor, h3 .anchor, h4 .anchor, h5 .anchor, h6 .anchor {
+    float: left;
+    margin-left: -20px;
+    visibility: hidden;
+    color: var(--text-color);
+    text-decoration: none;
+    display: inline-flex;
+    width: 20px;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, h6:hover .anchor {
+    visibility: visible;
+}
+.anchor:visited {
+    color: var(--text-color);
+}
+
+a {
+    color: var(--link);
+}
+a:visited {
+    color: var(--link-visited);
+}
+
+blockquote {
+    background-color: var(--quote-background);
+    padding: 5px 40px;
+    margin: 0;
+}
+
+blockquote, code {
+    border-radius: var(--block-radius);
+}
+
+header code, main code {
+    background-color: var(--inline-background);
+    padding: 4px 6px;
+    color: rgb(178, 183, 189);
+}
+
+header a {
+    text-decoration: none;
+    color: rgb(178, 183, 189);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --border-color: white;
+        --light-border-color: rgba(255, 255, 255, 0.1);
+        --background-color: rgb(46, 61, 79);
+        --text-color: rgb(178, 183, 189);
+        --link: rgb(133, 95, 238);
+        --link-visited: rgb(117, 84, 148);
+    }
+}

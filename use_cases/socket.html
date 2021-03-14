@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head><title>innmind/operating-system</title><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/><script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body>
+    <header><a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
+    </header><aside><ul><li>
+                                    <a href="https://innmind.github.io/OperatingSystem/index.html">
+                        Getting started
+                    </a>
+                            </li>
+                    <li>
+                                    <details open><summary>
+                                                            Use cases
+                                                    </summary><ul><li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/time.html">
+                                        Manipulating time
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/filesystem.html">
+                                        Filesystem
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/http.html">
+                                        HTTP Client
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/processes.html">
+                                        Processes
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/ipc.html">
+                                        Inter Process Communication
+                                    </a>
+                                </li>
+                                                            <li class="sub-item current">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/socket.html">
+                                        Socket communication
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/signals.html">
+                                        Handling process signals
+                                    </a>
+                                </li>
+                                                    </ul></details></li>
+                    <li>
+                                    <details><summary>
+                                                            Advanced usage
+                                                    </summary><ul><li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/advanced/logging.html">
+                                        Logging all operations
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/advanced/extensions.html">
+                                        Extensions
+                                    </a>
+                                </li>
+                                                    </ul></details></li>
+                </ul></aside><main><h1 id="socket-communication"><a href="#socket-communication" class="anchor">#</a>Socket communication</h1>
+<p>This topic is similar to the <a href="ipc.html">Inter Process Communication</a> but address talking to a socket through a specific network port (either locally or remotely).</p>
+<p>As you'll see below working with sockets (<a href="ipc.html"><code>.sock</code></a> or a port) is always the same workflow:</p>
+<ul><li>open a socket (client or server)</li>
+<li>watch for them to be ready to read</li>
+<li>perform an action on the socket when ready</li>
+</ul><h2 id="opening-a-port"><a href="#opening-a-port" class="anchor">#</a>Opening a port</h2>
+<p>The use case is not very common as you need to define a protocol and implement security but can still have some use for a secure network.</p>
+<pre><code class="language-php">use Innmind\Url\Authority\Port;
+use Innmind\Socket\Internet\Transport;
+use Innmind\IP\IPv4;
+use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+
+$server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080));
+$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
+
+while (true) {
+    $ready = $watch();
+
+    if ($ready->toRead()->contains($server)) {
+        $client = $server->accept();
+        // talk to the client here
+    }
+}</code></pre>
+<p>This is similar to the <a href="ipc.html">IPC example</a> but instead of using a socket file the server is exposed at <code>tcp://127.0.0.1:8080</code> and can be accessed from outside the server.</p>
+<h2 id="opening-a-connection-to-an-opened-port"><a href="#opening-a-connection-to-an-opened-port" class="anchor">#</a>Opening a connection to an opened port</h2>
+<p>This example will open a connection to the server defined above but can be changed to talk to an HTTP server or an <a href="https://github.com/innmind/amqp">AMQP Server</a>.</p>
+<pre><code class="language-php">use Innmind\Url\Url;
+use Innmind\Socket\Internet\Transport;
+use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+
+$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority());
+$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
+
+do {
+    $ready = $watch();
+} while (!$ready->toRead()->contains($client));
+
+echo 'Server has responded'.</code></pre></main><footer><a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
+    </footer></body></html>

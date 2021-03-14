@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html><head><title>innmind/operating-system</title><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/><script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body>
+    <header><a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
+    </header><aside><ul><li>
+                                    <a href="https://innmind.github.io/OperatingSystem/index.html">
+                        Getting started
+                    </a>
+                            </li>
+                    <li>
+                                    <details open><summary>
+                                                            Use cases
+                                                    </summary><ul><li class="sub-item current">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/time.html">
+                                        Manipulating time
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/filesystem.html">
+                                        Filesystem
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/http.html">
+                                        HTTP Client
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/processes.html">
+                                        Processes
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/ipc.html">
+                                        Inter Process Communication
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/socket.html">
+                                        Socket communication
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/signals.html">
+                                        Handling process signals
+                                    </a>
+                                </li>
+                                                    </ul></details></li>
+                    <li>
+                                    <details><summary>
+                                                            Advanced usage
+                                                    </summary><ul><li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/advanced/logging.html">
+                                        Logging all operations
+                                    </a>
+                                </li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/advanced/extensions.html">
+                                        Extensions
+                                    </a>
+                                </li>
+                                                    </ul></details></li>
+                </ul></aside><main><h1 id="manipulating-time"><a href="#manipulating-time" class="anchor">#</a>Manipulating time</h1>
+<p>Directly accessing time in a PHP code is straightforward (either via <code>DateTime</code> or time functions) but it prevents you to build testable code or require to use some hard to understand hacks. Instead it is simpler to think of time as another dependency that you need to inject in your code, thus easier to change the implementation when testing.</p>
+<p><strong>Note</strong> for a more in length presentation of why directly accessing time is problematic you can watch this <a href="https://www.youtube.com/watch?v=T_I6HhP9-6w">talk</a> (in french).</p>
+<h2 id="accessing-time"><a href="#accessing-time" class="anchor">#</a>Accessing time</h2>
+<pre><code class="language-php">use Innmind\TimeContinuum\PointInTime;
+
+$isItMonday = function(PointInTime $point): bool {
+    return $point->day()->weekNumber() === 1; // 0 for sunday
+};
+
+$now = $os->clock()->now();
+$now instanceof PointInTime; // true
+$isItMonday($now);</code></pre>
+<p>To access the time you need to go through the system clock. The <code>PointInTime</code> objects are immutable it prevents you from having side effects.</p>
+<p>For such example you could write unit tests by manually instaciating instances of <code>PointInTime</code> and verify that the function works as expected for every day of the week.</p>
+<h2 id="haltering-the-time-in-your-app"><a href="#haltering-the-time-in-your-app" class="anchor">#</a>Haltering the time in your app</h2>
+<p>In some cases you may want your program to wait for a certain amount of time before continuing its job. A good example is a web crawler where you want to respect the crawler delay specified in the website <code>robots.txt</code> to avoid overloading the website server.</p>
+<pre><code class="language-php">use Innmind\OperatingSystem\CurrentProcess;
+use Innmind\TimeContinuum\Earth\Period\Second;
+
+$crawl = function(CurrentProcess $process, string ...$urls): void {
+    foreach ($urls as $url) {
+        // crawl the $url and do something with the result
+
+        // here for the sake of simplicity we specify 1 second but it can be
+        // any instance of Innmind\TimeContinuum\Period and you could build it
+        // from a robots.txt Crawler-Delay directive
+        $process->halt(new Second(1));
+    }
+};
+$crawl($os->process(), 'http://google.com', 'http://github.com');</code></pre>
+<p>Once again you can change the implementation of <code>CurrentProcess</code> when unit testing your function so it doesn't have to really wait for the specified amount of time while still verifying it is instructed to wait for a given period.</p></main><footer><a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
+    </footer></body></html>
