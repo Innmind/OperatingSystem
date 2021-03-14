@@ -84,7 +84,7 @@ class LoggerTest extends TestCase
                     ->with(
                         'Opening remote socket at {address}',
                         $this->callback(static function($context) use ($transport, $authority) {
-                            return (bool) \preg_match('~^[a-z\.0-9]+://\S+$~', $context['address']) &&
+                            return (bool) \preg_match('~^[a-z\.0-9]+://.+$~', $context['address']) &&
                                 \strpos($context['address'], $transport->toString()) === 0 &&
                                 \strpos($context['address'], $authority->toString()) !== false;
                         }),
