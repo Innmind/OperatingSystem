@@ -30,6 +30,9 @@ class UnixTest extends TestCase
             Transport::tlsv12(),
             IPv4::localhost(),
             Port::of(1234)
+        )->match(
+            static fn($server) => $server,
+            static fn() => null,
         );
 
         $this->assertInstanceOf(Internet::class, $socket);

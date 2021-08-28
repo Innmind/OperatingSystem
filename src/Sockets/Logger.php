@@ -11,6 +11,7 @@ use Innmind\Socket\{
 };
 use Innmind\TimeContinuum\ElapsedPeriod;
 use Innmind\Stream\Watch;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Sockets
@@ -24,7 +25,7 @@ final class Logger implements Sockets
         $this->logger = $logger;
     }
 
-    public function open(Address $address): Server
+    public function open(Address $address): Maybe
     {
         $this->logger->info(
             'Opening socket at {address}',
@@ -34,7 +35,7 @@ final class Logger implements Sockets
         return $this->sockets->open($address);
     }
 
-    public function takeOver(Address $address): Server
+    public function takeOver(Address $address): Maybe
     {
         $this->logger->info(
             'Taking over the socket at {address}',
@@ -44,7 +45,7 @@ final class Logger implements Sockets
         return $this->sockets->takeOver($address);
     }
 
-    public function connectTo(Address $address): Client
+    public function connectTo(Address $address): Maybe
     {
         $this->logger->info(
             'Connecting to socket at {address}',

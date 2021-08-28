@@ -14,6 +14,7 @@ use Innmind\Url\{
     Authority,
 };
 use Innmind\HttpTransport;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Remote
@@ -35,7 +36,7 @@ final class Logger implements Remote
         );
     }
 
-    public function socket(Transport $transport, Authority $authority): Client
+    public function socket(Transport $transport, Authority $authority): Maybe
     {
         $this->logger->info(
             'Opening remote socket at {address}',

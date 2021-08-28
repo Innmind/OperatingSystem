@@ -9,8 +9,12 @@ use Innmind\Socket\{
     Server,
 };
 use Innmind\IP\IP;
+use Innmind\Immutable\Maybe;
 
 interface Ports
 {
-    public function open(Transport $transport, IP $ip, Port $port): Server;
+    /**
+     * @return Maybe<Server>
+     */
+    public function open(Transport $transport, IP $ip, Port $port): Maybe;
 }

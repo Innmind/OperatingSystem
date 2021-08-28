@@ -19,6 +19,7 @@ use Innmind\Url\{
     Authority\Port,
 };
 use Innmind\HttpTransport\Transport as HttpTransport;
+use Innmind\Immutable\Maybe;
 use function Innmind\HttpTransport\bootstrap as http;
 
 final class Generic implements Remote
@@ -49,12 +50,9 @@ final class Generic implements Remote
         );
     }
 
-    public function socket(Transport $transport, Authority $authority): Client
+    public function socket(Transport $transport, Authority $authority): Maybe
     {
-        return Client\Internet::of($transport, $authority)->match(
-            static fn($client) => $client,
-            static fn() => throw new \RuntimeException, // todo change interface
-        );
+        return Client\Internet::of($transport, $authority);
     }
 
     public function http(): HttpTransport

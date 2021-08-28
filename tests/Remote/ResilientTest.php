@@ -14,6 +14,7 @@ use Innmind\Socket\{
     Internet\Transport,
     Client,
 };
+use Innmind\Immutable\Maybe;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -80,7 +81,7 @@ class ResilientTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = $this->createMock(Client::class));
+                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });

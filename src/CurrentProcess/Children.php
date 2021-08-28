@@ -7,6 +7,7 @@ use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Immutable\{
     Map,
     Sequence,
+    Maybe,
 };
 
 final class Children
@@ -31,12 +32,12 @@ final class Children
         return $this->children->contains($pid->toInt());
     }
 
-    public function get(Pid $pid): Child
+    /**
+     * @return Maybe<Child>
+     */
+    public function get(Pid $pid): Maybe
     {
-        return $this->children->get($pid->toInt())->match(
-            static fn($child) => $child,
-            static fn() => throw new \LogicException, // todo change interface
-        );
+        return $this->children->get($pid->toInt());
     }
 
     public function wait(): void

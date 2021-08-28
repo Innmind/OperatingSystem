@@ -14,6 +14,7 @@ use Innmind\Socket\{
 };
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 use Innmind\Stream\Watch;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -44,7 +45,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('open')
             ->with($address)
-            ->willReturn($expected = $this->createMock(Server::class));
+            ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -66,7 +67,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('takeOver')
             ->with($address)
-            ->willReturn($expected = $this->createMock(Server::class));
+            ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -88,7 +89,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('connectTo')
             ->with($address)
-            ->willReturn($expected = $this->createMock(Client::class));
+            ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

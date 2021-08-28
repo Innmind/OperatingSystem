@@ -96,7 +96,10 @@ class GenericTest extends TestCase
             static fn() => null,
         );
 
-        $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority());
+        $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority())->match(
+            static fn($client) => $client,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Internet::class, $socket);
         $server->close();

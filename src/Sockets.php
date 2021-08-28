@@ -10,18 +10,27 @@ use Innmind\Socket\{
 };
 use Innmind\TimeContinuum\ElapsedPeriod;
 use Innmind\Stream\Watch;
+use Innmind\Immutable\Maybe;
 
 interface Sockets
 {
     /**
      * This method will fail if the socket already exist
+     *
+     * @return Maybe<Server>
      */
-    public function open(Unix $address): Server;
+    public function open(Unix $address): Maybe;
 
     /**
      * This will take control of the socket if it already exist (use carefully)
+     *
+     * @return Maybe<Server>
      */
-    public function takeOver(Unix $address): Server;
-    public function connectTo(Unix $address): Client;
+    public function takeOver(Unix $address): Maybe;
+
+    /**
+     * @return Maybe<Client>
+     */
+    public function connectTo(Unix $address): Maybe;
     public function watch(ElapsedPeriod $timeout): Watch;
 }

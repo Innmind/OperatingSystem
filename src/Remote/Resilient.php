@@ -18,6 +18,7 @@ use Innmind\HttpTransport\{
     ExponentialBackoffTransport,
 };
 use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Immutable\Maybe;
 
 final class Resilient implements Remote
 {
@@ -33,7 +34,7 @@ final class Resilient implements Remote
         return $this->remote->ssh($server);
     }
 
-    public function socket(Transport $transport, Authority $authority): Client
+    public function socket(Transport $transport, Authority $authority): Maybe
     {
         return $this->remote->socket($transport, $authority);
     }

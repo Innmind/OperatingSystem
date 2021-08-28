@@ -66,7 +66,10 @@ class GenericTest extends TestCase
 
         $this->assertInstanceOf(Children::class, $process->children());
         $this->assertTrue($process->children()->contains($side->child()));
-        $child = $process->children()->get($side->child());
+        $child = $process->children()->get($side->child())->match(
+            static fn($child) => $child,
+            static fn() => null,
+        );
         $this->assertSame(0, $child->wait()->toInt());
     }
 
@@ -120,7 +123,10 @@ class GenericTest extends TestCase
         // dump(true) it have the time to remove the child signal handler
         \sleep(1);
 
-        $child = $process->children()->get($side->child());
+        $child = $process->children()->get($side->child())->match(
+            static fn($child) => $child,
+            static fn() => null,
+        );
         $child->terminate(); // should not trigger the listener in the child
         $this->assertSame(0, $child->wait()->toInt());
     }

@@ -24,8 +24,14 @@ class ChildrenTest extends TestCase
         $this->assertTrue($children->contains(new Pid(10)));
         $this->assertTrue($children->contains(new Pid(20)));
         $this->assertFalse($children->contains(new Pid(30)));
-        $this->assertSame($child1, $children->get(new Pid(10)));
-        $this->assertSame($child2, $children->get(new Pid(20)));
+        $this->assertSame($child1, $children->get(new Pid(10))->match(
+            static fn($child) => $child,
+            static fn() => null,
+        ));
+        $this->assertSame($child2, $children->get(new Pid(20))->match(
+            static fn($child) => $child,
+            static fn() => null,
+        ));
     }
 
     public function testWait()

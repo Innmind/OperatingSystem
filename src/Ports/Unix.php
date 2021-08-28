@@ -10,14 +10,12 @@ use Innmind\Socket\{
     Server,
 };
 use Innmind\IP\IP;
+use Innmind\Immutable\Maybe;
 
 final class Unix implements Ports
 {
-    public function open(Transport $transport, IP $ip, Port $port): Server
+    public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
-        return Server\Internet::of($transport, $ip, $port)->match(
-            static fn($server) => $server,
-            static fn() => throw new \RuntimeException, // todo change interface
-        );
+        return Server\Internet::of($transport, $ip, $port);
     }
 }

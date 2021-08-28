@@ -14,6 +14,7 @@ use Innmind\Socket\{
     Client,
 };
 use Innmind\Url\Url;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -80,7 +81,7 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = $this->createMock(Client::class));
+                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
