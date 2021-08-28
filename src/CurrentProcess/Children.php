@@ -16,10 +16,7 @@ final class Children
 
     public function __construct(Child ...$children)
     {
-        /**
-         * @psalm-suppress MixedArgumentTypeCoercion
-         * @var Map<int, Child>
-         */
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         $this->children = Sequence::mixed(...$children)->toMapOf(
             'int',
             Child::class,
