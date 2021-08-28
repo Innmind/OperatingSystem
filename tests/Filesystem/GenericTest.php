@@ -13,10 +13,14 @@ use Innmind\Server\Control\Server\Processes;
 use Innmind\TimeWarp\Halt;
 use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\Ping;
+use Fixtures\Innmind\Url\Path as FPath;
 use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\BlackBox;
 
 class GenericTest extends TestCase
 {
+    use BlackBox;
+
     public function testInterface()
     {
         $this->assertInstanceOf(
@@ -79,5 +83,37 @@ class GenericTest extends TestCase
         );
 
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
+    }
+
+    public function testRequireUnknownFile()
+    {
+        $this
+            ->forAll(FPath::any())
+            ->then(function($path) {
+                $filesystem = new Generic(
+                    $this->createMock(Processes::class),
+                    $this->createMock(Halt::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $this->assertFalse($filesystem->require($path)->match(
+                    static fn() => true,
+                    static fn() => false,
+                ));
+            });
+    }
+
+    public function testRequireFile()
+    {
+        $filesystem = new Generic(
+            $this->createMock(Processes::class),
+            $this->createMock(Halt::class),
+            $this->createMock(Clock::class),
+        );
+
+        $this->assertSame(42, $filesystem->require(Path::of(__DIR__.'/fixture.php'))->match(
+            static fn($value) => $value,
+            static fn() => null,
+        ));
     }
 }

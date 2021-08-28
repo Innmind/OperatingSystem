@@ -10,6 +10,7 @@ use Innmind\Server\Control\Server\Processes;
 use Innmind\TimeWarp\Halt;
 use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\Ping;
+use Innmind\Immutable\Maybe;
 use function Innmind\FileWatch\bootstrap as watch;
 
 final class Generic implements Filesystem
@@ -44,6 +45,21 @@ final class Generic implements Filesystem
         }
 
         return true;
+    }
+
+    public function require(Path $path): Maybe
+    {
+        if (!\file_exists($path->toString())) {
+            /** @var Maybe<mixed> */
+            return Maybe::nothing();
+        }
+
+        /**
+         * @psalm-suppress UnresolvableInclude
+         * @psalm-suppress MixedArgument
+         * @var Maybe<mixed>
+         */
+        return Maybe::just(require $path->toString());
     }
 
     public function watch(Path $path): Ping

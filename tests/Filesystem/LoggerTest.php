@@ -9,6 +9,7 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Filesystem\Adapter;
 use Innmind\FileWatch\Ping;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -113,6 +114,51 @@ class LoggerTest extends TestCase
                 $filesystem = new Logger($inner, $logger);
 
                 $this->assertInstanceOf(Ping\Logger::class, $filesystem->watch($path));
+            });
+    }
+
+    public function testDoesntLogUnknownRequiredFile()
+    {
+        $this
+            ->forAll(Path::any())
+            ->then(function($path) {
+                $inner = $this->createMock(Filesystem::class);
+                $inner
+                    ->expects($this->once())
+                    ->method('require')
+                    ->with($path)
+                    ->willReturn($expected = Maybe::nothing());
+                $logger = $this->createMock(LoggerInterface::class);
+                $logger
+                    ->expects($this->never())
+                    ->method('info');
+                $filesystem = new Logger($inner, $logger);
+
+                $this->assertEquals($expected, $filesystem->require($path));
+            });
+    }
+
+    public function testLogRequiredFile()
+    {
+        $this
+            ->forAll(
+                Path::any(),
+                Set\AnyType::any(),
+            )
+            ->then(function($path, $value) {
+                $inner = $this->createMock(Filesystem::class);
+                $inner
+                    ->expects($this->once())
+                    ->method('require')
+                    ->with($path)
+                    ->willReturn($expected = Maybe::just($value));
+                $logger = $this->createMock(LoggerInterface::class);
+                $logger
+                    ->expects($this->once())
+                    ->method('info');
+                $filesystem = new Logger($inner, $logger);
+
+                $this->assertEquals($expected, $filesystem->require($path));
             });
     }
 }

@@ -7,6 +7,7 @@ use Innmind\OperatingSystem\Filesystem;
 use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Filesystem
@@ -40,6 +41,21 @@ final class Logger implements Filesystem
         );
 
         return $contains;
+    }
+
+    public function require(Path $path): Maybe
+    {
+        return $this
+            ->filesystem
+            ->require($path)
+            ->map(function(mixed $value) use ($path): mixed {
+                $this->logger->info(
+                    'PHP file located at {path} loaded in memory',
+                    ['path' => $path->toString()],
+                );
+
+                return $value;
+            });
     }
 
     public function watch(Path $path): Ping
