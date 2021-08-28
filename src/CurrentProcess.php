@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    CurrentProcess\ForkSide,
     CurrentProcess\Children,
     CurrentProcess\Signals,
     Exception\ForkFailed,
@@ -12,15 +11,19 @@ use Innmind\OperatingSystem\{
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 
 interface CurrentProcess
 {
     public function id(): Pid;
 
     /**
-     * @throws ForkFailed
+     * @return Either<ForkFailed|Pid, SideEffect> SideEffect represent the child side and the Pid the parent side (with the pid being the child one)
      */
-    public function fork(): ForkSide;
+    public function fork(): Either;
     public function children(): Children;
     public function signals(): Signals;
     public function halt(Period $period): void;

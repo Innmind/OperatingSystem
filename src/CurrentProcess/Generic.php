@@ -12,7 +12,11 @@ use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
-use Innmind\Immutable\Set;
+use Innmind\Immutable\{
+    Set,
+    Either,
+    SideEffect,
+};
 
 final class Generic implements CurrentProcess
 {
@@ -34,21 +38,27 @@ final class Generic implements CurrentProcess
         return new Pid(\getmypid());
     }
 
-    public function fork(): ForkSide
+    public function fork(): Either
     {
-        $side = ForkSide::of(\pcntl_fork());
+        /** @var Either<ForkFailed|Pid, SideEffect> */
+        $result = match ($pid = \pcntl_fork()) {
+            -1 => Either::left(new ForkFailed),
+            0 => Either::right(new SideEffect),
+            default => Either::left(new Pid($pid)),
+        };
 
-        if ($side->parent()) {
-            $this->children = $this->children->add(
-                new Child($side->child()),
-            );
-        } else {
-            $this->children = $this->children->clear();
-            $this->signals = null;
-            $this->signalsHandler = $this->signalsHandler ? $this->signalsHandler->reset() : null;
-        }
+        return $result
+            ->map(function($sideEffect) {
+                $this->children = $this->children->clear();
+                $this->signals = null;
+                $this->signalsHandler = $this->signalsHandler ? $this->signalsHandler->reset() : null;
 
-        return $side;
+                return $sideEffect;
+            })
+            ->leftMap(fn($left) => match (true) {
+                $left instanceof Pid => $this->register($left),
+                default => $left,
+            });
     }
 
     public function children(): Children
@@ -71,5 +81,12 @@ final class Generic implements CurrentProcess
     public function memory(): Bytes
     {
         return new Bytes(\memory_get_usage());
+    }
+
+    private function register(Pid $child): Pid
+    {
+        $this->children = ($this->children)(new Child($child));
+
+        return $child;
     }
 }

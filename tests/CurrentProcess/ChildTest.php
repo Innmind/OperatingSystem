@@ -27,15 +27,19 @@ class ChildTest extends TestCase
     {
         $process = new Generic($this->createMock(Halt::class));
 
-        $side = $process->fork();
+        $child = $process->fork()->match(
+            static fn($left) => $left,
+            static fn() => null
+        );
 
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(0);
         }
 
-        $child = new Child($side->child());
+        $this->assertInstanceOf(Pid::class, $child);
+        $child = new Child($child);
 
         $this->assertTrue($child->running());
         \sleep(1);
@@ -47,15 +51,19 @@ class ChildTest extends TestCase
     {
         $process = new Generic($this->createMock(Halt::class));
 
-        $side = $process->fork();
+        $child = $process->fork()->match(
+            static fn($left) => $left,
+            static fn() => null
+        );
 
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
+        $this->assertInstanceOf(Pid::class, $child);
+        $child = new Child($child);
 
         $this->assertTrue($child->running());
         $exitCode = $child->wait();
@@ -68,15 +76,19 @@ class ChildTest extends TestCase
     {
         $process = new Generic($this->createMock(Halt::class));
 
-        $side = $process->fork();
+        $child = $process->fork()->match(
+            static fn($left) => $left,
+            static fn() => null
+        );
 
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
+        $this->assertInstanceOf(Pid::class, $child);
+        $child = new Child($child);
 
         $this->assertTrue($child->running());
         $this->assertNull($child->kill());
@@ -89,15 +101,19 @@ class ChildTest extends TestCase
     {
         $process = new Generic($this->createMock(Halt::class));
 
-        $side = $process->fork();
+        $child = $process->fork()->match(
+            static fn($left) => $left,
+            static fn() => null
+        );
 
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
+        $this->assertInstanceOf(Pid::class, $child);
+        $child = new Child($child);
 
         $this->assertTrue($child->running());
         $this->assertNull($child->terminate());

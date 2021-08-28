@@ -7,6 +7,7 @@ use Innmind\OperatingSystem\CurrentProcess;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\Either;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements CurrentProcess
@@ -33,22 +34,23 @@ final class Logger implements CurrentProcess
         return $pid;
     }
 
-    public function fork(): ForkSide
+    public function fork(): Either
     {
         $this->logger->info('Forking process');
 
-        $side = $this->process->fork();
+        return $this
+            ->process
+            ->fork()
+            ->map(function($sideEffect) {
+                // @see Generic::fork()
+                // the child process reset the signal handlers to avoid side effects
+                // between parent and child so here we can safely reset the signals
+                // to free memory as listeners are kept in memory to reference the
+                // decorated listeners given to the underlying signals handler
+                $this->signals = null;
 
-        if (!$side->parent()) {
-            // @see Generic::fork()
-            // the child process reset the signal handlers to avoid side effects
-            // between parent and child so here we can safely reset the signals
-            // to free memory as listeners are kept in memory to reference the
-            // decorated listeners given to the underlying signals handler
-            $this->signals = null;
-        }
-
-        return $side;
+                return $sideEffect;
+            });
     }
 
     public function children(): Children

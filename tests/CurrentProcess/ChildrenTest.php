@@ -43,14 +43,19 @@ class ChildrenTest extends TestCase
         $count = 0;
 
         foreach (\range(2, 3) as $i) {
-            $side = $process->fork();
+            $child = $process->fork()->match(
+                static fn($left) => $left,
+                static fn() => null,
+            );
 
-            if (!$side->parent()) {
+            if (\is_null($child)) {
                 \sleep($i);
 
                 exit(0);
             }
-            $children[] = new Child($side->child());
+
+            $this->assertInstanceOf(Pid::class, $child);
+            $children[] = new Child($child);
             ++$count;
         }
 

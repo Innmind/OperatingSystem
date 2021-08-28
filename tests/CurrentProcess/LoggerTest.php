@@ -6,13 +6,16 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 use Innmind\OperatingSystem\{
     CurrentProcess\Logger,
     CurrentProcess\Signals,
-    CurrentProcess\ForkSide,
     CurrentProcess\Children,
     CurrentProcess,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -72,9 +75,14 @@ class LoggerTest extends TestCase
     public function testFork()
     {
         $this
-            ->forAll(Set\Integers::above(0)->filter(static fn($id) => $id !== 1))
-            ->then(function($result) {
-                $expected = ForkSide::of($result);
+            ->forAll(new Set\Either(
+                Set\Elements::of(Either::right(new SideEffect)),
+                Set\Decorate::immutable(
+                    static fn($id) => Either::left(new Pid($id)),
+                    Set\Integers::above(2),
+                ),
+            ))
+            ->then(function($expected) {
                 $inner = $this->createMock(CurrentProcess::class);
                 $inner
                     ->expects($this->once())
@@ -87,7 +95,7 @@ class LoggerTest extends TestCase
                     ->with('Forking process');
                 $process = new Logger($inner, $logger);
 
-                $this->assertSame($expected, $process->fork());
+                $this->assertEquals($expected, $process->fork());
             });
     }
 
@@ -97,7 +105,7 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('fork')
-            ->willReturn(ForkSide::of(0));
+            ->willReturn(Either::right(new SideEffect));
         $logger = $this->createMock(LoggerInterface::class);
         $process = new Logger($inner, $logger);
         $original = $process->signals();
@@ -115,7 +123,7 @@ class LoggerTest extends TestCase
                 $inner
                     ->expects($this->once())
                     ->method('fork')
-                    ->willReturn(ForkSide::of($child));
+                    ->willReturn(Either::left(new Pid($child)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $process = new Logger($inner, $logger);
                 $original = $process->signals();
