@@ -15,6 +15,9 @@ final class Unix implements Ports
 {
     public function open(Transport $transport, IP $ip, Port $port): Server
     {
-        return new Server\Internet($transport, $ip, $port);
+        return Server\Internet::of($transport, $ip, $port)->match(
+            static fn($server) => $server,
+            static fn() => throw new \RuntimeException, // todo change interface
+        );
     }
 }

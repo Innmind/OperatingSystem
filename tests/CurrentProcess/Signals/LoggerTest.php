@@ -11,6 +11,7 @@ use Innmind\Signals\{
     Signal,
     Info,
 };
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -62,7 +63,13 @@ class LoggerTest extends TestCase
         $this
             ->forAll($this->signals())
             ->then(function($signal) {
-                $info = new Info;
+                $info = new Info(
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                );
                 $inner = $this->createMock(Signals::class);
                 $inner
                     ->expects($this->once())

@@ -59,10 +59,7 @@ final class Resilient implements OperatingSystem
 
     public function remote(): Remote
     {
-        return new Remote\Resilient(
-            $this->os->remote(),
-            $this->os->clock(),
-        );
+        return new Remote\Resilient($this->os->remote());
     }
 
     public function process(): CurrentProcess

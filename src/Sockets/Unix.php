@@ -16,17 +16,26 @@ final class Unix implements Sockets
 {
     public function open(Address $address): Server
     {
-        return new Server\Unix($address);
+        return Server\Unix::of($address)->match(
+            static fn($server) => $server,
+            static fn() => throw new \RuntimeException, // todo change interface
+        );
     }
 
     public function takeOver(Address $address): Server
     {
-        return Server\Unix::recoverable($address);
+        return Server\Unix::recoverable($address)->match(
+            static fn($server) => $server,
+            static fn() => throw new \RuntimeException, // todo change interface
+        );
     }
 
     public function connectTo(Address $address): Client
     {
-        return new Client\Unix($address);
+        return Client\Unix::of($address)->match(
+            static fn($client) => $client,
+            static fn() => throw new \RuntimeException, // todo change interface
+        );
     }
 
     public function watch(ElapsedPeriod $timeout): Watch

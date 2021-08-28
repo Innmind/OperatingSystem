@@ -14,15 +14,15 @@ final class Children
     /** @var Map<int, Child> */
     private Map $children;
 
+    /**
+     * @no-named-arguments
+     */
     public function __construct(Child ...$children)
     {
-        /** @psalm-suppress MixedArgumentTypeCoercion */
-        $this->children = Sequence::mixed(...$children)->toMapOf(
-            'int',
-            Child::class,
-            static function(Child $child): \Generator {
-                yield $child->id()->toInt() => $child;
-            },
+        $this->children = Map::of(
+            ...Sequence::of(...$children)
+                ->map(static fn($child) => [$child->id()->toInt(), $child])
+                ->toList(),
         );
     }
 
@@ -33,12 +33,15 @@ final class Children
 
     public function get(Pid $pid): Child
     {
-        return $this->children->get($pid->toInt());
+        return $this->children->get($pid->toInt())->match(
+            static fn($child) => $child,
+            static fn() => throw new \LogicException, // todo change interface
+        );
     }
 
     public function wait(): void
     {
-        $this->children->values()->foreach(static function(Child $child): void {
+        $_ = $this->children->values()->foreach(static function(Child $child): void {
             $child->wait();
         });
     }

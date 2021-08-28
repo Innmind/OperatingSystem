@@ -16,6 +16,7 @@ use Innmind\Url\{
     Url,
     Authority\Port,
 };
+use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client\Internet,
@@ -32,15 +33,17 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(
             Remote::class,
             new Generic(
-                $this->createMock(Server::class)
-            )
+                $this->createMock(Server::class),
+                $this->createMock(Clock::class),
+            ),
         );
     }
 
     public function testSsh()
     {
         $remote = new Generic(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
@@ -62,7 +65,8 @@ class GenericTest extends TestCase
     public function testSshWithoutPort()
     {
         $remote = new Generic(
-            $server = $this->createMock(Server::class)
+            $server = $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
@@ -84,9 +88,13 @@ class GenericTest extends TestCase
     public function testSocket()
     {
         $remote = new Generic(
-            $this->createMock(Server::class)
+            $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
-        $server = new InternetServer(Transport::tcp(), IPv4::localhost(), Port::of(1234));
+        $server = InternetServer::of(Transport::tcp(), IPv4::localhost(), Port::of(1234))->match(
+            static fn($server) => $server,
+            static fn() => null,
+        );
 
         $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority());
 
@@ -98,7 +106,8 @@ class GenericTest extends TestCase
     public function testHttp()
     {
         $remote = new Generic(
-            $this->createMock(Server::class)
+            $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
 
         $http = $remote->http();

@@ -17,18 +17,15 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     ExponentialBackoffTransport,
 };
-use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 
 final class Resilient implements Remote
 {
     private Remote $remote;
-    private Clock $clock;
 
-    public function __construct(Remote $remote, Clock $clock)
+    public function __construct(Remote $remote)
     {
         $this->remote = $remote;
-        $this->clock = $clock;
     }
 
     public function ssh(Url $server): Server
@@ -46,7 +43,6 @@ final class Resilient implements Remote
         return ExponentialBackoffTransport::of(
             $this->remote->http(),
             new Usleep,
-            $this->clock,
         );
     }
 }

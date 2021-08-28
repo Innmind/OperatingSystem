@@ -74,14 +74,11 @@ final class Unix implements OperatingSystem
 
     public function remote(): Remote
     {
-        return $this->remote ??= new Remote\Generic($this->control());
+        return $this->remote ??= new Remote\Generic($this->control(), $this->clock());
     }
 
     public function process(): CurrentProcess
     {
-        return $this->process ??= new CurrentProcess\Generic(
-            $this->clock(),
-            new Usleep,
-        );
+        return $this->process ??= new CurrentProcess\Generic(new Usleep);
     }
 }

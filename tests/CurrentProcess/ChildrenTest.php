@@ -9,7 +9,6 @@ use Innmind\OperatingSystem\CurrentProcess\{
     Generic,
 };
 use Innmind\Server\Control\Server\Process\Pid;
-use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
@@ -31,10 +30,7 @@ class ChildrenTest extends TestCase
 
     public function testWait()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $start = \microtime(true);
         $children = [];

@@ -11,7 +11,6 @@ use Innmind\Server\Control\Server\Process\{
     Pid,
     ExitCode,
 };
-use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
@@ -26,10 +25,7 @@ class ChildTest extends TestCase
 
     public function testRunning()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $side = $process->fork();
 
@@ -49,10 +45,7 @@ class ChildTest extends TestCase
 
     public function testWait()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $side = $process->fork();
 
@@ -73,10 +66,7 @@ class ChildTest extends TestCase
 
     public function testKill()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $side = $process->fork();
 
@@ -97,10 +87,7 @@ class ChildTest extends TestCase
 
     public function testTerminate()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $side = $process->fork();
 

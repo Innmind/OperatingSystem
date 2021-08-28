@@ -23,7 +23,7 @@ final class Logger implements Signals
         $this->signals = $signals;
         $this->logger = $logger;
         /** @var Map<callable(Signal, Info): void, callable(Signal, Info): void> */
-        $this->decorated = Map::of('callable', 'callable');
+        $this->decorated = Map::of();
     }
 
     public function listen(Signal $signal, callable $listener): void
@@ -52,12 +52,13 @@ final class Logger implements Signals
 
         // by default we alias the user listener as the decorated in case he
         // found a way to install his listener from another way than from self::listen()
-        $decorated = $listener;
-
-        if ($this->decorated->contains($listener)) {
-            $decorated = $this->decorated->get($listener);
-        }
-
+        $decorated = $this
+            ->decorated
+            ->get($listener)
+            ->match(
+                static fn($decorated) => $decorated,
+                static fn() => $listener,
+            );
         $this->signals->remove($decorated);
         $this->decorated = $this->decorated->remove($decorated);
     }

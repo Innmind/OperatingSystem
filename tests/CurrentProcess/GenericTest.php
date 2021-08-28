@@ -11,10 +11,7 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
-use Innmind\TimeContinuum\{
-    Clock,
-    Period,
-};
+use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Signal;
 use PHPUnit\Framework\TestCase;
@@ -25,19 +22,13 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             CurrentProcess::class,
-            new Generic(
-                $this->createMock(Clock::class),
-                $this->createMock(Halt::class)
-            )
+            new Generic($this->createMock(Halt::class))
         );
     }
 
     public function testId()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Pid::class, $process->id());
         $this->assertSame($process->id()->toInt(), $process->id()->toInt());
@@ -45,10 +36,7 @@ class GenericTest extends TestCase
 
     public function testFork()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $parentId = $process->id()->toInt();
 
@@ -66,10 +54,7 @@ class GenericTest extends TestCase
 
     public function testChildren()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $side = $process->fork();
 
@@ -88,24 +73,20 @@ class GenericTest extends TestCase
     public function testHalt()
     {
         $process = new Generic(
-            $clock = $this->createMock(Clock::class),
-            $halt = $this->createMock(Halt::class)
+            $halt = $this->createMock(Halt::class),
         );
         $period = $this->createMock(Period::class);
         $halt
             ->expects($this->once())
             ->method('__invoke')
-            ->with($clock, $period);
+            ->with($period);
 
         $this->assertNull($process->halt($period));
     }
 
     public function testSignals()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
@@ -113,10 +94,7 @@ class GenericTest extends TestCase
 
     public function testSignalsAreResettedInForkChild()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
         $signals = $process->signals();
         $signals->listen(Signal::terminate(), static function(...$args) {
             exit(1);
@@ -149,10 +127,7 @@ class GenericTest extends TestCase
 
     public function testMemory()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
-        );
+        $process = new Generic($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Bytes::class, $process->memory());
         $this->assertTrue($process->memory()->toInt() > 6000000); // ~5MB

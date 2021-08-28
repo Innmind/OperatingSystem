@@ -64,6 +64,6 @@ final class Generic implements Filesystem
 
     public function watch(Path $path): Ping
     {
-        return watch($this->processes, $this->halt, $this->clock)($path);
+        return watch($this->processes, $this->halt)($path);
     }
 }

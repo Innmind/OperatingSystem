@@ -9,30 +9,24 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
-use Innmind\TimeContinuum\{
-    Clock,
-    Period,
-};
+use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
 use Innmind\Immutable\Set;
-use function Innmind\Immutable\unwrap;
 
 final class Generic implements CurrentProcess
 {
-    private Clock $clock;
     private Halt $halt;
     /** @var Set<Child> */
     private Set $children;
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
 
-    public function __construct(Clock $clock, Halt $halt)
+    public function __construct(Halt $halt)
     {
-        $this->clock = $clock;
         $this->halt = $halt;
         /** @var Set<Child> */
-        $this->children = Set::of(Child::class);
+        $this->children = Set::of();
     }
 
     public function id(): Pid
@@ -59,7 +53,7 @@ final class Generic implements CurrentProcess
 
     public function children(): Children
     {
-        return new Children(...unwrap($this->children));
+        return new Children(...$this->children->toList());
     }
 
     public function signals(): Signals
@@ -71,7 +65,7 @@ final class Generic implements CurrentProcess
 
     public function halt(Period $period): void
     {
-        ($this->halt)($this->clock, $period);
+        ($this->halt)($period);
     }
 
     public function memory(): Bytes

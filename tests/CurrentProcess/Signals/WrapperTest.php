@@ -32,12 +32,12 @@ class WrapperTest extends TestCase
         $this->fork();
 
         $this->assertNull($signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+            $this->assertEquals(Signal::child(), $signal);
             $order[] = 'first';
             ++$count;
         }));
         $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+            $this->assertEquals(Signal::child(), $signal);
             $order[] = 'second';
             ++$count;
         });
@@ -63,7 +63,7 @@ class WrapperTest extends TestCase
         };
         $signals->listen(Signal::child(), $first);
         $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+            $this->assertEquals(Signal::child(), $signal);
             $order[] = 'second';
             ++$count;
         });

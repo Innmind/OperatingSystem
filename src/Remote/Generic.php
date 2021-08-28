@@ -8,6 +8,7 @@ use Innmind\Server\Control\{
     Server,
     Servers,
 };
+use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client,
@@ -23,11 +24,13 @@ use function Innmind\HttpTransport\bootstrap as http;
 final class Generic implements Remote
 {
     private Server $server;
+    private Clock $clock;
     private ?HttpTransport $http = null;
 
-    public function __construct(Server $server)
+    public function __construct(Server $server, Clock $clock)
     {
         $this->server = $server;
+        $this->clock = $clock;
     }
 
     public function ssh(Url $server): Server
@@ -48,11 +51,14 @@ final class Generic implements Remote
 
     public function socket(Transport $transport, Authority $authority): Client
     {
-        return new Client\Internet($transport, $authority);
+        return Client\Internet::of($transport, $authority)->match(
+            static fn($client) => $client,
+            static fn() => throw new \RuntimeException, // todo change interface
+        );
     }
 
     public function http(): HttpTransport
     {
-        return $this->http ??= http()['default'](null);
+        return $this->http ??= http($this->clock)['default'](null);
     }
 }
