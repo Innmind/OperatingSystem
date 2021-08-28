@@ -49,7 +49,9 @@ final class Generic implements Filesystem
 
     public function require(Path $path): Maybe
     {
-        if (!\file_exists($path->toString())) {
+        $path = $path->toString();
+
+        if (!\file_exists($path) || \is_dir($path)) {
             /** @var Maybe<mixed> */
             return Maybe::nothing();
         }
@@ -59,7 +61,7 @@ final class Generic implements Filesystem
          * @psalm-suppress MixedArgument
          * @var Maybe<mixed>
          */
-        return Maybe::just(require $path->toString());
+        return Maybe::just(require $path);
     }
 
     public function watch(Path $path): Ping
