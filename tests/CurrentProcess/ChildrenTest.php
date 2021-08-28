@@ -40,6 +40,7 @@ class ChildrenTest extends TestCase
 
         $start = \microtime(true);
         $children = [];
+        $count = 0;
 
         foreach (\range(2, 3) as $i) {
             $side = $process->fork();
@@ -50,11 +51,17 @@ class ChildrenTest extends TestCase
                 exit(0);
             }
             $children[] = new Child($side->child());
+            ++$count;
         }
 
         $children = new Children(...$children);
 
-        $this->assertNull($children->wait());
+        $codes = $children->wait();
+        $this->assertCount($count, $codes);
+        $codes->foreach(function($pid, $code) use ($children) {
+            $this->assertTrue($children->contains($pid));
+            $this->assertSame(0, $code->toInt());
+        });
         $delta = \microtime(true) - $start;
         $this->assertEqualsWithDelta(3, $delta, 0.1);
     }

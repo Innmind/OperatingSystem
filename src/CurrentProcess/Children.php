@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\{
+    Pid,
+    ExitCode,
+};
 use Innmind\Immutable\{
     Map,
     Sequence,
@@ -40,10 +43,13 @@ final class Children
         return $this->children->get($pid->toInt());
     }
 
-    public function wait(): void
+    /**
+     * @return Map<Pid, ExitCode>
+     */
+    public function wait(): Map
     {
-        $_ = $this->children->values()->foreach(static function(Child $child): void {
-            $child->wait();
-        });
+        return $this->children->flatMap(
+            static fn($_, $child) => Map::of([$child->id(), $child->wait()]),
+        );
     }
 }
