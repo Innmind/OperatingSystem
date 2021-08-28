@@ -52,6 +52,7 @@ final class Generic implements Remote
 
     public function socket(Transport $transport, Authority $authority): Maybe
     {
+        /** @var Maybe<Client> */
         return Client\Internet::of($transport, $authority);
     }
 

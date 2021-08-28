@@ -16,6 +16,7 @@ final class Unix implements Ports
 {
     public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
+        /** @var Maybe<Server> */
         return Server\Internet::of($transport, $ip, $port);
     }
 }
