@@ -3,10 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\OperatingSystem\{
-    CurrentProcess\Children,
-    CurrentProcess\Signals,
-    Exception\ForkFailed,
+use Innmind\OperatingSystem\CurrentProcess\{
+    Children,
+    Signals,
+    ForkFailed,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;

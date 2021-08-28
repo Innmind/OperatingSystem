@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\OperatingSystem\{
-    CurrentProcess,
-    Exception\ForkFailed,
-};
+use Innmind\OperatingSystem\CurrentProcess;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
