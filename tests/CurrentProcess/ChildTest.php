@@ -38,9 +38,7 @@ class ChildTest extends TestCase
             exit(0);
         }
 
-        $this->assertInstanceOf(Pid::class, $child);
-        $child = new Child($child);
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         \sleep(1);
         $child->wait();
@@ -62,9 +60,7 @@ class ChildTest extends TestCase
             exit(42);
         }
 
-        $this->assertInstanceOf(Pid::class, $child);
-        $child = new Child($child);
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $exitCode = $child->wait();
         $this->assertInstanceOf(ExitCode::class, $exitCode);
@@ -87,9 +83,7 @@ class ChildTest extends TestCase
             exit(42);
         }
 
-        $this->assertInstanceOf(Pid::class, $child);
-        $child = new Child($child);
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $this->assertNull($child->kill());
         $exitCode = $child->wait();
@@ -112,9 +106,7 @@ class ChildTest extends TestCase
             exit(42);
         }
 
-        $this->assertInstanceOf(Pid::class, $child);
-        $child = new Child($child);
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $this->assertNull($child->terminate());
         $exitCode = $child->wait();

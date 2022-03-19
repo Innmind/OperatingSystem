@@ -54,8 +54,8 @@ class ChildrenTest extends TestCase
                 exit(0);
             }
 
-            $this->assertInstanceOf(Pid::class, $child);
-            $children[] = new Child($child);
+            $this->assertInstanceOf(Child::class, $child);
+            $children[] = $child;
             ++$count;
         }
 

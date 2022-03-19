@@ -5,6 +5,7 @@ namespace Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\CurrentProcess\{
     Children,
+    Child,
     Signals,
     ForkFailed,
 };
@@ -21,7 +22,7 @@ interface CurrentProcess
     public function id(): Pid;
 
     /**
-     * @return Either<ForkFailed|Pid, SideEffect> SideEffect represent the child side and the Pid the parent side (with the pid being the child one)
+     * @return Either<ForkFailed|Child, SideEffect> SideEffect represent the child side
      */
     public function fork(): Either;
     public function children(): Children;

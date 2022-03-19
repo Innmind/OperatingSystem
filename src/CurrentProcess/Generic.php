@@ -40,12 +40,12 @@ final class Generic implements CurrentProcess
     {
         /**
          * @psalm-suppress ArgumentTypeCoercion
-         * @var Either<ForkFailed|Pid, SideEffect>
+         * @var Either<ForkFailed|Child, SideEffect>
          */
         $result = match ($pid = \pcntl_fork()) {
             -1 => Either::left(new ForkFailed),
             0 => Either::right(new SideEffect),
-            default => Either::left(new Pid($pid)),
+            default => Either::left(new Child(new Pid($pid))),
         };
 
         return $result
@@ -57,7 +57,7 @@ final class Generic implements CurrentProcess
                 return $sideEffect;
             })
             ->leftMap(fn($left) => match (true) {
-                $left instanceof Pid => $this->register($left),
+                $left instanceof Child => $this->register($left),
                 default => $left,
             });
     }
@@ -84,9 +84,9 @@ final class Generic implements CurrentProcess
         return new Bytes(\memory_get_usage());
     }
 
-    private function register(Pid $child): Pid
+    private function register(Child $child): Child
     {
-        $this->children = ($this->children)(new Child($child));
+        $this->children = ($this->children)($child);
 
         return $child;
     }

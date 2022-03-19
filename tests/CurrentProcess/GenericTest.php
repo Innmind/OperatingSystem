@@ -6,6 +6,7 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
     CurrentProcess\Children,
+    CurrentProcess\Child,
     CurrentProcess\Signals,
     CurrentProcess,
 };
@@ -51,9 +52,9 @@ class GenericTest extends TestCase
             exit(0);
         }
 
-        $this->assertInstanceOf(Pid::class, $result);
+        $this->assertInstanceOf(Child::class, $result);
         $this->assertSame($parentId, $process->id()->toInt());
-        $this->assertNotSame($parentId, $result->toInt());
+        $this->assertNotSame($parentId, $result->id()->toInt());
     }
 
     public function testChildren()
@@ -72,12 +73,8 @@ class GenericTest extends TestCase
         }
 
         $this->assertInstanceOf(Children::class, $process->children());
-        $this->assertInstanceOf(Pid::class, $child);
-        $this->assertTrue($process->children()->contains($child));
-        $child = $process->children()->get($child)->match(
-            static fn($child) => $child,
-            static fn() => null,
-        );
+        $this->assertInstanceOf(Child::class, $child);
+        $this->assertTrue($process->children()->contains($child->id()));
         $this->assertSame(0, $child->wait()->toInt());
     }
 
@@ -134,11 +131,7 @@ class GenericTest extends TestCase
         // dump(true) it have the time to remove the child signal handler
         \sleep(1);
 
-        $this->assertInstanceOf(Pid::class, $child);
-        $child = $process->children()->get($child)->match(
-            static fn($child) => $child,
-            static fn() => null,
-        );
+        $this->assertInstanceOf(Child::class, $child);
         $child->terminate(); // should not trigger the listener in the child
         $this->assertSame(0, $child->wait()->toInt());
     }
