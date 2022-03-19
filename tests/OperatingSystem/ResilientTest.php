@@ -21,7 +21,7 @@ class ResilientTest extends TestCase
 {
     public function testInterface()
     {
-        $os = new Resilient($this->createMock(OperatingSystem::class));
+        $os = Resilient::of($this->createMock(OperatingSystem::class));
 
         $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertInstanceOf(Clock::class, $os->clock());

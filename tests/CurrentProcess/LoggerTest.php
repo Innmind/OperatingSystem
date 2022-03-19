@@ -6,13 +6,16 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 use Innmind\OperatingSystem\{
     CurrentProcess\Logger,
     CurrentProcess\Signals,
-    CurrentProcess\ForkSide,
     CurrentProcess\Children,
     CurrentProcess,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -28,7 +31,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             CurrentProcess::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(CurrentProcess::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -48,12 +51,12 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Current process id is {pid}',
                         ['pid' => $id],
                     );
-                $process = new Logger($inner, $logger);
+                $process = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $process->id());
             });
@@ -63,7 +66,7 @@ class LoggerTest extends TestCase
     {
         $inner = $this->createMock(CurrentProcess::class);
         $logger = $this->createMock(LoggerInterface::class);
-        $process = new Logger($inner, $logger);
+        $process = Logger::psr($inner, $logger);
 
         $this->assertInstanceOf(Signals\Logger::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
@@ -72,9 +75,14 @@ class LoggerTest extends TestCase
     public function testFork()
     {
         $this
-            ->forAll(Set\Integers::above(0)->filter(static fn($id) => $id !== 1))
-            ->then(function($result) {
-                $expected = ForkSide::of($result);
+            ->forAll(new Set\Either(
+                Set\Elements::of(Either::right(new SideEffect)),
+                Set\Decorate::immutable(
+                    static fn($id) => Either::left(new Pid($id)),
+                    Set\Integers::above(2),
+                ),
+            ))
+            ->then(function($expected) {
                 $inner = $this->createMock(CurrentProcess::class);
                 $inner
                     ->expects($this->once())
@@ -83,11 +91,11 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with('Forking process');
-                $process = new Logger($inner, $logger);
+                $process = Logger::psr($inner, $logger);
 
-                $this->assertSame($expected, $process->fork());
+                $this->assertEquals($expected, $process->fork());
             });
     }
 
@@ -97,9 +105,9 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('fork')
-            ->willReturn(ForkSide::of(0));
+            ->willReturn(Either::right(new SideEffect));
         $logger = $this->createMock(LoggerInterface::class);
-        $process = new Logger($inner, $logger);
+        $process = Logger::psr($inner, $logger);
         $original = $process->signals();
         $process->fork();
 
@@ -115,9 +123,9 @@ class LoggerTest extends TestCase
                 $inner
                     ->expects($this->once())
                     ->method('fork')
-                    ->willReturn(ForkSide::of($child));
+                    ->willReturn(Either::left(new Pid($child)));
                 $logger = $this->createMock(LoggerInterface::class);
-                $process = new Logger($inner, $logger);
+                $process = Logger::psr($inner, $logger);
                 $original = $process->signals();
                 $process->fork();
 
@@ -131,8 +139,8 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('children')
-            ->willReturn($expected = new Children);
-        $process = new Logger($inner, $this->createMock(LoggerInterface::class));
+            ->willReturn($expected = Children::of());
+        $process = Logger::psr($inner, $this->createMock(LoggerInterface::class));
 
         $this->assertSame($expected, $process->children());
     }
@@ -148,9 +156,9 @@ class LoggerTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with('Halting current process...');
-        $process = new Logger($inner, $logger);
+        $process = Logger::psr($inner, $logger);
 
         $this->assertNull($process->halt($period));
     }
@@ -168,7 +176,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Current process memory at {memory}',
                         $this->callback(static function($context) {
@@ -177,7 +185,7 @@ class LoggerTest extends TestCase
                                 $context['memory'] !== '';
                         }),
                     );
-                $process = new Logger($inner, $logger);
+                $process = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $process->memory());
             });

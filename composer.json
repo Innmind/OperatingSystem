@@ -8,24 +8,25 @@
     "authors": [
         {
             "name": "Baptiste Langlade",
-            "email": "langlade.baptiste@gmail.com"
+            "email": "baptiste.langlade@hey.com"
         }
     ],
     "support": {
         "issues": "http://github.com/Innmind/OperatingSystem/issues"
     },
     "require": {
-        "php": "~7.4|~8.0",
-        "innmind/time-continuum": "~2.5",
-        "innmind/server-status": "~2.1",
-        "innmind/server-control": "~3.0",
-        "innmind/filesystem": "~4.1",
-        "innmind/socket": "~3.0",
-        "innmind/http-transport": "~5.0",
-        "innmind/time-warp": "~2.1",
-        "innmind/signals": "~2.0",
-        "innmind/file-watch": "~2.2",
-        "innmind/stream": "~2.3"
+        "php": "~8.1",
+        "innmind/time-continuum": "~3.0",
+        "innmind/server-status": "~3.0",
+        "innmind/server-control": "^4.0.1",
+        "innmind/filesystem": "~5.0",
+        "innmind/socket": "~4.0",
+        "innmind/http-transport": "~6.0",
+        "innmind/time-warp": "~3.0",
+        "innmind/signals": "~3.0",
+        "innmind/file-watch": "~3.0",
+        "innmind/stream": "~3.0",
+        "formal/access-layer": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -39,10 +40,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~9.0",
-        "innmind/url": "~3.0",
-        "innmind/ip": "~2.0",
+        "innmind/url": "~4.0",
+        "innmind/ip": "~3.0",
         "vimeo/psalm": "~4.4",
         "innmind/black-box": "^4.8",
-        "innmind/coding-standard": "^1.1"
+        "innmind/coding-standard": "~2.0"
     }
 }

@@ -2,13 +2,13 @@
 
 If you want to trace everything that is done on your operating system you can use the logger decorator that will automatically write to your log file (almost) all operations.
 
-**Note**: data and actions done on a socket are not logged as well as processes output to prevent logging too many data (at least for now).
+**Note**: data and actions done on a socket are not logged as well as processes output to prevent logging too much data (at least for now).
 
 ```php
 use Innmind\OperatingSystem\OperatingSystem\Logger;
 use Psr\Log\LoggerInterface;
 
-$os = new Logger(
+$os = Logger::psr(
     $os,
     /* any instance of LoggerInterface */
 );

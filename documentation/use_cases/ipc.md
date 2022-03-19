@@ -7,22 +7,31 @@ The later is the safest of the two (but not exempt of problems) and you will fin
 **Note**: the adage `share state through messages and not messages through state` is a pillar of the [actor model](https://en.wikipedia.org/wiki/Actor_model) and [initially of object oriented programming](https://www.youtube.com/watch?v=7erJ1DV_Tlo).
 
 ```php
-# process acting a server
+# process acting as a server
 use Innmind\Socket\Address\Unix as Address;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 use Innmind\Immutable\Str;
 
-$server = $os->sockets()->open(Address::of('/tmp/foo'));
+$server = $os->sockets()->open(Address::of('/tmp/foo'))->match(
+    static fn($server) => $server,
+    static fn() => throw new \RuntimeException('Unable to start the server'),
+);
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
 
 while (true) {
-    $ready = $watch();
-
-    if ($ready->toRead()->contains($server)) {
-        $client = $server->accept();
-        $client->write(Str::of('Hello 👋'));
-        $client->close();
-    }
+    $watch()
+        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($socket) => $socket === $stream))
+        ->flatMap(static fn($server) => $server->accept())
+        ->match(
+            static fn($client) => $client
+                ->write(Str::of('Hello 👋'))
+                ->flatMap(static fn($client) => $client->close())
+                ->match(
+                    static fn() => null, // everyhting is ok
+                    static fn() => throw new \RuntimeException('Unable to send data or close the connection'),
+                ),
+            static fn() => null, // no new connection available
+        );
 }
 ```
 
@@ -35,10 +44,18 @@ $client = $os->sockets()->connectTo(Address::of('/tmp/foo'));
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
 
 do {
-    $ready = $watch();
-} while (!$ready->toRead()->contains($client));
+    $ready = $watch()
+        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
+        ->match(
+            static fn() => true,
+            static fn() => false,
+        );
+} while (!$ready);
 
-echo $client->read()->toString();
+echo $client->read()->match(
+    static fn($data) => $data->toString(),
+    static fn() => 'unable to read the stream',
+);
 ```
 
 In the case the server is started first then the client would print `Hello 👋`.

@@ -29,28 +29,30 @@ Here we copy all the files from a local directory to another, but the `backup` f
 ```php
 use Innmind\Filesystem\{
     Adapter,
-    File\File,
-    Directory\Directory,
+    File,
+    File\Content,
+    Directory,
     Name,
 };
 use Innmind\Url\Path;
-use Innmind\Stream\Readable\Stream;
 
 $addUserPicture = function(Adapter $filesystem, string $userId, File $picture): void {
-    if ($filesystem->contains(new Name($userId))) {
-        $userDirectory = $filesystem->get(new Name($userId));
-    } else {
-        $userDirectory = Directory::named($userId);
-    }
-
-    $filesystem->add($userDirectory->add($picture));
+    $filesystem
+        ->get(new Name($userId))
+        ->filter(static fn($file) => $file instanceof Directory)
+        ->otherwise(static fn() => Directory\Directory::named($userId))
+        ->map(static fn($directory) => $directory->add($picture))
+        ->match(
+            static fn($directory) => $filesystem->add($directory),
+            static fn() => null,
+        );
 };
 $addUserPicture(
     $os->filesystem()->mount(Path::of('/path/to/users/data/')),
     'some-unique-id',
-    File::named(
+    File\File::named(
         'picture.png',
-        Stream::open(
+        Content\AtPath::of(
             Path::of($_FILES['some_file']['tmp_name']),
         ),
     ),
@@ -93,7 +95,7 @@ See [processes](processes.md) section on how to execute commands on your operati
 
 ### Mounting the `tmp` folder
 
-Sometimes you want to use the `tmp` folder to write down files such as cache that can be saefly lost in case of a system reboot. You can easily mount this folder as any other folder like so:
+Sometimes you want to use the `tmp` folder to write down files such as cache that can be safely lost in case of a system reboot. You can easily mount this folder as any other folder like so:
 
 ```php
 use Innmind\Filesystem\Adapter;
@@ -106,16 +108,27 @@ It is a great way to forget about where the tmp folder is located and simply foc
 
 ### Watching for changes on the filesystem
 
-A pattern we don't see much in PHP is an infinite loop to react to an event to perform another task. Here can build such pattern by watching for changes in a file or a directory.
+A pattern we don't see much in PHP is an infinite loop to react to an event to perform another task. Here we can build such pattern by watching for changes in a file or a directory.
 
 ```php
+use Innmind\FileWatch\Stop;
+use Innmind\Immutable\Either;
+
 $runTests = $os->filesystem()->watch(Path::of('/path/to/project/src/'));
 
-$runTests(function() use ($os): void {
+$count = $runTests(0, function(int $count) use ($os): Either {
+    if ($count === 42) {
+        return Either::left(Stop::of($count));
+    }
+
     $os->control()->processes()->execute($phpunitCommand);
+
+    return Either::right(++$count);
 });
 ```
 
 Here it will run phpunit tests every time the `src/` folder changes. Concrete examples of this pattern can be found in [`innmind/lab-station`](https://github.com/Innmind/LabStation/blob/develop/src/Agent/WatchSources.php#L38) to run a suite of tools when sources change or in [`halsey/journal`](https://github.com/halsey-php/journal/blob/develop/src/Command/Preview.php#L58) to rebuild the website when the markdown files change.
+
+This operation is a bit like an `array_reduce` as you can keep a state record between each calls of the callable via the first argument (here `0`, but it can be anything) and the argument of your callable will be the previous value returned by `Either::right()`.
 
 **Important**: since there is not builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.

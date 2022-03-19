@@ -19,17 +19,20 @@ class UnixTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Ports::class, new Unix);
+        $this->assertInstanceOf(Ports::class, Unix::of());
     }
 
     public function testOpen()
     {
-        $ports = new Unix;
+        $ports = Unix::of();
 
         $socket = $ports->open(
             Transport::tlsv12(),
             IPv4::localhost(),
-            Port::of(1234)
+            Port::of(1234),
+        )->match(
+            static fn($server) => $server,
+            static fn() => null,
         );
 
         $this->assertInstanceOf(Internet::class, $socket);

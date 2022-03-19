@@ -12,9 +12,14 @@ final class Child
 {
     private Pid $pid;
 
-    public function __construct(Pid $pid)
+    private function __construct(Pid $pid)
     {
         $this->pid = $pid;
+    }
+
+    public static function of(Pid $pid): self
+    {
+        return new self($pid);
     }
 
     public function id(): Pid
@@ -30,6 +35,7 @@ final class Child
     public function wait(): ExitCode
     {
         \pcntl_waitpid($this->pid->toInt(), $status);
+        /** @var int<0, 255> */
         $exitCode = \pcntl_wexitstatus($status);
 
         return new ExitCode($exitCode);

@@ -16,6 +16,7 @@ use Innmind\Url\{
     Url,
     Authority\Port,
 };
+use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client\Internet,
@@ -23,24 +24,31 @@ use Innmind\Socket\{
 };
 use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
+use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\BlackBox;
+use Fixtures\Innmind\Url\Url as FUrl;
 
 class GenericTest extends TestCase
 {
+    use BlackBox;
+
     public function testInterface()
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Generic(
-                $this->createMock(Server::class)
-            )
+            Generic::of(
+                $this->createMock(Server::class),
+                $this->createMock(Clock::class),
+            ),
         );
     }
 
     public function testSsh()
     {
-        $remote = new Generic(
-            $server = $this->createMock(Server::class)
+        $remote = Generic::of(
+            $server = $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
@@ -61,8 +69,9 @@ class GenericTest extends TestCase
 
     public function testSshWithoutPort()
     {
-        $remote = new Generic(
-            $server = $this->createMock(Server::class)
+        $remote = Generic::of(
+            $server = $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
         $server
             ->expects($this->once())
@@ -83,12 +92,19 @@ class GenericTest extends TestCase
 
     public function testSocket()
     {
-        $remote = new Generic(
-            $this->createMock(Server::class)
+        $remote = Generic::of(
+            $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
-        $server = new InternetServer(Transport::tcp(), IPv4::localhost(), Port::of(1234));
+        $server = InternetServer::of(Transport::tcp(), IPv4::localhost(), Port::of(1234))->match(
+            static fn($server) => $server,
+            static fn() => null,
+        );
 
-        $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority());
+        $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority())->match(
+            static fn($client) => $client,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Internet::class, $socket);
         $server->close();
@@ -97,13 +113,30 @@ class GenericTest extends TestCase
 
     public function testHttp()
     {
-        $remote = new Generic(
-            $this->createMock(Server::class)
+        $remote = Generic::of(
+            $this->createMock(Server::class),
+            $this->createMock(Clock::class),
         );
 
         $http = $remote->http();
 
         $this->assertInstanceOf(HttpTransport::class, $http);
         $this->assertSame($http, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(FUrl::any())
+            ->then(function($server) {
+                $remote = Generic::of(
+                    $this->createMock(Server::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $sql = $remote->sql($server);
+
+                $this->assertInstanceOf(Connection::class, $sql);
+            });
     }
 }

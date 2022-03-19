@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\OperatingSystem\Exception\UnsupportedOperatingSystem;
 use Innmind\TimeContinuum\{
     Clock,
     Earth,
@@ -16,9 +15,9 @@ final class Factory
         switch (\PHP_OS) {
             case 'Darwin':
             case 'Linux':
-                return new OperatingSystem\Unix($clock ?? new Earth\Clock);
+                return OperatingSystem\Unix::of($clock ?? new Earth\Clock);
         }
 
-        throw new UnsupportedOperatingSystem;
+        throw new \LogicException('Unuspported operating system');
     }
 }

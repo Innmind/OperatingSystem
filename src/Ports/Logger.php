@@ -10,6 +10,7 @@ use Innmind\Socket\{
     Server,
 };
 use Innmind\IP\IP;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Ports
@@ -17,15 +18,20 @@ final class Logger implements Ports
     private Ports $ports;
     private LoggerInterface $logger;
 
-    public function __construct(Ports $ports, LoggerInterface $logger)
+    private function __construct(Ports $ports, LoggerInterface $logger)
     {
         $this->ports = $ports;
         $this->logger = $logger;
     }
 
-    public function open(Transport $transport, IP $ip, Port $port): Server
+    public static function psr(Ports $ports, LoggerInterface $logger): self
     {
-        $this->logger->info(
+        return new self($ports, $logger);
+    }
+
+    public function open(Transport $transport, IP $ip, Port $port): Maybe
+    {
+        $this->logger->debug(
             'Opening new port at {address}',
             [
                 'address' => \sprintf(

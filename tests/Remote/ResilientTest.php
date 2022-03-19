@@ -8,12 +8,14 @@ use Innmind\OperatingSystem\{
     Remote,
 };
 use Innmind\TimeContinuum\Clock;
-use Innmind\HttpTransport\ExponentialBackoffTransport;
+use Innmind\HttpTransport\ExponentialBackoff;
 use Innmind\Server\Control\Server;
 use Innmind\Socket\{
     Internet\Transport,
     Client,
 };
+use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -32,7 +34,7 @@ class ResilientTest extends TestCase
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Resilient(
+            Resilient::of(
                 $this->createMock(Remote::class),
                 $this->createMock(Clock::class),
             ),
@@ -44,7 +46,7 @@ class ResilientTest extends TestCase
         $this
             ->forAll(Url::any())
             ->then(function($url) {
-                $remote = new Resilient(
+                $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
                     $this->createMock(Clock::class),
                 );
@@ -72,7 +74,7 @@ class ResilientTest extends TestCase
                 Authority::any(),
             )
             ->then(function($transport, $authority) {
-                $remote = new Resilient(
+                $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
                     $this->createMock(Clock::class),
                 );
@@ -80,7 +82,7 @@ class ResilientTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = $this->createMock(Client::class));
+                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });
@@ -88,11 +90,25 @@ class ResilientTest extends TestCase
 
     public function testHttp()
     {
-        $remote = new Resilient(
+        $remote = Resilient::of(
             $this->createMock(Remote::class),
             $this->createMock(Clock::class),
         );
 
-        $this->assertInstanceOf(ExponentialBackoffTransport::class, $remote->http());
+        $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(Url::any())
+            ->then(function($server) {
+                $remote = Resilient::of(
+                    $this->createMock(Remote::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $this->assertInstanceOf(Connection::class, $remote->sql($server));
+            });
     }
 }

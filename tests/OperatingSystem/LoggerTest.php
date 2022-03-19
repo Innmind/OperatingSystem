@@ -30,7 +30,7 @@ class LoggerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->os = new Logger(
+        $this->os = Logger::psr(
             $this->createMock(OperatingSystem::class),
             $this->createMock(LoggerInterface::class),
         );

@@ -11,6 +11,7 @@ use Innmind\Signals\{
     Signal,
     Info,
 };
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -26,7 +27,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Signals::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Signals::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -46,12 +47,12 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Registering a listener for signal {signal}',
                         ['signal' => $signal->toInt()],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
 
                 $this->assertNull($signals->listen($signal, static fn() => null));
             });
@@ -62,7 +63,13 @@ class LoggerTest extends TestCase
         $this
             ->forAll($this->signals())
             ->then(function($signal) {
-                $info = new Info;
+                $info = new Info(
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                    Maybe::nothing(),
+                );
                 $inner = $this->createMock(Signals::class);
                 $inner
                     ->expects($this->once())
@@ -75,7 +82,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->exactly(2))
-                    ->method('info')
+                    ->method('debug')
                     ->withConsecutive(
                         [],
                         [
@@ -83,7 +90,7 @@ class LoggerTest extends TestCase
                             ['signal' => $signal->toInt()],
                         ],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
                 $called = false;
 
                 $this->assertNull($signals->listen($signal, function($sig, $inf) use ($signal, $info, &$called) {
@@ -120,12 +127,12 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->exactly(2))
-                    ->method('info')
+                    ->method('debug')
                     ->withConsecutive(
                         [],
                         ['Removing a signal listener'],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
                 $listener = static fn() => null;
 
                 $this->assertNull($signals->listen($signal, $listener));
@@ -136,33 +143,33 @@ class LoggerTest extends TestCase
     private function signals(): Set
     {
         return Set\Elements::of(
-            Signal::hangup(),
-            Signal::interrupt(),
-            Signal::quit(),
-            Signal::illegal(),
-            Signal::trap(),
-            Signal::abort(),
-            Signal::floatingPointException(),
-            Signal::bus(),
-            Signal::segmentationViolation(),
-            Signal::system(),
-            Signal::pipe(),
-            Signal::alarm(),
-            Signal::terminate(),
-            Signal::urgent(),
-            Signal::terminalStop(),
-            Signal::continue(),
-            Signal::child(),
-            Signal::ttyIn(),
-            Signal::ttyOut(),
-            Signal::io(),
-            Signal::exceedsCpu(),
-            Signal::exceedsFileSize(),
-            Signal::virtualTimerExpired(),
-            Signal::profilingTimerExpired(),
-            Signal::terminalWindowsSizeChanged(),
-            Signal::userDefinedSignal1(),
-            Signal::userDefinedSignal2(),
+            Signal::hangup,
+            Signal::interrupt,
+            Signal::quit,
+            Signal::illegal,
+            Signal::trap,
+            Signal::abort,
+            Signal::floatingPointException,
+            Signal::bus,
+            Signal::segmentationViolation,
+            Signal::system,
+            Signal::pipe,
+            Signal::alarm,
+            Signal::terminate,
+            Signal::urgent,
+            Signal::terminalStop,
+            Signal::continue,
+            Signal::child,
+            Signal::ttyIn,
+            Signal::ttyOut,
+            Signal::io,
+            Signal::exceedsCpu,
+            Signal::exceedsFileSize,
+            Signal::virtualTimerExpired,
+            Signal::profilingTimerExpired,
+            Signal::terminalWindowsSizeChanged,
+            Signal::userDefinedSignal1,
+            Signal::userDefinedSignal2,
         );
     }
 }

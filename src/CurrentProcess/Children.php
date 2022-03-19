@@ -3,30 +3,39 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\Server\Control\Server\Process\Pid;
+use Innmind\Server\Control\Server\Process\{
+    Pid,
+    ExitCode,
+};
 use Innmind\Immutable\{
     Map,
     Sequence,
+    Maybe,
 };
 
 final class Children
 {
-    /** @var Map<int, Child> */
+    /** @var Map<int<2, max>, Child> */
     private Map $children;
 
-    public function __construct(Child ...$children)
+    /**
+     * @no-named-arguments
+     */
+    private function __construct(Child ...$children)
     {
-        /**
-         * @psalm-suppress MixedArgumentTypeCoercion
-         * @var Map<int, Child>
-         */
-        $this->children = Sequence::mixed(...$children)->toMapOf(
-            'int',
-            Child::class,
-            static function(Child $child): \Generator {
-                yield $child->id()->toInt() => $child;
-            },
+        $this->children = Map::of(
+            ...Sequence::of(...$children)
+                ->map(static fn($child) => [$child->id()->toInt(), $child])
+                ->toList(),
         );
+    }
+
+    /**
+     * @no-named-arguments
+     */
+    public static function of(Child ...$children): self
+    {
+        return new self(...$children);
     }
 
     public function contains(Pid $pid): bool
@@ -34,15 +43,21 @@ final class Children
         return $this->children->contains($pid->toInt());
     }
 
-    public function get(Pid $pid): Child
+    /**
+     * @return Maybe<Child>
+     */
+    public function get(Pid $pid): Maybe
     {
         return $this->children->get($pid->toInt());
     }
 
-    public function wait(): void
+    /**
+     * @return Map<Pid, ExitCode>
+     */
+    public function wait(): Map
     {
-        $this->children->values()->foreach(static function(Child $child): void {
-            $child->wait();
-        });
+        return $this->children->flatMap(
+            static fn($_, $child) => Map::of([$child->id(), $child->wait()]),
+        );
     }
 }

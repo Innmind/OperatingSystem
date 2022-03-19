@@ -10,11 +10,22 @@ use Innmind\Socket\{
     Server,
 };
 use Innmind\IP\IP;
+use Innmind\Immutable\Maybe;
 
 final class Unix implements Ports
 {
-    public function open(Transport $transport, IP $ip, Port $port): Server
+    private function __construct()
     {
-        return new Server\Internet($transport, $ip, $port);
+    }
+
+    public static function of(): self
+    {
+        return new self;
+    }
+
+    public function open(Transport $transport, IP $ip, Port $port): Maybe
+    {
+        /** @var Maybe<Server> */
+        return Server\Internet::of($transport, $ip, $port);
     }
 }

@@ -13,15 +13,19 @@ use Innmind\Server\Control\Server\Processes;
 use Innmind\TimeWarp\Halt;
 use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\Ping;
+use Fixtures\Innmind\Url\Path as FPath;
 use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\BlackBox;
 
 class GenericTest extends TestCase
 {
+    use BlackBox;
+
     public function testInterface()
     {
         $this->assertInstanceOf(
             Filesystem::class,
-            new Generic(
+            Generic::of(
                 $this->createMock(Processes::class),
                 $this->createMock(Halt::class),
                 $this->createMock(Clock::class),
@@ -31,7 +35,7 @@ class GenericTest extends TestCase
 
     public function testMount()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -42,9 +46,22 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
     }
 
+    public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
+    {
+        $filesystem = Generic::of(
+            $this->createMock(Processes::class),
+            $this->createMock(Halt::class),
+            $this->createMock(Clock::class),
+        );
+
+        $adapter = $filesystem->mount(Path::of('/tmp/'));
+
+        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/')));
+    }
+
     public function testContainsFile()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -58,7 +75,7 @@ class GenericTest extends TestCase
 
     public function testContainsDirectory()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -72,12 +89,44 @@ class GenericTest extends TestCase
 
     public function testWatch()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
         );
 
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
+    }
+
+    public function testRequireUnknownFile()
+    {
+        $this
+            ->forAll(FPath::any())
+            ->then(function($path) {
+                $filesystem = Generic::of(
+                    $this->createMock(Processes::class),
+                    $this->createMock(Halt::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $this->assertFalse($filesystem->require($path)->match(
+                    static fn() => true,
+                    static fn() => false,
+                ));
+            });
+    }
+
+    public function testRequireFile()
+    {
+        $filesystem = Generic::of(
+            $this->createMock(Processes::class),
+            $this->createMock(Halt::class),
+            $this->createMock(Clock::class),
+        );
+
+        $this->assertSame(42, $filesystem->require(Path::of(__DIR__.'/fixture.php'))->match(
+            static fn($value) => $value,
+            static fn() => null,
+        ));
     }
 }

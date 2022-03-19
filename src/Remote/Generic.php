@@ -8,6 +8,7 @@ use Innmind\Server\Control\{
     Server,
     Servers,
 };
+use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client,
@@ -17,17 +18,28 @@ use Innmind\Url\{
     Authority,
     Authority\Port,
 };
-use Innmind\HttpTransport\Transport as HttpTransport;
-use function Innmind\HttpTransport\bootstrap as http;
+use Innmind\HttpTransport\{
+    Transport as HttpTransport,
+    Curl,
+};
+use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 
 final class Generic implements Remote
 {
     private Server $server;
+    private Clock $clock;
     private ?HttpTransport $http = null;
 
-    public function __construct(Server $server)
+    private function __construct(Server $server, Clock $clock)
     {
         $this->server = $server;
+        $this->clock = $clock;
+    }
+
+    public static function of(Server $server, Clock $clock): self
+    {
+        return new self($server, $clock);
     }
 
     public function ssh(Url $server): Server
@@ -46,13 +58,19 @@ final class Generic implements Remote
         );
     }
 
-    public function socket(Transport $transport, Authority $authority): Client
+    public function socket(Transport $transport, Authority $authority): Maybe
     {
-        return new Client\Internet($transport, $authority);
+        /** @var Maybe<Client> */
+        return Client\Internet::of($transport, $authority);
     }
 
     public function http(): HttpTransport
     {
-        return $this->http ??= http()['default'](null);
+        return $this->http ??= Curl::of($this->clock);
+    }
+
+    public function sql(Url $server): Connection
+    {
+        return new Connection\Lazy(static fn() => Connection\PDO::of($server));
     }
 }

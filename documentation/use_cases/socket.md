@@ -17,16 +17,20 @@ use Innmind\Socket\Internet\Transport;
 use Innmind\IP\IPv4;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 
-$server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080));
+$server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080))->match(
+    static fn($server) => $server,
+    static fn() => throw new \RuntimeException('Unable to start the server'),
+);
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
 
 while (true) {
-    $ready = $watch();
-
-    if ($ready->toRead()->contains($server)) {
-        $client = $server->accept();
-        // talk to the client here
-    }
+    $watch()
+        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $server))
+        ->flatMap(static fn($server) => $server->accept())
+        ->match(
+            static fn($client) => /* talk to the client */,
+            static fn() => null, // no client available yet
+        );
 }
 ```
 
@@ -41,12 +45,20 @@ use Innmind\Url\Url;
 use Innmind\Socket\Internet\Transport;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 
-$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority());
+$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
+    static fn($client) => $client,
+    static fn() => throw new \RuntimeException('Unable to connect to the client'),
+);
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
 
 do {
-    $ready = $watch();
-} while (!$ready->toRead()->contains($client));
+    $ready = $watch()
+        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
+        ->match(
+            static fn() => true,
+            static fn() => false,
+        );
+} while (!$ready);
 
 echo 'Server has responded'.
 ```
