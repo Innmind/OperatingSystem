@@ -33,8 +33,12 @@ final class Unix implements Sockets
         return Client\Unix::of($address);
     }
 
-    public function watch(ElapsedPeriod $timeout): Watch
+    public function watch(ElapsedPeriod $timeout = null): Watch
     {
+        if (\is_null($timeout)) {
+            return Watch\Select::waitForever();
+        }
+
         return Watch\Select::timeoutAfter($timeout);
     }
 }
