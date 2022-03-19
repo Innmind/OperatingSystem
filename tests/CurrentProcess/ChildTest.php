@@ -11,7 +11,6 @@ use Innmind\Server\Control\Server\Process\{
     Pid,
     ExitCode,
 };
-use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt;
 use PHPUnit\Framework\TestCase;
 
@@ -19,28 +18,27 @@ class ChildTest extends TestCase
 {
     public function testPid()
     {
-        $child = new Child($pid = new Pid(42));
+        $child = Child::of($pid = new Pid(42));
 
         $this->assertSame($pid, $child->id());
     }
 
     public function testRunning()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
+        $process = Generic::of($this->createMock(Halt::class));
+
+        $child = $process->fork()->match(
+            static fn() => null,
+            static fn($left) => $left,
         );
 
-        $side = $process->fork();
-
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(0);
         }
 
-        $child = new Child($side->child());
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         \sleep(1);
         $child->wait();
@@ -49,21 +47,20 @@ class ChildTest extends TestCase
 
     public function testWait()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
+        $process = Generic::of($this->createMock(Halt::class));
+
+        $child = $process->fork()->match(
+            static fn() => null,
+            static fn($left) => $left,
         );
 
-        $side = $process->fork();
-
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $exitCode = $child->wait();
         $this->assertInstanceOf(ExitCode::class, $exitCode);
@@ -73,21 +70,20 @@ class ChildTest extends TestCase
 
     public function testKill()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
+        $process = Generic::of($this->createMock(Halt::class));
+
+        $child = $process->fork()->match(
+            static fn() => null,
+            static fn($left) => $left,
         );
 
-        $side = $process->fork();
-
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $this->assertNull($child->kill());
         $exitCode = $child->wait();
@@ -97,21 +93,20 @@ class ChildTest extends TestCase
 
     public function testTerminate()
     {
-        $process = new Generic(
-            $this->createMock(Clock::class),
-            $this->createMock(Halt::class)
+        $process = Generic::of($this->createMock(Halt::class));
+
+        $child = $process->fork()->match(
+            static fn() => null,
+            static fn($left) => $left,
         );
 
-        $side = $process->fork();
-
-        if ($side->parent() === false) {
+        if (\is_null($child)) {
             \usleep(5000);
 
             exit(42);
         }
 
-        $child = new Child($side->child());
-
+        $this->assertInstanceOf(Child::class, $child);
         $this->assertTrue($child->running());
         $this->assertNull($child->terminate());
         $exitCode = $child->wait();

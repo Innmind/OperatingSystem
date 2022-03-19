@@ -14,6 +14,8 @@ use Innmind\Url\{
     Authority,
 };
 use Innmind\HttpTransport;
+use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Remote
@@ -21,23 +23,28 @@ final class Logger implements Remote
     private Remote $remote;
     private LoggerInterface $logger;
 
-    public function __construct(Remote $remote, LoggerInterface $logger)
+    private function __construct(Remote $remote, LoggerInterface $logger)
     {
         $this->remote = $remote;
         $this->logger = $logger;
     }
 
+    public static function psr(Remote $remote, LoggerInterface $logger): self
+    {
+        return new self($remote, $logger);
+    }
+
     public function ssh(Url $server): Control\Server
     {
-        return new Control\Servers\Logger(
+        return Control\Servers\Logger::psr(
             $this->remote->ssh($server),
             $this->logger,
         );
     }
 
-    public function socket(Transport $transport, Authority $authority): Client
+    public function socket(Transport $transport, Authority $authority): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Opening remote socket at {address}',
             [
                 'address' => \sprintf(
@@ -53,8 +60,16 @@ final class Logger implements Remote
 
     public function http(): HttpTransport\Transport
     {
-        return new HttpTransport\LoggerTransport(
+        return HttpTransport\Logger::psr(
             $this->remote->http(),
+            $this->logger,
+        );
+    }
+
+    public function sql(Url $server): Connection
+    {
+        return Connection\Logger::psr(
+            $this->remote->sql($server),
             $this->logger,
         );
     }

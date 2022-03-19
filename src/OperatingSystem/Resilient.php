@@ -22,9 +22,14 @@ final class Resilient implements OperatingSystem
 {
     private OperatingSystem $os;
 
-    public function __construct(OperatingSystem $os)
+    private function __construct(OperatingSystem $os)
     {
         $this->os = $os;
+    }
+
+    public static function of(OperatingSystem $os): self
+    {
+        return new self($os);
     }
 
     public function clock(): Clock
@@ -59,10 +64,7 @@ final class Resilient implements OperatingSystem
 
     public function remote(): Remote
     {
-        return new Remote\Resilient(
-            $this->os->remote(),
-            $this->os->clock(),
-        );
+        return Remote\Resilient::of($this->os->remote());
     }
 
     public function process(): CurrentProcess

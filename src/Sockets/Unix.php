@@ -11,26 +11,43 @@ use Innmind\Socket\{
 };
 use Innmind\TimeContinuum\ElapsedPeriod;
 use Innmind\Stream\Watch;
+use Innmind\Immutable\Maybe;
 
 final class Unix implements Sockets
 {
-    public function open(Address $address): Server
+    private function __construct()
     {
-        return new Server\Unix($address);
     }
 
-    public function takeOver(Address $address): Server
+    public static function of(): self
     {
+        return new self;
+    }
+
+    public function open(Address $address): Maybe
+    {
+        /** @var Maybe<Server> */
+        return Server\Unix::of($address);
+    }
+
+    public function takeOver(Address $address): Maybe
+    {
+        /** @var Maybe<Server> */
         return Server\Unix::recoverable($address);
     }
 
-    public function connectTo(Address $address): Client
+    public function connectTo(Address $address): Maybe
     {
-        return new Client\Unix($address);
+        /** @var Maybe<Client> */
+        return Client\Unix::of($address);
     }
 
-    public function watch(ElapsedPeriod $timeout): Watch
+    public function watch(ElapsedPeriod $timeout = null): Watch
     {
-        return new Watch\Select($timeout);
+        if (\is_null($timeout)) {
+            return Watch\Select::waitForever();
+        }
+
+        return Watch\Select::timeoutAfter($timeout);
     }
 }

@@ -16,6 +16,7 @@ use Innmind\IP\{
     IPv4,
     IPv6,
 };
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -31,7 +32,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Ports::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Ports::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -62,11 +63,11 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('open')
                     ->with($transport, $ip, Port::of($port))
-                    ->willReturn($expected = $this->createMock(Server::class));
+                    ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Opening new port at {address}',
                         $this->callback(static function($context) use ($transport, $ip, $port) {
@@ -76,7 +77,7 @@ class LoggerTest extends TestCase
                                 \strpos($context['address'], (string) $port) !== false;
                         }),
                     );
-                $ports = new Logger($inner, $logger);
+                $ports = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $ports->open($transport, $ip, Port::of($port)));
             });

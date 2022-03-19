@@ -14,17 +14,25 @@ use Innmind\Socket\Internet\Transport;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 use Innmind\Signals\Signal;
 
-$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority());
+$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
+    static fn($client) => $client,
+    static fn() => throw new \RuntimeException('Unable to connect to the server'),
+);
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
 $continue = true;
-$os->process()->signals()->listen(Signal::terminate(), function() use (&$continue, $client) {
+$os->process()->signals()->listen(Signal::terminate, function() use (&$continue, $client) {
     $continue = false;
     $client->close();
 });
 
 do {
-    $ready = $watch();
-} while ($continue && !$ready->toRead()->contains($client));
+    $ready = $watch()
+        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
+        ->match(
+            static fn() => true,
+            static fn() => false,
+        );
+} while ($continue && !$ready);
 
 if (!$client->closed()) {
     echo 'Server has responded'.
@@ -42,8 +50,8 @@ $prevent = function() {
     echo 'Process cannot be interrupted in the middle of a backup';
 };
 
-$os->process()->signals()->listen(Signal::terminate(), $prevent);
-$os->process()->signals()->listen(Signal::interrupt(), $prevent);
+$os->process()->signals()->listen(Signal::terminate, $prevent);
+$os->process()->signals()->listen(Signal::interrupt, $prevent);
 
 // perform the backup here that can't be stopped to prevent data corruption
 

@@ -3,79 +3,96 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\OperatingSystem\{
-    CurrentProcess,
-    Exception\ForkFailed,
-};
+use Innmind\OperatingSystem\CurrentProcess;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
-use Innmind\TimeContinuum\{
-    Clock,
-    Period,
-};
+use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
-use Innmind\Immutable\Set;
-use function Innmind\Immutable\unwrap;
+use Innmind\Immutable\{
+    Set,
+    Either,
+    SideEffect,
+};
 
 final class Generic implements CurrentProcess
 {
-    private Clock $clock;
     private Halt $halt;
     /** @var Set<Child> */
     private Set $children;
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
 
-    public function __construct(Clock $clock, Halt $halt)
+    private function __construct(Halt $halt)
     {
-        $this->clock = $clock;
         $this->halt = $halt;
         /** @var Set<Child> */
-        $this->children = Set::of(Child::class);
+        $this->children = Set::of();
+    }
+
+    public static function of(Halt $halt): self
+    {
+        return new self($halt);
     }
 
     public function id(): Pid
     {
+        /** @psalm-suppress ArgumentTypeCoercion */
         return new Pid(\getmypid());
     }
 
-    public function fork(): ForkSide
+    public function fork(): Either
     {
-        $side = ForkSide::of(\pcntl_fork());
+        /**
+         * @psalm-suppress ArgumentTypeCoercion
+         * @var Either<ForkFailed|Child, SideEffect>
+         */
+        $result = match ($pid = \pcntl_fork()) {
+            -1 => Either::left(new ForkFailed),
+            0 => Either::right(new SideEffect),
+            default => Either::left(Child::of(new Pid($pid))),
+        };
 
-        if ($side->parent()) {
-            $this->children = $this->children->add(
-                new Child($side->child()),
-            );
-        } else {
-            $this->children = $this->children->clear();
-            $this->signals = null;
-            $this->signalsHandler = $this->signalsHandler ? $this->signalsHandler->reset() : null;
-        }
+        return $result
+            ->map(function($sideEffect) {
+                $this->children = $this->children->clear();
+                $this->signals = null;
+                $this->signalsHandler = $this->signalsHandler ? $this->signalsHandler->reset() : null;
 
-        return $side;
+                return $sideEffect;
+            })
+            ->leftMap(fn($left) => match (true) {
+                $left instanceof Child => $this->register($left),
+                default => $left,
+            });
     }
 
     public function children(): Children
     {
-        return new Children(...unwrap($this->children));
+        return Children::of(...$this->children->toList());
     }
 
     public function signals(): Signals
     {
-        return $this->signals ??= new Signals\Wrapper(
+        return $this->signals ??= Signals\Wrapper::of(
             $this->signalsHandler = new Handler,
         );
     }
 
     public function halt(Period $period): void
     {
-        ($this->halt)($this->clock, $period);
+        ($this->halt)($period);
     }
 
     public function memory(): Bytes
     {
         return new Bytes(\memory_get_usage());
+    }
+
+    private function register(Child $child): Child
+    {
+        $this->children = ($this->children)($child);
+
+        return $child;
     }
 }

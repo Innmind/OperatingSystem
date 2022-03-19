@@ -7,6 +7,7 @@ use Innmind\OperatingSystem\CurrentProcess;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\Either;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements CurrentProcess
@@ -15,17 +16,22 @@ final class Logger implements CurrentProcess
     private LoggerInterface $logger;
     private ?Signals $signals = null;
 
-    public function __construct(CurrentProcess $process, LoggerInterface $logger)
+    private function __construct(CurrentProcess $process, LoggerInterface $logger)
     {
         $this->process = $process;
         $this->logger = $logger;
+    }
+
+    public static function psr(CurrentProcess $process, LoggerInterface $logger): self
+    {
+        return new self($process, $logger);
     }
 
     public function id(): Pid
     {
         $pid = $this->process->id();
 
-        $this->logger->info(
+        $this->logger->debug(
             'Current process id is {pid}',
             ['pid' => $pid->toInt()],
         );
@@ -33,22 +39,23 @@ final class Logger implements CurrentProcess
         return $pid;
     }
 
-    public function fork(): ForkSide
+    public function fork(): Either
     {
-        $this->logger->info('Forking process');
+        $this->logger->debug('Forking process');
 
-        $side = $this->process->fork();
+        return $this
+            ->process
+            ->fork()
+            ->map(function($sideEffect) {
+                // @see Generic::fork()
+                // the child process reset the signal handlers to avoid side effects
+                // between parent and child so here we can safely reset the signals
+                // to free memory as listeners are kept in memory to reference the
+                // decorated listeners given to the underlying signals handler
+                $this->signals = null;
 
-        if (!$side->parent()) {
-            // @see Generic::fork()
-            // the child process reset the signal handlers to avoid side effects
-            // between parent and child so here we can safely reset the signals
-            // to free memory as listeners are kept in memory to reference the
-            // decorated listeners given to the underlying signals handler
-            $this->signals = null;
-        }
-
-        return $side;
+                return $sideEffect;
+            });
     }
 
     public function children(): Children
@@ -58,7 +65,7 @@ final class Logger implements CurrentProcess
 
     public function signals(): Signals
     {
-        return $this->signals ??= new Signals\Logger(
+        return $this->signals ??= Signals\Logger::psr(
             $this->process->signals(),
             $this->logger,
         );
@@ -66,7 +73,7 @@ final class Logger implements CurrentProcess
 
     public function halt(Period $period): void
     {
-        $this->logger->info('Halting current process...', ['period' => [
+        $this->logger->debug('Halting current process...', ['period' => [
             'years' => $period->years(),
             'months' => $period->months(),
             'days' => $period->days(),
@@ -83,7 +90,7 @@ final class Logger implements CurrentProcess
     {
         $memory = $this->process->memory();
 
-        $this->logger->info(
+        $this->logger->debug(
             'Current process memory at {memory}',
             ['memory' => $memory->toString()],
         );

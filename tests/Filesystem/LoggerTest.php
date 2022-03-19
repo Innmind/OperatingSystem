@@ -9,6 +9,7 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Filesystem\Adapter;
 use Innmind\FileWatch\Ping;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -25,7 +26,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Filesystem::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Filesystem::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -43,7 +44,7 @@ class LoggerTest extends TestCase
                     ->method('mount')
                     ->with($path);
                 $logger = $this->createMock(LoggerInterface::class);
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Adapter\Logger::class, $filesystem->mount($path));
             });
@@ -63,12 +64,12 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'yes'],
                     );
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertTrue($filesystem->contains($path));
             });
@@ -88,12 +89,12 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'no'],
                     );
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertFalse($filesystem->contains($path));
             });
@@ -110,9 +111,54 @@ class LoggerTest extends TestCase
                     ->method('watch')
                     ->with($path);
                 $logger = $this->createMock(LoggerInterface::class);
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Ping\Logger::class, $filesystem->watch($path));
+            });
+    }
+
+    public function testDoesntLogUnknownRequiredFile()
+    {
+        $this
+            ->forAll(Path::any())
+            ->then(function($path) {
+                $inner = $this->createMock(Filesystem::class);
+                $inner
+                    ->expects($this->once())
+                    ->method('require')
+                    ->with($path)
+                    ->willReturn($expected = Maybe::nothing());
+                $logger = $this->createMock(LoggerInterface::class);
+                $logger
+                    ->expects($this->never())
+                    ->method('debug');
+                $filesystem = Logger::psr($inner, $logger);
+
+                $this->assertEquals($expected, $filesystem->require($path));
+            });
+    }
+
+    public function testLogRequiredFile()
+    {
+        $this
+            ->forAll(
+                Path::any(),
+                Set\AnyType::any(),
+            )
+            ->then(function($path, $value) {
+                $inner = $this->createMock(Filesystem::class);
+                $inner
+                    ->expects($this->once())
+                    ->method('require')
+                    ->with($path)
+                    ->willReturn($expected = Maybe::just($value));
+                $logger = $this->createMock(LoggerInterface::class);
+                $logger
+                    ->expects($this->once())
+                    ->method('debug');
+                $filesystem = Logger::psr($inner, $logger);
+
+                $this->assertEquals($expected, $filesystem->require($path));
             });
     }
 }

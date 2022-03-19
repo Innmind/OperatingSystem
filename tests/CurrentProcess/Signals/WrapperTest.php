@@ -19,25 +19,25 @@ class WrapperTest extends TestCase
     {
         $this->assertInstanceOf(
             Signals::class,
-            new Wrapper(new Handler)
+            Wrapper::of(new Handler),
         );
     }
 
     public function testListen()
     {
-        $signals = new Wrapper(new Handler);
+        $signals = Wrapper::of(new Handler);
         $order = [];
         $count = 0;
 
         $this->fork();
 
-        $this->assertNull($signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+        $this->assertNull($signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'first';
             ++$count;
         }));
-        $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
         });
@@ -50,20 +50,20 @@ class WrapperTest extends TestCase
 
     public function testRemoveSignal()
     {
-        $signals = new Wrapper(new Handler);
+        $signals = Wrapper::of(new Handler);
         $order = [];
         $count = 0;
 
         $this->fork();
 
         $first = function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'first';
             ++$count;
         };
-        $signals->listen(Signal::child(), $first);
-        $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+        $signals->listen(Signal::child, $first);
+        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
         });

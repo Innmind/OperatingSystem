@@ -8,12 +8,14 @@ use Innmind\OperatingSystem\{
     Remote,
 };
 use Innmind\Server\Control\Servers;
-use Innmind\HttpTransport\LoggerTransport;
+use Innmind\HttpTransport\Logger as LoggerTransport;
 use Innmind\Socket\{
     Internet\Transport,
     Client,
 };
 use Innmind\Url\Url;
+use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -30,7 +32,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Remote::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -48,7 +50,7 @@ class LoggerTest extends TestCase
                     ->method('ssh')
                     ->with($url);
                 $logger = $this->createMock(LoggerInterface::class);
-                $remote = new Logger($inner, $logger);
+                $remote = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Servers\Logger::class, $remote->ssh($url));
             });
@@ -80,11 +82,11 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = $this->createMock(Client::class));
+                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Opening remote socket at {address}',
                         $this->callback(static function($context) use ($transport, $authority) {
@@ -93,7 +95,7 @@ class LoggerTest extends TestCase
                                 \strpos($context['address'], $authority->toString()) !== false;
                         }),
                     );
-                $remote = new Logger($inner, $logger);
+                $remote = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });
@@ -103,8 +105,21 @@ class LoggerTest extends TestCase
     {
         $inner = $this->createMock(Remote::class);
         $logger = $this->createMock(LoggerInterface::class);
-        $remote = new Logger($inner, $logger);
+        $remote = Logger::psr($inner, $logger);
 
         $this->assertInstanceOf(LoggerTransport::class, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(FUrl::any())
+            ->then(function($server) {
+                $inner = $this->createMock(Remote::class);
+                $logger = $this->createMock(LoggerInterface::class);
+                $remote = Logger::psr($inner, $logger);
+
+                $this->assertInstanceOf(Connection\Logger::class, $remote->sql($server));
+            });
     }
 }

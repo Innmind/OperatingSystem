@@ -8,6 +8,8 @@ Abstraction for most of the operating system the PHP code run on.
 
 The goal is to deal with the operating system in a more abstract way (instead of dealing with concrete, low level, details).
 
+**Important**: you must use [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm) to make sure you use this library correctly.
+
 ## Installation
 
 ```sh
@@ -24,17 +26,17 @@ $os = Factory::build();
 
 ### Want to access the system clock ?
 
-`$os->clock()` will return an instance of [`Innmind\TimeContinuum\TimeContinuumInterface`](https://github.com/innmind/timecontinuum#usage).
+`$os->clock()` will return an instance of [`Innmind\TimeContinuum\Clock`](https://github.com/innmind/timecontinuum#usage).
 
 ### Want to access the filesystem ?
 
 ```php
 use Innmind\Url\Path;
 
-$adapter = $os->filesystem()->mount(Path::of('/var/data'));
+$adapter = $os->filesystem()->mount(Path::of('/var/data/'));
 ```
 
-`$adater` is an instance of [`Innmind\Filesystem\Adapter`](https://github.com/innmind/filesystem#filesystem).
+`$adater` is an instance of [`Innmind\Filesystem\Adapter`](http://innmind.github.io/Filesystem/).
 
 ### Want to list processes running on the system ?
 
@@ -66,6 +68,10 @@ $server = $os
         Transport::tcp(),
         IPv4::localhost(),
         Port::of(1337),
+    )
+    ->match(
+        static fn($server) => $server,
+        static fn() => throw new \RuntimeException('Cannot open the socket'),
     );
 ```
 
@@ -77,7 +83,10 @@ $server = $os
 # process A
 use Innmind\Socket\Address\Unix;
 
-$server = $os->sockets()->open(Unix::of('/tmp/foo.sock'));
+$server = $os->sockets()->open(Unix::of('/tmp/foo.sock'))->match(
+    static fn($server) => $server,
+    static fn() => throw new \RuntimeException('Cannot open the socket'),
+);
 ```
 
 `$server` is an instance of [`Innmind\Socket\Server`](https://github.com/innmind/socket#unix-socket).
@@ -120,8 +129,8 @@ $response = $os
     ->remote()
     ->http()(new Request(
         Url::of('http://example.com'),
-        Method::get(),
-        new ProtocolVersion(2, 0),
+        Method::get,
+        ProtocolVersion::v20,
     ));
 ```
 
@@ -134,36 +143,49 @@ $os->process()->id();
 ### Want to fork the current process ?
 
 ```php
-use Innmind\OperatingSystem\Exception\ForkFailed;
+use Innmind\OperatingSystem\CurrentProcess\{
+    Child,
+    ForkFailed,
+};
 
-try {
-    $side = $os->process()->fork();
-
-    if ($side->parent()) {
-        $childPid = $side->child();
-    } else {
-        try {
-            // do something in the child process
-            exit(0);
-        } catch (\Throwable $e) {
-            exit(1);
-        }
+$childSide = static function(): void {
+    try {
+        // do something in the child process
+        exit(0);
+    } catch (\Throwable $e) {
+        exit(1);
     }
-
-} catch (ForkFailed $e) {
-    // handle the exception
-}
+};
+$parentSide = static function(Child $child): void {
+    // do something with the child
+};
+$os
+    ->process()
+    ->fork()
+    ->match(
+        static fn() => $childSide(),
+        static fn($left) => match (true) {
+            $left instanceof Child => $parentSide($left),
+            $left instanceof ForkFailed => throw new \RuntimeException('Unable to fork the process'),
+        },
+    );
 ```
 
 ### Want to wait for child process to finish ?
 
 ```php
-$side = $os->process()->fork();
+use Innmind\OperatingSystem\CurrentProcess\Child;
 
-if ($side->parent()) {
-    // do some thing
-    $os->process()->children()->wait();
-}
+$os
+    ->process()
+    ->fork()
+    ->match(
+        static fn() => \sleep(10), // child side
+        static fn($left) => match (true) {
+            $left instanceof Child => $left->wait(),
+            default => null,
+        },
+    );
 ```
 
 ### Want to pause the current process ?
@@ -179,11 +201,11 @@ $os->process()->halt(new Minute(1));
 ```php
 use Innmind\Signals\Signal;
 
-$os->process()->signals()->listen(Signal::terminate(), function() {
+$os->process()->signals()->listen(Signal::terminate, function() {
     // handle the signal here
 });
 ```
 
 **Note**: when forking the process the child will have all listeners resetted to avoid having the listener called twice (in the parent and the child).
 
-**Important**: beware when sending a signal right after a fork, there is a [case](tests/CurrentProcess/GenericTest.php#L134) where the listeners can still be called in the child.
+**Important**: beware when sending a signal right after a fork, there is a [case](tests/CurrentProcess/GenericTest.php#L126) where the listeners can still be called in the child.

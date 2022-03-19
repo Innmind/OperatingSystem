@@ -11,6 +11,7 @@ use Innmind\Socket\{
 };
 use Innmind\TimeContinuum\ElapsedPeriod;
 use Innmind\Stream\Watch;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Sockets
@@ -18,15 +19,20 @@ final class Logger implements Sockets
     private Sockets $sockets;
     private LoggerInterface $logger;
 
-    public function __construct(Sockets $sockets, LoggerInterface $logger)
+    private function __construct(Sockets $sockets, LoggerInterface $logger)
     {
         $this->sockets = $sockets;
         $this->logger = $logger;
     }
 
-    public function open(Address $address): Server
+    public static function psr(Sockets $sockets, LoggerInterface $logger): self
     {
-        $this->logger->info(
+        return new self($sockets, $logger);
+    }
+
+    public function open(Address $address): Maybe
+    {
+        $this->logger->debug(
             'Opening socket at {address}',
             ['address' => $address->toString()],
         );
@@ -34,9 +40,9 @@ final class Logger implements Sockets
         return $this->sockets->open($address);
     }
 
-    public function takeOver(Address $address): Server
+    public function takeOver(Address $address): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Taking over the socket at {address}',
             ['address' => $address->toString()],
         );
@@ -44,9 +50,9 @@ final class Logger implements Sockets
         return $this->sockets->takeOver($address);
     }
 
-    public function connectTo(Address $address): Client
+    public function connectTo(Address $address): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Connecting to socket at {address}',
             ['address' => $address->toString()],
         );
@@ -54,9 +60,9 @@ final class Logger implements Sockets
         return $this->sockets->connectTo($address);
     }
 
-    public function watch(ElapsedPeriod $timeout): Watch
+    public function watch(ElapsedPeriod $timeout = null): Watch
     {
-        return new Watch\Logger(
+        return Watch\Logger::psr(
             $this->sockets->watch($timeout),
             $this->logger,
         );

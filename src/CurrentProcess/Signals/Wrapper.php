@@ -13,9 +13,14 @@ final class Wrapper implements Signals
 {
     private Handler $handler;
 
-    public function __construct(Handler $handler)
+    private function __construct(Handler $handler)
     {
         $this->handler = $handler;
+    }
+
+    public static function of(Handler $handler): self
+    {
+        return new self($handler);
     }
 
     public function listen(Signal $signal, callable $listener): void
