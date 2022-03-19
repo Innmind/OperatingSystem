@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html><head><title>innmind/operating-system</title><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/><script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body>
-    <header><a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
-    </header><aside><ul><li>
+<html>
+<head>
+    <title>innmind/operating-system</title>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/>
+    <script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <header>
+        <a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
+    </header>
+    <aside>
+        <ul>
+                    <li>
                                     <a href="https://innmind.github.io/OperatingSystem/index.html">
                         Getting started
                     </a>
                             </li>
                     <li>
-                                    <details open><summary>
+                                    <details open>
+                        <summary>
                                                             Use cases
-                                                    </summary><ul><li class="sub-item ">
+                                                    </summary>
+                        <ul>
+                                                            <li class="sub-item ">
                                     <a href="https://innmind.github.io/OperatingSystem/use_cases/time.html">
                                         Manipulating time
                                     </a>
@@ -44,11 +60,21 @@
                                         Handling process signals
                                     </a>
                                 </li>
-                                                    </ul></details></li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/sql.html">
+                                        SQL connection
+                                    </a>
+                                </li>
+                                                    </ul>
+                    </details>
+                            </li>
                     <li>
-                                    <details><summary>
+                                    <details>
+                        <summary>
                                                             Advanced usage
-                                                    </summary><ul><li class="sub-item ">
+                                                    </summary>
+                        <ul>
+                                                            <li class="sub-item ">
                                     <a href="https://innmind.github.io/OperatingSystem/advanced/logging.html">
                                         Logging all operations
                                     </a>
@@ -58,8 +84,12 @@
                                         Extensions
                                     </a>
                                 </li>
-                                                    </ul></details></li>
-                </ul></aside><main><h1 id="http-client"><a href="#http-client" class="anchor">#</a>HTTP Client</h1>
+                                                    </ul>
+                    </details>
+                            </li>
+                </ul>
+    </aside>
+    <main><h1 id="http-client"><a href="#http-client" class="anchor">#</a>HTTP Client</h1>
 <h2 id="calling-an-http-server"><a href="#calling-an-http-server" class="anchor">#</a>Calling an HTTP server</h2>
 <pre><code class="language-php">use Innmind\Http\{
     Message\Request\Request,
@@ -73,25 +103,30 @@ $http = $os->remote()->http();
 
 $response = $http(new Request(
     Url::of('https://github.com'),
-    Method::get(),
-    new ProtocolVersion(2, 0),
-));
+    Method::get,
+    ProtocolVersion::v20,
+))
+    ->map(static fn($success) => $success->response())
+    ->match(
+        static fn($response) => $response,
+        static fn($error) => throw new \RuntimeException($error::class),
+    );
 $response instanceof Response; // true</code></pre>
 <p>All elements of a request/response call is built using objects to enforce correctness of the formatted messages.</p>
 <p><strong>Note</strong>: since request and responses messages can be viewed either from a client or a server the model is abstracted in the standalone <a href="https://github.com/innmind/http"><code>innmind/http</code> library</a>.</p>
 <h2 id="resiliency-in-a-distributed-system"><a href="#resiliency-in-a-distributed-system" class="anchor">#</a>Resiliency in a distributed system</h2>
 <p>One of the first things taught when working with distributed systems is that they will intermittently fail. To prevent your app to crash for an occasional failure a common pattern is the <em>retry pattern</em> with a backoff strategy allowing the client to retry safe requests a certain amount of time before giving up. You can use this pattern like so:</p>
 <pre><code class="language-php">use Innmind\OperatingSystem\OperatingSystem\Resilient;
-use Innmind\HttpTransport\ExponentialBackoffTransport;
+use Innmind\HttpTransport\ExponentialBackoff;
 
 $os = new Resilient($os);
 $http = $os->remote()->http();
-$http instanceof ExponentialBackoffTransport; // true</code></pre>
+$http instanceof ExponentialBackoff; // true</code></pre>
 <p>Another strategy you can add on top of that is the <a href="https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern">circuit breaker pattern</a> that will stop sending request to a server known to have failed.</p>
-<pre><code class="language-php">use Innmind\HttpTransport\CircuitBreakerTransport;
+<pre><code class="language-php">use Innmind\HttpTransport\CircuitBreaker;
 use Innmind\TimeContinuum\Earth\Period\Minute;
 
-$http = new CircuitBreakerTransport(
+$http = CircuitBreaker::of(
     $http,
     $os->clock(),
     new Minute(1),
@@ -102,5 +137,9 @@ $response = $http($request);
 // server and the client will respond immediately unless 1 minute has elapsed
 // between the 2 calls
 $response = $http($request);</code></pre>
-<p><strong>Note</strong>: the circuit breaker works on host per host basis meaning if <code>server1.com</code> fails then calls to <code>server2.com</code> will still be sent.</p></main><footer><a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
-    </footer></body></html>
+<p><strong>Note</strong>: the circuit breaker works on host per host basis meaning if <code>server1.com</code> fails then calls to <code>server2.com</code> will still be sent.</p></main>
+    <footer>
+        <a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
+    </footer>
+</body>
+</html>

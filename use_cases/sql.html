@@ -50,7 +50,7 @@
                                         Inter Process Communication
                                     </a>
                                 </li>
-                                                            <li class="sub-item current">
+                                                            <li class="sub-item ">
                                     <a href="https://innmind.github.io/OperatingSystem/use_cases/socket.html">
                                         Socket communication
                                     </a>
@@ -60,7 +60,7 @@
                                         Handling process signals
                                     </a>
                                 </li>
-                                                            <li class="sub-item ">
+                                                            <li class="sub-item current">
                                     <a href="https://innmind.github.io/OperatingSystem/use_cases/sql.html">
                                         SQL connection
                                     </a>
@@ -89,59 +89,16 @@
                             </li>
                 </ul>
     </aside>
-    <main><h1 id="socket-communication"><a href="#socket-communication" class="anchor">#</a>Socket communication</h1>
-<p>This topic is similar to the <a href="ipc.html">Inter Process Communication</a> but address talking to a socket through a specific network port (either locally or remotely).</p>
-<p>As you'll see below working with sockets (<a href="ipc.html"><code>.sock</code></a> or a port) is always the same workflow:</p>
-<ul>
-<li>open a socket (client or server)</li>
-<li>watch for them to be ready to read</li>
-<li>perform an action on the socket when ready</li>
-</ul>
-<h2 id="opening-a-port"><a href="#opening-a-port" class="anchor">#</a>Opening a port</h2>
-<p>The use case is not very common as you need to define a protocol and implement security but can still have some use for a secure network.</p>
-<pre><code class="language-php">use Innmind\Url\Authority\Port;
-use Innmind\Socket\Internet\Transport;
-use Innmind\IP\IPv4;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
-
-$server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080))->match(
-    static fn($server) => $server,
-    static fn() => throw new \RuntimeException('Unable to start the server'),
-);
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
-
-while (true) {
-    $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $server))
-        ->flatMap(static fn($server) => $server->accept())
-        ->match(
-            static fn($client) => /* talk to the client */,
-            static fn() => null, // no client available yet
-        );
-}</code></pre>
-<p>This is similar to the <a href="ipc.html">IPC example</a> but instead of using a socket file the server is exposed at <code>tcp://127.0.0.1:8080</code> and can be accessed from outside the server.</p>
-<h2 id="opening-a-connection-to-an-opened-port"><a href="#opening-a-connection-to-an-opened-port" class="anchor">#</a>Opening a connection to an opened port</h2>
-<p>This example will open a connection to the server defined above but can be changed to talk to an HTTP server or an <a href="https://github.com/innmind/amqp">AMQP Server</a>.</p>
+    <main><h1 id="sql-connection"><a href="#sql-connection" class="anchor">#</a>SQL connection</h1>
+<p>You can build a connection to a SQL server like so:</p>
 <pre><code class="language-php">use Innmind\Url\Url;
-use Innmind\Socket\Internet\Transport;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+use Formal\AccessLayer\Connection;
 
-$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
-    static fn($client) => $client,
-    static fn() => throw new \RuntimeException('Unable to connect to the client'),
-);
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
+$connection = $os->remote()->sql(Url::of('mysql://127.0.0.1:3306/database_name'));
 
-do {
-    $ready = $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
-        ->match(
-            static fn() => true,
-            static fn() => false,
-        );
-} while (!$ready);
-
-echo 'Server has responded'.</code></pre></main>
+$connection instanceof Connection; // true</code></pre>
+<p>By default it uses a lazy connection, meaning it won't open the connection until the first query.</p>
+<p>For more information on to query the database with this abstraction, visit the <a href="https://formal-php.github.io/access-layer/">dedicated documentation</a>.</p></main>
     <footer>
         <a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
     </footer>

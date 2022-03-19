@@ -10,6 +10,7 @@
     --selected-menu-background: rgba(41, 44, 51, 0.31);
     --block-radius: 5px;
     --inline-background: rgb(41, 44, 51);
+    --table-line-background: rgba(41, 44, 51, 0.1);
 }
 body {
     margin: 0;
@@ -140,6 +141,38 @@ header a {
     color: rgb(178, 183, 189);
 }
 
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+thead {
+    background-color: var(--table-line-background);
+}
+thead th:first-child {
+    border-top-left-radius: var(--block-radius);
+}
+thead th:last-child {
+    border-top-right-radius: var(--block-radius);
+}
+tbody tr:nth-child(even) {
+    background-color: var(--table-line-background);
+}
+tr td, tr th {
+    border-top: 1px solid var(--light-border-color);
+    border-right: 1px solid var(--light-border-color);
+}
+tr td:first-child, tr th:first-child {
+    border-left: 1px solid var(--light-border-color);
+}
+tr:last-child td {
+    border-bottom: 1px solid var(--light-border-color);
+    border-bottom-left-radius: var(--block-radius);
+    border-bottom-right-radius: var(--block-radius);
+}
+th, td {
+    padding: var(--padding);
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --border-color: white;
@@ -148,5 +181,6 @@ header a {
         --text-color: rgb(178, 183, 189);
         --link: rgb(133, 95, 238);
         --link-visited: rgb(117, 84, 148);
+        --table-line-background: rgba(41, 44, 51, 0.2);
     }
 }

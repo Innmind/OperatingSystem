@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html><head><title>innmind/operating-system</title><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/><link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/><script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body>
-    <header><a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
-    </header><aside><ul><li>
+<html>
+<head>
+    <title>innmind/operating-system</title>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/main.css"/>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/default.css"/>
+    <link rel="stylesheet" href="https://innmind.github.io/OperatingSystem/static/styles/atom-one-dark.css"/>
+    <script src="https://innmind.github.io/OperatingSystem/static/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <header>
+        <a href="https://innmind.github.io/OperatingSystem/"><code>operating-system</code></a>
+    </header>
+    <aside>
+        <ul>
+                    <li>
                                     <a href="https://innmind.github.io/OperatingSystem/index.html">
                         Getting started
                     </a>
                             </li>
                     <li>
-                                    <details open><summary>
+                                    <details open>
+                        <summary>
                                                             Use cases
-                                                    </summary><ul><li class="sub-item ">
+                                                    </summary>
+                        <ul>
+                                                            <li class="sub-item ">
                                     <a href="https://innmind.github.io/OperatingSystem/use_cases/time.html">
                                         Manipulating time
                                     </a>
@@ -44,11 +60,21 @@
                                         Handling process signals
                                     </a>
                                 </li>
-                                                    </ul></details></li>
+                                                            <li class="sub-item ">
+                                    <a href="https://innmind.github.io/OperatingSystem/use_cases/sql.html">
+                                        SQL connection
+                                    </a>
+                                </li>
+                                                    </ul>
+                    </details>
+                            </li>
                     <li>
-                                    <details><summary>
+                                    <details>
+                        <summary>
                                                             Advanced usage
-                                                    </summary><ul><li class="sub-item ">
+                                                    </summary>
+                        <ul>
+                                                            <li class="sub-item ">
                                     <a href="https://innmind.github.io/OperatingSystem/advanced/logging.html">
                                         Logging all operations
                                     </a>
@@ -58,8 +84,12 @@
                                         Extensions
                                     </a>
                                 </li>
-                                                    </ul></details></li>
-                </ul></aside><main><h1 id="filesystem"><a href="#filesystem" class="anchor">#</a>Filesystem</h1>
+                                                    </ul>
+                    </details>
+                            </li>
+                </ul>
+    </aside>
+    <main><h1 id="filesystem"><a href="#filesystem" class="anchor">#</a>Filesystem</h1>
 <p>Like <a href="time.html">time</a> the filesystem can be easily accessed with PHP builtin functions but is a source of implicits and state. To move away from these problems the filesystem here is considered as an immutable structure that you <em>mount</em> in your code. This forces you explicit what directories you are accessing and always verify that the structure you want to manipulate is as you expect.</p>
 <h2 id="examples"><a href="#examples" class="anchor">#</a>Examples</h2>
 <h3 id="doing-a-filesystem-backup"><a href="#doing-a-filesystem-backup" class="anchor">#</a>Doing a filesystem backup</h3>
@@ -80,28 +110,30 @@ $backup(
 <h3 id="adding-a-file-in-a-subdirectory"><a href="#adding-a-file-in-a-subdirectory" class="anchor">#</a>Adding a file in a subdirectory</h3>
 <pre><code class="language-php">use Innmind\Filesystem\{
     Adapter,
-    File\File,
-    Directory\Directory,
+    File,
+    File\Content,
+    Directory,
     Name,
 };
 use Innmind\Url\Path;
-use Innmind\Stream\Readable\Stream;
 
 $addUserPicture = function(Adapter $filesystem, string $userId, File $picture): void {
-    if ($filesystem->contains(new Name($userId))) {
-        $userDirectory = $filesystem->get(new Name($userId));
-    } else {
-        $userDirectory = Directory::named($userId);
-    }
-
-    $filesystem->add($userDirectory->add($picture));
+    $filesystem
+        ->get(new Name($userId))
+        ->filter(static fn($file) => $file instanceof Directory)
+        ->otherwise(static fn() => Directory\Directory::named($userId))
+        ->map(static fn($directory) => $directory->add($picture))
+        ->match(
+            static fn($directory) => $filesystem->add($directory),
+            static fn() => null,
+        );
 };
 $addUserPicture(
     $os->filesystem()->mount(Path::of('/path/to/users/data/')),
     'some-unique-id',
-    File::named(
+    File\File::named(
         'picture.png',
-        Stream::open(
+        Content\AtPath::of(
             Path::of($_FILES['some_file']['tmp_name']),
         ),
     ),
@@ -128,19 +160,33 @@ if (!$os->filesystem()->contains(Path::of('/path/to/some/required/folder/'))) {
 $os->control()->processes()->execute($subProcessCommand);</code></pre>
 <p>See <a href="processes.html">processes</a> section on how to execute commands on your operating system.</p>
 <h3 id="mounting-the-tmp-folder"><a href="#mounting-the-tmp-folder" class="anchor">#</a>Mounting the <code>tmp</code> folder</h3>
-<p>Sometimes you want to use the <code>tmp</code> folder to write down files such as cache that can be saefly lost in case of a system reboot. You can easily mount this folder as any other folder like so:</p>
+<p>Sometimes you want to use the <code>tmp</code> folder to write down files such as cache that can be safely lost in case of a system reboot. You can easily mount this folder as any other folder like so:</p>
 <pre><code class="language-php">use Innmind\Filesystem\Adapter;
 
 $tmp = $os->filesystem()->mount($os->status()->tmp());
 $tmp instanceof Adapter; // true</code></pre>
 <p>It is a great way to forget about where the tmp folder is located and simply focus on what you need to do. And since you can use it as any other mounted filesystem you can change it for tests purposes.</p>
 <h3 id="watching-for-changes-on-the-filesystem"><a href="#watching-for-changes-on-the-filesystem" class="anchor">#</a>Watching for changes on the filesystem</h3>
-<p>A pattern we don't see much in PHP is an infinite loop to react to an event to perform another task. Here can build such pattern by watching for changes in a file or a directory.</p>
-<pre><code class="language-php">$runTests = $os->filesystem()->watch(Path::of('/path/to/project/src/'));
+<p>A pattern we don't see much in PHP is an infinite loop to react to an event to perform another task. Here we can build such pattern by watching for changes in a file or a directory.</p>
+<pre><code class="language-php">use Innmind\FileWatch\Stop;
+use Innmind\Immutable\Either;
 
-$runTests(function() use ($os): void {
+$runTests = $os->filesystem()->watch(Path::of('/path/to/project/src/'));
+
+$count = $runTests(0, function(int $count) use ($os): Either {
+    if ($count === 42) {
+        return Either::left(Stop::of($count));
+    }
+
     $os->control()->processes()->execute($phpunitCommand);
+
+    return Either::right(++$count);
 });</code></pre>
 <p>Here it will run phpunit tests every time the <code>src/</code> folder changes. Concrete examples of this pattern can be found in <a href="https://github.com/Innmind/LabStation/blob/develop/src/Agent/WatchSources.php#L38"><code>innmind/lab-station</code></a> to run a suite of tools when sources change or in <a href="https://github.com/halsey-php/journal/blob/develop/src/Command/Preview.php#L58"><code>halsey/journal</code></a> to rebuild the website when the markdown files change.</p>
-<p><strong>Important</strong>: since there is not builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the <code>tail</code> command so there is no <code>sleep()</code> used.</p></main><footer><a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
-    </footer></body></html>
+<p>This operation is a bit like an <code>array_reduce</code> as you can keep a state record between each calls of the callable via the first argument (here <code>0</code>, but it can be anything) and the argument of your callable will be the previous value returned by <code>Either::right()</code>.</p>
+<p><strong>Important</strong>: since there is not builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the <code>tail</code> command so there is no <code>sleep()</code> used.</p></main>
+    <footer>
+        <a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
+    </footer>
+</body>
+</html>
