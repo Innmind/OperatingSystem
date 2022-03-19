@@ -22,7 +22,7 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             CurrentProcess::class,
-            new Generic($this->createMock(Halt::class))
+            new Generic($this->createMock(Halt::class)),
         );
     }
 

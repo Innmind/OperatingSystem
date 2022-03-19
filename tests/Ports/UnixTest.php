@@ -29,7 +29,7 @@ class UnixTest extends TestCase
         $socket = $ports->open(
             Transport::tlsv12(),
             IPv4::localhost(),
-            Port::of(1234)
+            Port::of(1234),
         )->match(
             static fn($server) => $server,
             static fn() => null,

@@ -18,7 +18,7 @@ class ChildrenTest extends TestCase
     {
         $children = new Children(
             $child1 = new Child(new Pid(10)),
-            $child2 = new Child(new Pid(20))
+            $child2 = new Child(new Pid(20)),
         );
 
         $this->assertTrue($children->contains(new Pid(10)));

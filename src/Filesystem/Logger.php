@@ -17,7 +17,7 @@ final class Logger implements Filesystem
 
     public function __construct(
         Filesystem $filesystem,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->filesystem = $filesystem;
         $this->logger = $logger;

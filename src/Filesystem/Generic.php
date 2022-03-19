@@ -24,7 +24,7 @@ final class Generic implements Filesystem
     public function __construct(
         Processes $processes,
         Halt $halt,
-        Clock $clock
+        Clock $clock,
     ) {
         $this->processes = $processes;
         $this->halt = $halt;

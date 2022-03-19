@@ -19,7 +19,7 @@ class WrapperTest extends TestCase
     {
         $this->assertInstanceOf(
             Signals::class,
-            new Wrapper(new Handler)
+            new Wrapper(new Handler),
         );
     }
 
