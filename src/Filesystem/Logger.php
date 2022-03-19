@@ -35,7 +35,7 @@ final class Logger implements Filesystem
     {
         $contains = $this->filesystem->contains($path);
 
-        $this->logger->info(
+        $this->logger->debug(
             'Checking if {path} exists, answer: {answer}',
             ['answer' => $contains ? 'yes' : 'no'],
         );
@@ -49,7 +49,7 @@ final class Logger implements Filesystem
             ->filesystem
             ->require($path)
             ->map(function(mixed $value) use ($path): mixed {
-                $this->logger->info(
+                $this->logger->debug(
                     'PHP file located at {path} loaded in memory',
                     ['path' => $path->toString()],
                 );

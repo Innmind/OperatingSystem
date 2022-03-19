@@ -49,7 +49,7 @@ class LoggerTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with(
                 'Opening socket at {address}',
                 ['address' => '/tmp/foo.sock'],
@@ -71,7 +71,7 @@ class LoggerTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with(
                 'Taking over the socket at {address}',
                 ['address' => '/tmp/foo.sock'],
@@ -93,7 +93,7 @@ class LoggerTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with(
                 'Connecting to socket at {address}',
                 ['address' => '/tmp/foo.sock'],

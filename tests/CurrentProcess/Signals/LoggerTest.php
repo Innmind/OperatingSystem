@@ -47,7 +47,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Registering a listener for signal {signal}',
                         ['signal' => $signal->toInt()],
@@ -82,7 +82,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->exactly(2))
-                    ->method('info')
+                    ->method('debug')
                     ->withConsecutive(
                         [],
                         [
@@ -127,7 +127,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->exactly(2))
-                    ->method('info')
+                    ->method('debug')
                     ->withConsecutive(
                         [],
                         ['Removing a signal listener'],

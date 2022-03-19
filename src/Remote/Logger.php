@@ -38,7 +38,7 @@ final class Logger implements Remote
 
     public function socket(Transport $transport, Authority $authority): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Opening remote socket at {address}',
             [
                 'address' => \sprintf(

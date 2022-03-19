@@ -85,7 +85,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Opening remote socket at {address}',
                         $this->callback(static function($context) use ($transport, $authority) {

@@ -26,7 +26,7 @@ final class Logger implements Ports
 
     public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Opening new port at {address}',
             [
                 'address' => \sprintf(

@@ -28,13 +28,13 @@ final class Logger implements Signals
 
     public function listen(Signal $signal, callable $listener): void
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Registering a listener for signal {signal}',
             ['signal' => $signal->toInt()],
         );
 
         $decorated = function(Signal $signal, Info $info) use ($listener): void {
-            $this->logger->info(
+            $this->logger->debug(
                 'Handling signal {signal}',
                 ['signal' => $signal->toInt()],
             );
@@ -48,7 +48,7 @@ final class Logger implements Signals
 
     public function remove(callable $listener): void
     {
-        $this->logger->info('Removing a signal listener');
+        $this->logger->debug('Removing a signal listener');
 
         // by default we alias the user listener as the decorated in case he
         // found a way to install his listener from another way than from self::listen()

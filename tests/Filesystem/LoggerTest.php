@@ -64,7 +64,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'yes'],
@@ -89,7 +89,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'no'],
@@ -131,7 +131,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->never())
-                    ->method('info');
+                    ->method('debug');
                 $filesystem = new Logger($inner, $logger);
 
                 $this->assertEquals($expected, $filesystem->require($path));
@@ -155,7 +155,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info');
+                    ->method('debug');
                 $filesystem = new Logger($inner, $logger);
 
                 $this->assertEquals($expected, $filesystem->require($path));

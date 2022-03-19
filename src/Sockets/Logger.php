@@ -27,7 +27,7 @@ final class Logger implements Sockets
 
     public function open(Address $address): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Opening socket at {address}',
             ['address' => $address->toString()],
         );
@@ -37,7 +37,7 @@ final class Logger implements Sockets
 
     public function takeOver(Address $address): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Taking over the socket at {address}',
             ['address' => $address->toString()],
         );
@@ -47,7 +47,7 @@ final class Logger implements Sockets
 
     public function connectTo(Address $address): Maybe
     {
-        $this->logger->info(
+        $this->logger->debug(
             'Connecting to socket at {address}',
             ['address' => $address->toString()],
         );

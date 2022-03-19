@@ -67,7 +67,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Opening new port at {address}',
                         $this->callback(static function($context) use ($transport, $ip, $port) {

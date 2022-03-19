@@ -26,7 +26,7 @@ final class Logger implements CurrentProcess
     {
         $pid = $this->process->id();
 
-        $this->logger->info(
+        $this->logger->debug(
             'Current process id is {pid}',
             ['pid' => $pid->toInt()],
         );
@@ -36,7 +36,7 @@ final class Logger implements CurrentProcess
 
     public function fork(): Either
     {
-        $this->logger->info('Forking process');
+        $this->logger->debug('Forking process');
 
         return $this
             ->process
@@ -68,7 +68,7 @@ final class Logger implements CurrentProcess
 
     public function halt(Period $period): void
     {
-        $this->logger->info('Halting current process...', ['period' => [
+        $this->logger->debug('Halting current process...', ['period' => [
             'years' => $period->years(),
             'months' => $period->months(),
             'days' => $period->days(),
@@ -85,7 +85,7 @@ final class Logger implements CurrentProcess
     {
         $memory = $this->process->memory();
 
-        $this->logger->info(
+        $this->logger->debug(
             'Current process memory at {memory}',
             ['memory' => $memory->toString()],
         );

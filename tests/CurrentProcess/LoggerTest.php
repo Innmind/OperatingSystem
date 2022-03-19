@@ -51,7 +51,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Current process id is {pid}',
                         ['pid' => $id],
@@ -91,7 +91,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with('Forking process');
                 $process = new Logger($inner, $logger);
 
@@ -156,7 +156,7 @@ class LoggerTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('info')
+            ->method('debug')
             ->with('Halting current process...');
         $process = new Logger($inner, $logger);
 
@@ -176,7 +176,7 @@ class LoggerTest extends TestCase
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
-                    ->method('info')
+                    ->method('debug')
                     ->with(
                         'Current process memory at {memory}',
                         $this->callback(static function($context) {
