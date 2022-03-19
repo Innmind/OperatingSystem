@@ -17,7 +17,7 @@ $webserver = $os->control()->processes()->execute(
         ->withShortOption('S', 'localhost:8080'),
 );
 // do some stuff
-$os->control()->processes()->kill($webserver->pid(), Signal::kill());
+$os->control()->processes()->kill($webserver->pid(), Signal::kill);
 ```
 
 Here we start the PHP builtin webserver and perform some imaginary action before killing it, but you could also wait the process to finish (see below) instead of killing it (in the case of the webserver it never finishes unless with a crash).
@@ -65,12 +65,15 @@ $installMariadb($os->remote()->ssh(Url::of('ssh://user@replication2')));
 use Innmind\Server\Status\Server\Process;
 use Innmind\TimeContinuum\Earth\Format\ISO8601;
 
-$os->status()->processes()->all()->foreach(function(int $pid, Process $process): void {
+$os->status()->processes()->all()->foreach(function(Process $process): void {
     \printf(
         "Process %s started by %s at %s\n",
         $process->command()->toString(),
         $process->user()->toString(),
-        $process->start()->format(new ISO8601),
+        $process->start()->match(
+            static fn($date) => $date->format(new ISO8601),
+            static fn() => 'unknown start date',
+        ),
     );
 });
 ```
@@ -87,7 +90,7 @@ $backupRunning = $os
     ->status()
     ->processes()
     ->all()
-    ->any(fn($_, $process): bool => $process->command()->matches(RegExp::of('~my-backup-tool~')));
+    ->any(fn($process): bool => $process->command()->matches(RegExp::of('~my-backup-tool~')));
 
 if (!$backupRunning) {
     $os->control()->processes()->execute(

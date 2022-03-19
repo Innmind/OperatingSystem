@@ -15,9 +15,14 @@ $http = $os->remote()->http();
 
 $response = $http(new Request(
     Url::of('https://github.com'),
-    Method::get(),
-    new ProtocolVersion(2, 0),
-));
+    Method::get,
+    ProtocolVersion::v20,
+))
+    ->map(static fn($success) => $success->response())
+    ->match(
+        static fn($response) => $response,
+        static fn($error) => throw new \RuntimeException($error::class),
+    );
 $response instanceof Response; // true
 ```
 
@@ -31,20 +36,20 @@ One of the first things taught when working with distributed systems is that the
 
 ```php
 use Innmind\OperatingSystem\OperatingSystem\Resilient;
-use Innmind\HttpTransport\ExponentialBackoffTransport;
+use Innmind\HttpTransport\ExponentialBackoff;
 
 $os = new Resilient($os);
 $http = $os->remote()->http();
-$http instanceof ExponentialBackoffTransport; // true
+$http instanceof ExponentialBackoff; // true
 ```
 
 Another strategy you can add on top of that is the [circuit breaker pattern](https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern) that will stop sending request to a server known to have failed.
 
 ```php
-use Innmind\HttpTransport\CircuitBreakerTransport;
+use Innmind\HttpTransport\CircuitBreaker;
 use Innmind\TimeContinuum\Earth\Period\Minute;
 
-$http = new CircuitBreakerTransport(
+$http = CircuitBreaker::of(
     $http,
     $os->clock(),
     new Minute(1),
