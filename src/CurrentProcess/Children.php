@@ -15,7 +15,7 @@ use Innmind\Immutable\{
 
 final class Children
 {
-    /** @var Map<int, Child> */
+    /** @var Map<int<2, max>, Child> */
     private Map $children;
 
     /**

@@ -17,10 +17,11 @@ use Innmind\Server\Status\{
 };
 use Innmind\Server\Control\{
     Server as ServerControl,
-    Servers\Unix as UnixControl,
+    Servers,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Watch\Select;
 
 final class Unix implements OperatingSystem
 {
@@ -59,7 +60,11 @@ final class Unix implements OperatingSystem
 
     public function control(): ServerControl
     {
-        return $this->control ??= new UnixControl;
+        return $this->control ??= Servers\Unix::of(
+            $this->clock(),
+            Select::timeoutAfter(...),
+            new Usleep,
+        );
     }
 
     public function ports(): Ports

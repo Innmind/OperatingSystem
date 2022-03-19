@@ -30,7 +30,7 @@ final class Logger implements Remote
 
     public function ssh(Url $server): Control\Server
     {
-        return new Control\Servers\Logger(
+        return Control\Servers\Logger::psr(
             $this->remote->ssh($server),
             $this->logger,
         );
@@ -54,7 +54,7 @@ final class Logger implements Remote
 
     public function http(): HttpTransport\Transport
     {
-        return new HttpTransport\LoggerTransport(
+        return HttpTransport\Logger::psr(
             $this->remote->http(),
             $this->logger,
         );

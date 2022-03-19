@@ -15,7 +15,7 @@ use Innmind\Url\{
 };
 use Innmind\HttpTransport\{
     Transport as HttpTransport,
-    ExponentialBackoffTransport,
+    ExponentialBackoff,
 };
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Immutable\Maybe;
@@ -41,7 +41,7 @@ final class Resilient implements Remote
 
     public function http(): HttpTransport
     {
-        return ExponentialBackoffTransport::of(
+        return ExponentialBackoff::of(
             $this->remote->http(),
             new Usleep,
         );

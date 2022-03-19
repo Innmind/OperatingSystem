@@ -32,12 +32,16 @@ final class Generic implements CurrentProcess
 
     public function id(): Pid
     {
+        /** @psalm-suppress ArgumentTypeCoercion */
         return new Pid(\getmypid());
     }
 
     public function fork(): Either
     {
-        /** @var Either<ForkFailed|Pid, SideEffect> */
+        /**
+         * @psalm-suppress ArgumentTypeCoercion
+         * @var Either<ForkFailed|Pid, SideEffect>
+         */
         $result = match ($pid = \pcntl_fork()) {
             -1 => Either::left(new ForkFailed),
             0 => Either::right(new SideEffect),

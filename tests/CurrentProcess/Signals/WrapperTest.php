@@ -31,13 +31,13 @@ class WrapperTest extends TestCase
 
         $this->fork();
 
-        $this->assertNull($signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertEquals(Signal::child(), $signal);
+        $this->assertNull($signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'first';
             ++$count;
         }));
-        $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertEquals(Signal::child(), $signal);
+        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
         });
@@ -57,13 +57,13 @@ class WrapperTest extends TestCase
         $this->fork();
 
         $first = function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child(), $signal);
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'first';
             ++$count;
         };
-        $signals->listen(Signal::child(), $first);
-        $signals->listen(Signal::child(), function($signal) use (&$order, &$count): void {
-            $this->assertEquals(Signal::child(), $signal);
+        $signals->listen(Signal::child, $first);
+        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+            $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
         });

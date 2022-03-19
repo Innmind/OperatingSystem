@@ -53,7 +53,7 @@ final class Logger implements OperatingSystem
 
     public function control(): Control\Server
     {
-        return new Control\Servers\Logger(
+        return Control\Servers\Logger::psr(
             $this->os->control(),
             $this->logger,
         );

@@ -44,8 +44,8 @@ class ChildrenTest extends TestCase
 
         foreach (\range(2, 3) as $i) {
             $child = $process->fork()->match(
-                static fn($left) => $left,
                 static fn() => null,
+                static fn($left) => $left,
             );
 
             if (\is_null($child)) {

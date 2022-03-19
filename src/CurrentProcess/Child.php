@@ -30,6 +30,7 @@ final class Child
     public function wait(): ExitCode
     {
         \pcntl_waitpid($this->pid->toInt(), $status);
+        /** @var int<0, 255> */
         $exitCode = \pcntl_wexitstatus($status);
 
         return new ExitCode($exitCode);

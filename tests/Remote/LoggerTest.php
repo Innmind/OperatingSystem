@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\{
     Remote,
 };
 use Innmind\Server\Control\Servers;
-use Innmind\HttpTransport\LoggerTransport;
+use Innmind\HttpTransport\Logger as LoggerTransport;
 use Innmind\Socket\{
     Internet\Transport,
     Client,

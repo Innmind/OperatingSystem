@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\{
     Remote,
 };
 use Innmind\TimeContinuum\Clock;
-use Innmind\HttpTransport\ExponentialBackoffTransport;
+use Innmind\HttpTransport\ExponentialBackoff;
 use Innmind\Server\Control\Server;
 use Innmind\Socket\{
     Internet\Transport,
@@ -94,6 +94,6 @@ class ResilientTest extends TestCase
             $this->createMock(Clock::class),
         );
 
-        $this->assertInstanceOf(ExponentialBackoffTransport::class, $remote->http());
+        $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
     }
 }

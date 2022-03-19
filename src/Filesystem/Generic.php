@@ -9,9 +9,11 @@ use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\TimeWarp\Halt;
 use Innmind\TimeContinuum\Clock;
-use Innmind\FileWatch\Ping;
+use Innmind\FileWatch\{
+    Ping,
+    Factory,
+};
 use Innmind\Immutable\Maybe;
-use function Innmind\FileWatch\bootstrap as watch;
 
 final class Generic implements Filesystem
 {
@@ -31,7 +33,7 @@ final class Generic implements Filesystem
 
     public function mount(Path $path): Adapter
     {
-        return new Adapter\Filesystem($path);
+        return Adapter\Filesystem::mount($path);
     }
 
     public function contains(Path $path): bool
@@ -66,6 +68,6 @@ final class Generic implements Filesystem
 
     public function watch(Path $path): Ping
     {
-        return watch($this->processes, $this->halt)($path);
+        return Factory::build($this->processes, $this->halt)($path);
     }
 }

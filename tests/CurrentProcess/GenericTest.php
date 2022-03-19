@@ -41,8 +41,8 @@ class GenericTest extends TestCase
         $parentId = $process->id()->toInt();
 
         $result = $process->fork()->match(
-            static fn($left) => $left,
             static fn() => null,
+            static fn($left) => $left,
         );
 
         if (\is_null($result)) {
@@ -61,8 +61,8 @@ class GenericTest extends TestCase
         $process = new Generic($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
-            static fn($left) => $left,
             static fn() => null,
+            static fn($left) => $left,
         );
 
         if (\is_null($child)) {
@@ -107,13 +107,13 @@ class GenericTest extends TestCase
     {
         $process = new Generic($this->createMock(Halt::class));
         $signals = $process->signals();
-        $signals->listen(Signal::terminate(), static function(...$args) {
+        $signals->listen(Signal::terminate, static function(...$args) {
             exit(1);
         });
 
         $child = $process->fork()->match(
-            static fn($left) => $left,
             static fn() => null,
+            static fn($left) => $left,
         );
 
         if (\is_null($child)) {

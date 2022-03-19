@@ -35,6 +35,6 @@ final class Unix implements Sockets
 
     public function watch(ElapsedPeriod $timeout): Watch
     {
-        return new Watch\Select($timeout);
+        return Watch\Select::timeoutAfter($timeout);
     }
 }

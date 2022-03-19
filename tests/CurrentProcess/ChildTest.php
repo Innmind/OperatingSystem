@@ -28,8 +28,8 @@ class ChildTest extends TestCase
         $process = new Generic($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
+            static fn() => null,
             static fn($left) => $left,
-            static fn() => null
         );
 
         if (\is_null($child)) {
@@ -52,8 +52,8 @@ class ChildTest extends TestCase
         $process = new Generic($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
+            static fn() => null,
             static fn($left) => $left,
-            static fn() => null
         );
 
         if (\is_null($child)) {
@@ -77,8 +77,8 @@ class ChildTest extends TestCase
         $process = new Generic($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
+            static fn() => null,
             static fn($left) => $left,
-            static fn() => null
         );
 
         if (\is_null($child)) {
@@ -102,8 +102,8 @@ class ChildTest extends TestCase
         $process = new Generic($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
+            static fn() => null,
             static fn($left) => $left,
-            static fn() => null
         );
 
         if (\is_null($child)) {

@@ -25,7 +25,7 @@ final class Logger implements Filesystem
 
     public function mount(Path $path): Adapter
     {
-        return new Adapter\Logger(
+        return Adapter\Logger::psr(
             $this->filesystem->mount($path),
             $this->logger,
         );
@@ -60,7 +60,7 @@ final class Logger implements Filesystem
 
     public function watch(Path $path): Ping
     {
-        return new Ping\Logger(
+        return Ping\Logger::psr(
             $this->filesystem->watch($path),
             $path,
             $this->logger,

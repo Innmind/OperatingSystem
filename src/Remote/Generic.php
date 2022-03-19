@@ -18,9 +18,11 @@ use Innmind\Url\{
     Authority,
     Authority\Port,
 };
-use Innmind\HttpTransport\Transport as HttpTransport;
+use Innmind\HttpTransport\{
+    Transport as HttpTransport,
+    Curl,
+};
 use Innmind\Immutable\Maybe;
-use function Innmind\HttpTransport\bootstrap as http;
 
 final class Generic implements Remote
 {
@@ -58,6 +60,6 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        return $this->http ??= http($this->clock)['default'](null);
+        return $this->http ??= Curl::of($this->clock);
     }
 }
