@@ -46,6 +46,19 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
     }
 
+    public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
+    {
+        $filesystem = new Generic(
+            $this->createMock(Processes::class),
+            $this->createMock(Halt::class),
+            $this->createMock(Clock::class),
+        );
+
+        $adapter = $filesystem->mount(Path::of('/tmp/'));
+
+        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/')));
+    }
+
     public function testContainsFile()
     {
         $filesystem = new Generic(

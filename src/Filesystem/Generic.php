@@ -12,28 +12,40 @@ use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\{
     Ping,
     Factory,
+    Watch,
 };
 use Innmind\Immutable\Maybe;
 
 final class Generic implements Filesystem
 {
-    private Processes $processes;
-    private Halt $halt;
+    private Watch $watch;
     private Clock $clock;
+    /** @var \WeakMap<Adapter, string> */
+    private \WeakMap $mounted;
 
     public function __construct(
         Processes $processes,
         Halt $halt,
         Clock $clock,
     ) {
-        $this->processes = $processes;
-        $this->halt = $halt;
+        $this->watch = Factory::build($processes, $halt);
         $this->clock = $clock;
+        /** @var \WeakMap<Adapter, string> */
+        $this->mounted = new \WeakMap;
     }
 
     public function mount(Path $path): Adapter
     {
-        return Adapter\Filesystem::mount($path);
+        foreach ($this->mounted as $adapter => $mounted) {
+            if ($path->toString() === $mounted) {
+                return $adapter;
+            }
+        }
+
+        $adapter = Adapter\Filesystem::mount($path);
+        $this->mounted[$adapter] = $path->toString();
+
+        return $adapter;
     }
 
     public function contains(Path $path): bool
@@ -68,6 +80,6 @@ final class Generic implements Filesystem
 
     public function watch(Path $path): Ping
     {
-        return Factory::build($this->processes, $this->halt)($path);
+        return ($this->watch)($path);
     }
 }
