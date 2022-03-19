@@ -45,6 +45,6 @@
         "innmind/ip": "~2.0",
         "vimeo/psalm": "~4.4",
         "innmind/black-box": "^4.8",
-        "innmind/coding-standard": "^1.1"
+        "innmind/coding-standard": "~2.0"
     }
 }
