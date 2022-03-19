@@ -14,6 +14,7 @@ use Innmind\Url\{
 };
 use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 
 interface Remote
 {
@@ -24,4 +25,5 @@ interface Remote
      */
     public function socket(Transport $transport, Authority $authority): Maybe;
     public function http(): HttpTransport;
+    public function sql(Url $server): Connection;
 }

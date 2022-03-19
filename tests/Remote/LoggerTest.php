@@ -15,6 +15,7 @@ use Innmind\Socket\{
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -107,5 +108,18 @@ class LoggerTest extends TestCase
         $remote = Logger::psr($inner, $logger);
 
         $this->assertInstanceOf(LoggerTransport::class, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(FUrl::any())
+            ->then(function($server) {
+                $inner = $this->createMock(Remote::class);
+                $logger = $this->createMock(LoggerInterface::class);
+                $remote = Logger::psr($inner, $logger);
+
+                $this->assertInstanceOf(Connection\Logger::class, $remote->sql($server));
+            });
     }
 }

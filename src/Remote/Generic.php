@@ -23,6 +23,7 @@ use Innmind\HttpTransport\{
     Curl,
 };
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 
 final class Generic implements Remote
 {
@@ -66,5 +67,10 @@ final class Generic implements Remote
     public function http(): HttpTransport
     {
         return $this->http ??= Curl::of($this->clock);
+    }
+
+    public function sql(Url $server): Connection
+    {
+        return new Connection\Lazy(static fn() => Connection\PDO::of($server));
     }
 }

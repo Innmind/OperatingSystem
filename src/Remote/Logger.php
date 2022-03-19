@@ -15,6 +15,7 @@ use Innmind\Url\{
 };
 use Innmind\HttpTransport;
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Remote
@@ -61,6 +62,14 @@ final class Logger implements Remote
     {
         return HttpTransport\Logger::psr(
             $this->remote->http(),
+            $this->logger,
+        );
+    }
+
+    public function sql(Url $server): Connection
+    {
+        return Connection\Logger::psr(
+            $this->remote->sql($server),
             $this->logger,
         );
     }

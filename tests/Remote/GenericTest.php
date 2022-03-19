@@ -24,10 +24,15 @@ use Innmind\Socket\{
 };
 use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
+use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\BlackBox;
+use Fixtures\Innmind\Url\Url as FUrl;
 
 class GenericTest extends TestCase
 {
+    use BlackBox;
+
     public function testInterface()
     {
         $this->assertInstanceOf(
@@ -117,5 +122,21 @@ class GenericTest extends TestCase
 
         $this->assertInstanceOf(HttpTransport::class, $http);
         $this->assertSame($http, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(FUrl::any())
+            ->then(function($server) {
+                $remote = Generic::of(
+                    $this->createMock(Server::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $sql = $remote->sql($server);
+
+                $this->assertInstanceOf(Connection::class, $sql);
+            });
     }
 }

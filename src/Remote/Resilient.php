@@ -19,6 +19,7 @@ use Innmind\HttpTransport\{
 };
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 
 final class Resilient implements Remote
 {
@@ -50,5 +51,10 @@ final class Resilient implements Remote
             $this->remote->http(),
             new Usleep,
         );
+    }
+
+    public function sql(Url $server): Connection
+    {
+        return $this->remote->sql($server);
     }
 }

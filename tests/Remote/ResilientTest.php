@@ -15,6 +15,7 @@ use Innmind\Socket\{
     Client,
 };
 use Innmind\Immutable\Maybe;
+use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -95,5 +96,19 @@ class ResilientTest extends TestCase
         );
 
         $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
+    }
+
+    public function testSql()
+    {
+        $this
+            ->forAll(Url::any())
+            ->then(function($server) {
+                $remote = Resilient::of(
+                    $this->createMock(Remote::class),
+                    $this->createMock(Clock::class),
+                );
+
+                $this->assertInstanceOf(Connection::class, $remote->sql($server));
+            });
     }
 }
