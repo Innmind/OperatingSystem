@@ -15,12 +15,19 @@ final class Logger implements Filesystem
     private Filesystem $filesystem;
     private LoggerInterface $logger;
 
-    public function __construct(
+    private function __construct(
         Filesystem $filesystem,
         LoggerInterface $logger,
     ) {
         $this->filesystem = $filesystem;
         $this->logger = $logger;
+    }
+
+    public static function psr(
+        Filesystem $filesystem,
+        LoggerInterface $logger,
+    ): self {
+        return new self($filesystem, $logger);
     }
 
     public function mount(Path $path): Adapter

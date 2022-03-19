@@ -27,7 +27,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Signals::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Signals::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -52,7 +52,7 @@ class LoggerTest extends TestCase
                         'Registering a listener for signal {signal}',
                         ['signal' => $signal->toInt()],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
 
                 $this->assertNull($signals->listen($signal, static fn() => null));
             });
@@ -90,7 +90,7 @@ class LoggerTest extends TestCase
                             ['signal' => $signal->toInt()],
                         ],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
                 $called = false;
 
                 $this->assertNull($signals->listen($signal, function($sig, $inf) use ($signal, $info, &$called) {
@@ -132,7 +132,7 @@ class LoggerTest extends TestCase
                         [],
                         ['Removing a signal listener'],
                     );
-                $signals = new Logger($inner, $logger);
+                $signals = Logger::psr($inner, $logger);
                 $listener = static fn() => null;
 
                 $this->assertNull($signals->listen($signal, $listener));

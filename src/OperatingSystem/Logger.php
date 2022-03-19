@@ -21,10 +21,15 @@ final class Logger implements OperatingSystem
     private OperatingSystem $os;
     private LoggerInterface $logger;
 
-    public function __construct(OperatingSystem $os, LoggerInterface $logger)
+    private function __construct(OperatingSystem $os, LoggerInterface $logger)
     {
         $this->os = $os;
         $this->logger = $logger;
+    }
+
+    public static function psr(OperatingSystem $os, LoggerInterface $logger): self
+    {
+        return new self($os, $logger);
     }
 
     public function clock(): TimeContinuum\Clock
@@ -37,7 +42,7 @@ final class Logger implements OperatingSystem
 
     public function filesystem(): Filesystem
     {
-        return new Filesystem\Logger(
+        return Filesystem\Logger::psr(
             $this->os->filesystem(),
             $this->logger,
         );
@@ -61,7 +66,7 @@ final class Logger implements OperatingSystem
 
     public function ports(): Ports
     {
-        return new Ports\Logger(
+        return Ports\Logger::psr(
             $this->os->ports(),
             $this->logger,
         );
@@ -69,7 +74,7 @@ final class Logger implements OperatingSystem
 
     public function sockets(): Sockets
     {
-        return new Sockets\Logger(
+        return Sockets\Logger::psr(
             $this->os->sockets(),
             $this->logger,
         );
@@ -77,7 +82,7 @@ final class Logger implements OperatingSystem
 
     public function remote(): Remote
     {
-        return new Remote\Logger(
+        return Remote\Logger::psr(
             $this->os->remote(),
             $this->logger,
         );
@@ -85,7 +90,7 @@ final class Logger implements OperatingSystem
 
     public function process(): CurrentProcess
     {
-        return new CurrentProcess\Logger(
+        return CurrentProcess\Logger::psr(
             $this->os->process(),
             $this->logger,
         );

@@ -18,12 +18,17 @@ final class Logger implements Signals
     /** @var Map<callable(Signal, Info): void, callable(Signal, Info): void> */
     private Map $decorated;
 
-    public function __construct(Signals $signals, LoggerInterface $logger)
+    private function __construct(Signals $signals, LoggerInterface $logger)
     {
         $this->signals = $signals;
         $this->logger = $logger;
         /** @var Map<callable(Signal, Info): void, callable(Signal, Info): void> */
         $this->decorated = Map::of();
+    }
+
+    public static function psr(Signals $signals, LoggerInterface $logger): self
+    {
+        return new self($signals, $logger);
     }
 
     public function listen(Signal $signal, callable $listener): void

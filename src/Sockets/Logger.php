@@ -19,10 +19,15 @@ final class Logger implements Sockets
     private Sockets $sockets;
     private LoggerInterface $logger;
 
-    public function __construct(Sockets $sockets, LoggerInterface $logger)
+    private function __construct(Sockets $sockets, LoggerInterface $logger)
     {
         $this->sockets = $sockets;
         $this->logger = $logger;
+    }
+
+    public static function psr(Sockets $sockets, LoggerInterface $logger): self
+    {
+        return new self($sockets, $logger);
     }
 
     public function open(Address $address): Maybe

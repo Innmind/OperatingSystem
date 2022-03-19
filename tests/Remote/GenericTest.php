@@ -32,7 +32,7 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Generic(
+            Generic::of(
                 $this->createMock(Server::class),
                 $this->createMock(Clock::class),
             ),
@@ -41,7 +41,7 @@ class GenericTest extends TestCase
 
     public function testSsh()
     {
-        $remote = new Generic(
+        $remote = Generic::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -64,7 +64,7 @@ class GenericTest extends TestCase
 
     public function testSshWithoutPort()
     {
-        $remote = new Generic(
+        $remote = Generic::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -87,7 +87,7 @@ class GenericTest extends TestCase
 
     public function testSocket()
     {
-        $remote = new Generic(
+        $remote = Generic::of(
             $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );
@@ -108,7 +108,7 @@ class GenericTest extends TestCase
 
     public function testHttp()
     {
-        $remote = new Generic(
+        $remote = Generic::of(
             $this->createMock(Server::class),
             $this->createMock(Clock::class),
         );

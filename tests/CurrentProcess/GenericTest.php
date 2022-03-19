@@ -23,13 +23,13 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             CurrentProcess::class,
-            new Generic($this->createMock(Halt::class)),
+            Generic::of($this->createMock(Halt::class)),
         );
     }
 
     public function testId()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Pid::class, $process->id());
         $this->assertSame($process->id()->toInt(), $process->id()->toInt());
@@ -37,7 +37,7 @@ class GenericTest extends TestCase
 
     public function testFork()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $parentId = $process->id()->toInt();
 
@@ -59,7 +59,7 @@ class GenericTest extends TestCase
 
     public function testChildren()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
             static fn() => null,
@@ -80,7 +80,7 @@ class GenericTest extends TestCase
 
     public function testHalt()
     {
-        $process = new Generic(
+        $process = Generic::of(
             $halt = $this->createMock(Halt::class),
         );
         $period = $this->createMock(Period::class);
@@ -94,7 +94,7 @@ class GenericTest extends TestCase
 
     public function testSignals()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
@@ -102,7 +102,7 @@ class GenericTest extends TestCase
 
     public function testSignalsAreResettedInForkChild()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
         $signals = $process->signals();
         $signals->listen(Signal::terminate, static function(...$args) {
             exit(1);
@@ -138,7 +138,7 @@ class GenericTest extends TestCase
 
     public function testMemory()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $this->assertInstanceOf(Bytes::class, $process->memory());
         $this->assertTrue($process->memory()->toInt() > 6000000); // ~5MB

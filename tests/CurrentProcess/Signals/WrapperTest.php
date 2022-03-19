@@ -19,13 +19,13 @@ class WrapperTest extends TestCase
     {
         $this->assertInstanceOf(
             Signals::class,
-            new Wrapper(new Handler),
+            Wrapper::of(new Handler),
         );
     }
 
     public function testListen()
     {
-        $signals = new Wrapper(new Handler);
+        $signals = Wrapper::of(new Handler);
         $order = [];
         $count = 0;
 
@@ -50,7 +50,7 @@ class WrapperTest extends TestCase
 
     public function testRemoveSignal()
     {
-        $signals = new Wrapper(new Handler);
+        $signals = Wrapper::of(new Handler);
         $order = [];
         $count = 0;
 

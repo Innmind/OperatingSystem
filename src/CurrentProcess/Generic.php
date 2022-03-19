@@ -23,11 +23,16 @@ final class Generic implements CurrentProcess
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
 
-    public function __construct(Halt $halt)
+    private function __construct(Halt $halt)
     {
         $this->halt = $halt;
         /** @var Set<Child> */
         $this->children = Set::of();
+    }
+
+    public static function of(Halt $halt): self
+    {
+        return new self($halt);
     }
 
     public function id(): Pid
@@ -45,7 +50,7 @@ final class Generic implements CurrentProcess
         $result = match ($pid = \pcntl_fork()) {
             -1 => Either::left(new ForkFailed),
             0 => Either::right(new SideEffect),
-            default => Either::left(new Child(new Pid($pid))),
+            default => Either::left(Child::of(new Pid($pid))),
         };
 
         return $result
@@ -64,12 +69,12 @@ final class Generic implements CurrentProcess
 
     public function children(): Children
     {
-        return new Children(...$this->children->toList());
+        return Children::of(...$this->children->toList());
     }
 
     public function signals(): Signals
     {
-        return $this->signals ??= new Signals\Wrapper(
+        return $this->signals ??= Signals\Wrapper::of(
             $this->signalsHandler = new Handler,
         );
     }

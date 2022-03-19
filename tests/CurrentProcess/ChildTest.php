@@ -18,14 +18,14 @@ class ChildTest extends TestCase
 {
     public function testPid()
     {
-        $child = new Child($pid = new Pid(42));
+        $child = Child::of($pid = new Pid(42));
 
         $this->assertSame($pid, $child->id());
     }
 
     public function testRunning()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
             static fn() => null,
@@ -47,7 +47,7 @@ class ChildTest extends TestCase
 
     public function testWait()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
             static fn() => null,
@@ -70,7 +70,7 @@ class ChildTest extends TestCase
 
     public function testKill()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
             static fn() => null,
@@ -93,7 +93,7 @@ class ChildTest extends TestCase
 
     public function testTerminate()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $child = $process->fork()->match(
             static fn() => null,

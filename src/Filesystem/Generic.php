@@ -23,7 +23,7 @@ final class Generic implements Filesystem
     /** @var \WeakMap<Adapter, string> */
     private \WeakMap $mounted;
 
-    public function __construct(
+    private function __construct(
         Processes $processes,
         Halt $halt,
         Clock $clock,
@@ -32,6 +32,14 @@ final class Generic implements Filesystem
         $this->clock = $clock;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
+    }
+
+    public static function of(
+        Processes $processes,
+        Halt $halt,
+        Clock $clock,
+    ): self {
+        return new self($processes, $halt, $clock);
     }
 
     public function mount(Path $path): Adapter

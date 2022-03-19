@@ -30,7 +30,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Sockets::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Sockets::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -54,7 +54,7 @@ class LoggerTest extends TestCase
                 'Opening socket at {address}',
                 ['address' => '/tmp/foo.sock'],
             );
-        $sockets = new Logger($inner, $logger);
+        $sockets = Logger::psr($inner, $logger);
 
         $this->assertSame($expected, $sockets->open($address));
     }
@@ -76,7 +76,7 @@ class LoggerTest extends TestCase
                 'Taking over the socket at {address}',
                 ['address' => '/tmp/foo.sock'],
             );
-        $sockets = new Logger($inner, $logger);
+        $sockets = Logger::psr($inner, $logger);
 
         $this->assertSame($expected, $sockets->takeOver($address));
     }
@@ -98,7 +98,7 @@ class LoggerTest extends TestCase
                 'Connecting to socket at {address}',
                 ['address' => '/tmp/foo.sock'],
             );
-        $sockets = new Logger($inner, $logger);
+        $sockets = Logger::psr($inner, $logger);
 
         $this->assertSame($expected, $sockets->connectTo($address));
     }
@@ -114,7 +114,7 @@ class LoggerTest extends TestCase
                     ->method('watch')
                     ->with(new ElapsedPeriod($milliseconds));
                 $logger = $this->createMock(LoggerInterface::class);
-                $sockets = new Logger($inner, $logger);
+                $sockets = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(
                     Watch\Logger::class,

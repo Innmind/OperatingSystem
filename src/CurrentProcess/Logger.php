@@ -16,10 +16,15 @@ final class Logger implements CurrentProcess
     private LoggerInterface $logger;
     private ?Signals $signals = null;
 
-    public function __construct(CurrentProcess $process, LoggerInterface $logger)
+    private function __construct(CurrentProcess $process, LoggerInterface $logger)
     {
         $this->process = $process;
         $this->logger = $logger;
+    }
+
+    public static function psr(CurrentProcess $process, LoggerInterface $logger): self
+    {
+        return new self($process, $logger);
     }
 
     public function id(): Pid
@@ -60,7 +65,7 @@ final class Logger implements CurrentProcess
 
     public function signals(): Signals
     {
-        return $this->signals ??= new Signals\Logger(
+        return $this->signals ??= Signals\Logger::psr(
             $this->process->signals(),
             $this->logger,
         );

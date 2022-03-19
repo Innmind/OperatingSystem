@@ -20,12 +20,12 @@ class UnixTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Sockets::class, new Unix);
+        $this->assertInstanceOf(Sockets::class, Unix::of());
     }
 
     public function testOpen()
     {
-        $sockets = new Unix;
+        $sockets = Unix::of();
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -44,7 +44,7 @@ class UnixTest extends TestCase
 
     public function testTakeOver()
     {
-        $sockets = new Unix;
+        $sockets = Unix::of();
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -62,7 +62,7 @@ class UnixTest extends TestCase
 
     public function testConnectTo()
     {
-        $sockets = new Unix;
+        $sockets = Unix::of();
 
         $server = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -80,7 +80,7 @@ class UnixTest extends TestCase
 
     public function testWatch()
     {
-        $sockets = new Unix;
+        $sockets = Unix::of();
 
         $this->assertInstanceOf(
             Watch::class,

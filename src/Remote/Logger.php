@@ -22,10 +22,15 @@ final class Logger implements Remote
     private Remote $remote;
     private LoggerInterface $logger;
 
-    public function __construct(Remote $remote, LoggerInterface $logger)
+    private function __construct(Remote $remote, LoggerInterface $logger)
     {
         $this->remote = $remote;
         $this->logger = $logger;
+    }
+
+    public static function psr(Remote $remote, LoggerInterface $logger): self
+    {
+        return new self($remote, $logger);
     }
 
     public function ssh(Url $server): Control\Server

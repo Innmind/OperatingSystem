@@ -14,6 +14,15 @@ use Innmind\Immutable\Maybe;
 
 final class Unix implements Ports
 {
+    private function __construct()
+    {
+    }
+
+    public static function of(): self
+    {
+        return new self;
+    }
+
     public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
         /** @var Maybe<Server> */

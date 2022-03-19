@@ -21,13 +21,21 @@ final class Children
     /**
      * @no-named-arguments
      */
-    public function __construct(Child ...$children)
+    private function __construct(Child ...$children)
     {
         $this->children = Map::of(
             ...Sequence::of(...$children)
                 ->map(static fn($child) => [$child->id()->toInt(), $child])
                 ->toList(),
         );
+    }
+
+    /**
+     * @no-named-arguments
+     */
+    public static function of(Child ...$children): self
+    {
+        return new self(...$children);
     }
 
     public function contains(Pid $pid): bool

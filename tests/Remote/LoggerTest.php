@@ -31,7 +31,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Remote::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -49,7 +49,7 @@ class LoggerTest extends TestCase
                     ->method('ssh')
                     ->with($url);
                 $logger = $this->createMock(LoggerInterface::class);
-                $remote = new Logger($inner, $logger);
+                $remote = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Servers\Logger::class, $remote->ssh($url));
             });
@@ -94,7 +94,7 @@ class LoggerTest extends TestCase
                                 \strpos($context['address'], $authority->toString()) !== false;
                         }),
                     );
-                $remote = new Logger($inner, $logger);
+                $remote = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });
@@ -104,7 +104,7 @@ class LoggerTest extends TestCase
     {
         $inner = $this->createMock(Remote::class);
         $logger = $this->createMock(LoggerInterface::class);
-        $remote = new Logger($inner, $logger);
+        $remote = Logger::psr($inner, $logger);
 
         $this->assertInstanceOf(LoggerTransport::class, $remote->http());
     }

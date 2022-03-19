@@ -23,7 +23,7 @@ class UnixTest extends TestCase
     {
         $clock = $this->createMock(Clock::class);
 
-        $os = new Unix($clock);
+        $os = Unix::of($clock);
 
         $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());

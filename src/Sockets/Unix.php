@@ -15,6 +15,15 @@ use Innmind\Immutable\Maybe;
 
 final class Unix implements Sockets
 {
+    private function __construct()
+    {
+    }
+
+    public static function of(): self
+    {
+        return new self;
+    }
+
     public function open(Address $address): Maybe
     {
         /** @var Maybe<Server> */

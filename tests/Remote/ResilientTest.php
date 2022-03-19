@@ -33,7 +33,7 @@ class ResilientTest extends TestCase
     {
         $this->assertInstanceOf(
             Remote::class,
-            new Resilient(
+            Resilient::of(
                 $this->createMock(Remote::class),
                 $this->createMock(Clock::class),
             ),
@@ -45,7 +45,7 @@ class ResilientTest extends TestCase
         $this
             ->forAll(Url::any())
             ->then(function($url) {
-                $remote = new Resilient(
+                $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
                     $this->createMock(Clock::class),
                 );
@@ -73,7 +73,7 @@ class ResilientTest extends TestCase
                 Authority::any(),
             )
             ->then(function($transport, $authority) {
-                $remote = new Resilient(
+                $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
                     $this->createMock(Clock::class),
                 );
@@ -89,7 +89,7 @@ class ResilientTest extends TestCase
 
     public function testHttp()
     {
-        $remote = new Resilient(
+        $remote = Resilient::of(
             $this->createMock(Remote::class),
             $this->createMock(Clock::class),
         );

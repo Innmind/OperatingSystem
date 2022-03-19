@@ -18,10 +18,15 @@ final class Logger implements Ports
     private Ports $ports;
     private LoggerInterface $logger;
 
-    public function __construct(Ports $ports, LoggerInterface $logger)
+    private function __construct(Ports $ports, LoggerInterface $logger)
     {
         $this->ports = $ports;
         $this->logger = $logger;
+    }
+
+    public static function psr(Ports $ports, LoggerInterface $logger): self
+    {
+        return new self($ports, $logger);
     }
 
     public function open(Transport $transport, IP $ip, Port $port): Maybe

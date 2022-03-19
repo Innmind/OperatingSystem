@@ -12,9 +12,14 @@ final class Child
 {
     private Pid $pid;
 
-    public function __construct(Pid $pid)
+    private function __construct(Pid $pid)
     {
         $this->pid = $pid;
+    }
+
+    public static function of(Pid $pid): self
+    {
+        return new self($pid);
     }
 
     public function id(): Pid

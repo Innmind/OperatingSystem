@@ -26,7 +26,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Filesystem::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Filesystem::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -44,7 +44,7 @@ class LoggerTest extends TestCase
                     ->method('mount')
                     ->with($path);
                 $logger = $this->createMock(LoggerInterface::class);
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Adapter\Logger::class, $filesystem->mount($path));
             });
@@ -69,7 +69,7 @@ class LoggerTest extends TestCase
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'yes'],
                     );
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertTrue($filesystem->contains($path));
             });
@@ -94,7 +94,7 @@ class LoggerTest extends TestCase
                         'Checking if {path} exists, answer: {answer}',
                         ['answer' => 'no'],
                     );
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertFalse($filesystem->contains($path));
             });
@@ -111,7 +111,7 @@ class LoggerTest extends TestCase
                     ->method('watch')
                     ->with($path);
                 $logger = $this->createMock(LoggerInterface::class);
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertInstanceOf(Ping\Logger::class, $filesystem->watch($path));
             });
@@ -132,7 +132,7 @@ class LoggerTest extends TestCase
                 $logger
                     ->expects($this->never())
                     ->method('debug');
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertEquals($expected, $filesystem->require($path));
             });
@@ -156,7 +156,7 @@ class LoggerTest extends TestCase
                 $logger
                     ->expects($this->once())
                     ->method('debug');
-                $filesystem = new Logger($inner, $logger);
+                $filesystem = Logger::psr($inner, $logger);
 
                 $this->assertEquals($expected, $filesystem->require($path));
             });

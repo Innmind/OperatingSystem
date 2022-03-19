@@ -24,9 +24,14 @@ final class Resilient implements Remote
 {
     private Remote $remote;
 
-    public function __construct(Remote $remote)
+    private function __construct(Remote $remote)
     {
         $this->remote = $remote;
+    }
+
+    public static function of(Remote $remote): self
+    {
+        return new self($remote);
     }
 
     public function ssh(Url $server): Server

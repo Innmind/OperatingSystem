@@ -16,9 +16,9 @@ class ChildrenTest extends TestCase
 {
     public function testInterface()
     {
-        $children = new Children(
-            $child1 = new Child(new Pid(10)),
-            $child2 = new Child(new Pid(20)),
+        $children = Children::of(
+            $child1 = Child::of(new Pid(10)),
+            $child2 = Child::of(new Pid(20)),
         );
 
         $this->assertTrue($children->contains(new Pid(10)));
@@ -36,7 +36,7 @@ class ChildrenTest extends TestCase
 
     public function testWait()
     {
-        $process = new Generic($this->createMock(Halt::class));
+        $process = Generic::of($this->createMock(Halt::class));
 
         $start = \microtime(true);
         $children = [];
@@ -59,7 +59,7 @@ class ChildrenTest extends TestCase
             ++$count;
         }
 
-        $children = new Children(...$children);
+        $children = Children::of(...$children);
 
         $codes = $children->wait();
         $this->assertCount($count, $codes);

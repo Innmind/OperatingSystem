@@ -25,7 +25,7 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             Filesystem::class,
-            new Generic(
+            Generic::of(
                 $this->createMock(Processes::class),
                 $this->createMock(Halt::class),
                 $this->createMock(Clock::class),
@@ -35,7 +35,7 @@ class GenericTest extends TestCase
 
     public function testMount()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -48,7 +48,7 @@ class GenericTest extends TestCase
 
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -61,7 +61,7 @@ class GenericTest extends TestCase
 
     public function testContainsFile()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -75,7 +75,7 @@ class GenericTest extends TestCase
 
     public function testContainsDirectory()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -89,7 +89,7 @@ class GenericTest extends TestCase
 
     public function testWatch()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
@@ -103,7 +103,7 @@ class GenericTest extends TestCase
         $this
             ->forAll(FPath::any())
             ->then(function($path) {
-                $filesystem = new Generic(
+                $filesystem = Generic::of(
                     $this->createMock(Processes::class),
                     $this->createMock(Halt::class),
                     $this->createMock(Clock::class),
@@ -118,7 +118,7 @@ class GenericTest extends TestCase
 
     public function testRequireFile()
     {
-        $filesystem = new Generic(
+        $filesystem = Generic::of(
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),

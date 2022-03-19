@@ -32,7 +32,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             Ports::class,
-            new Logger(
+            Logger::psr(
                 $this->createMock(Ports::class),
                 $this->createMock(LoggerInterface::class),
             ),
@@ -77,7 +77,7 @@ class LoggerTest extends TestCase
                                 \strpos($context['address'], (string) $port) !== false;
                         }),
                     );
-                $ports = new Logger($inner, $logger);
+                $ports = Logger::psr($inner, $logger);
 
                 $this->assertSame($expected, $ports->open($transport, $ip, Port::of($port)));
             });
