@@ -25,7 +25,7 @@
         "innmind/time-warp": "~3.0",
         "innmind/signals": "~3.0",
         "innmind/file-watch": "~3.0",
-        "innmind/stream": "~3.0",
+        "innmind/stream": "~3.2",
         "formal/access-layer": "^2.0"
     },
     "autoload": {
