@@ -110,7 +110,7 @@ while (true) {
         ->flatMap(static fn($server) => $server->accept())
         ->match(
             static fn($client) => $client
-                ->write(Str::of('Hello ð'))
+                ->write(Str::of('Hello 👋'))
                 ->flatMap(static fn($client) => $client->close())
                 ->match(
                     static fn() => null, // everyhting is ok
@@ -139,7 +139,7 @@ echo $client->read()->match(
     static fn($data) => $data->toString(),
     static fn() => 'unable to read the stream',
 );</code></pre>
-<p>In the case the server is started first then the client would print <code>Hello ð</code>.</p>
+<p>In the case the server is started first then the client would print <code>Hello 👋</code>.</p>
 <p><strong>Important</strong>: this is a very rough implementation of communication between processes. <strong>DO NOT</strong> use this simple implementation in your code, instead use a higher level API such as <a href="https://github.com/innmind/ipc"><code>innmind/ipc</code></a>.</p></main>
     <footer>
         <a href="https://github.com/innmind/OperatingSystem/" target="_blank">GitHub</a>
