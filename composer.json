@@ -19,7 +19,7 @@
         "innmind/time-continuum": "~3.0",
         "innmind/server-status": "~3.0",
         "innmind/server-control": "^4.0.1",
-        "innmind/filesystem": "~5.0",
+        "innmind/filesystem": "~5.0|~6.0",
         "innmind/socket": "~4.0|~5.0",
         "innmind/http-transport": "~6.0",
         "innmind/time-warp": "~3.0",
@@ -42,7 +42,7 @@
         "phpunit/phpunit": "~9.0",
         "innmind/url": "~4.0",
         "innmind/ip": "~3.0",
-        "vimeo/psalm": "~4.4",
+        "vimeo/psalm": "~4.30",
         "innmind/black-box": "^4.8",
         "innmind/coding-standard": "~2.0"
     }
