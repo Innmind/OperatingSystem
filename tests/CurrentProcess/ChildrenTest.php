@@ -68,6 +68,6 @@ class ChildrenTest extends TestCase
             $this->assertSame(0, $code->toInt());
         });
         $delta = \microtime(true) - $start;
-        $this->assertEqualsWithDelta(3, $delta, 0.1);
+        $this->assertEqualsWithDelta(3, $delta, 0.2);
     }
 }
