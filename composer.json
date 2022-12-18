@@ -42,7 +42,7 @@
         "phpunit/phpunit": "~9.0",
         "innmind/url": "~4.0",
         "innmind/ip": "~3.0",
-        "vimeo/psalm": "~4.4",
+        "vimeo/psalm": "~4.30",
         "innmind/black-box": "^4.8",
         "innmind/coding-standard": "~2.0"
     }
