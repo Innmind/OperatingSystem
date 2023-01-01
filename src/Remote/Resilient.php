@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\Remote;
 
-use Innmind\OperatingSystem\Remote;
+use Innmind\OperatingSystem\{
+    Remote,
+    CurrentProcess,
+};
 use Innmind\Server\Control\Server;
 use Innmind\Socket\{
     Internet\Transport,
@@ -17,22 +20,23 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     ExponentialBackoff,
 };
-use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Immutable\Maybe;
 use Formal\AccessLayer\Connection;
 
 final class Resilient implements Remote
 {
     private Remote $remote;
+    private CurrentProcess $process;
 
-    private function __construct(Remote $remote)
+    private function __construct(Remote $remote, CurrentProcess $process)
     {
         $this->remote = $remote;
+        $this->process = $process;
     }
 
-    public static function of(Remote $remote): self
+    public static function of(Remote $remote, CurrentProcess $process): self
     {
-        return new self($remote);
+        return new self($remote, $process);
     }
 
     public function ssh(Url $server): Server
@@ -49,7 +53,7 @@ final class Resilient implements Remote
     {
         return ExponentialBackoff::of(
             $this->remote->http(),
-            new Usleep,
+            $this->process->halt(...),
         );
     }
 
