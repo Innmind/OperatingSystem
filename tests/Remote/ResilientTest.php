@@ -6,8 +6,8 @@ namespace Tests\Innmind\OperatingSystem\Remote;
 use Innmind\OperatingSystem\{
     Remote\Resilient,
     Remote,
+    CurrentProcess,
 };
-use Innmind\TimeContinuum\Clock;
 use Innmind\HttpTransport\ExponentialBackoff;
 use Innmind\Server\Control\Server;
 use Innmind\Socket\{
@@ -36,7 +36,7 @@ class ResilientTest extends TestCase
             Remote::class,
             Resilient::of(
                 $this->createMock(Remote::class),
-                $this->createMock(Clock::class),
+                $this->createMock(CurrentProcess::class),
             ),
         );
     }
@@ -48,7 +48,7 @@ class ResilientTest extends TestCase
             ->then(function($url) {
                 $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
-                    $this->createMock(Clock::class),
+                    $this->createMock(CurrentProcess::class),
                 );
                 $inner
                     ->expects($this->once())
@@ -76,7 +76,7 @@ class ResilientTest extends TestCase
             ->then(function($transport, $authority) {
                 $remote = Resilient::of(
                     $inner = $this->createMock(Remote::class),
-                    $this->createMock(Clock::class),
+                    $this->createMock(CurrentProcess::class),
                 );
                 $inner
                     ->expects($this->once())
@@ -92,7 +92,7 @@ class ResilientTest extends TestCase
     {
         $remote = Resilient::of(
             $this->createMock(Remote::class),
-            $this->createMock(Clock::class),
+            $this->createMock(CurrentProcess::class),
         );
 
         $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
@@ -105,7 +105,7 @@ class ResilientTest extends TestCase
             ->then(function($server) {
                 $remote = Resilient::of(
                     $this->createMock(Remote::class),
-                    $this->createMock(Clock::class),
+                    $this->createMock(CurrentProcess::class),
                 );
 
                 $this->assertInstanceOf(Connection::class, $remote->sql($server));
