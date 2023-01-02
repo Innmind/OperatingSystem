@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\Filesystem;
 
-use Innmind\OperatingSystem\Filesystem;
+use Innmind\OperatingSystem\{
+    Filesystem,
+    Config,
+};
 use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
@@ -20,6 +23,7 @@ final class Generic implements Filesystem
 {
     private Watch $watch;
     private Clock $clock;
+    private Config $config;
     /** @var \WeakMap<Adapter, string> */
     private \WeakMap $mounted;
 
@@ -27,9 +31,11 @@ final class Generic implements Filesystem
         Processes $processes,
         Halt $halt,
         Clock $clock,
+        Config $config,
     ) {
         $this->watch = Factory::build($processes, $halt);
         $this->clock = $clock;
+        $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
     }
@@ -38,8 +44,9 @@ final class Generic implements Filesystem
         Processes $processes,
         Halt $halt,
         Clock $clock,
+        Config $config = null,
     ): self {
-        return new self($processes, $halt, $clock);
+        return new self($processes, $halt, $clock, $config ?? Config::of());
     }
 
     public function mount(Path $path): Adapter
@@ -50,7 +57,9 @@ final class Generic implements Filesystem
             }
         }
 
-        $adapter = Adapter\Filesystem::mount($path);
+        $adapter = Adapter\Filesystem::mount($path)->withCaseSensitivity(
+            $this->config->filesystemCaseSensitivity(),
+        );
         $this->mounted[$adapter] = $path->toString();
 
         return $adapter;
