@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.4.0 - 2023-01-02
+
+### Added
+
+- `Innmind\OperatingSystem\Config`
+- `Innmind\OperatingSystem\Factory::build` now accepts `Config` as a second parameter
+
+### Changed
+
+- Requires `innmind/filesystem:~6.1`
+
 ## 3.3.0 - 2023-01-01
 
 ### Changed

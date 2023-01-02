@@ -10,12 +10,14 @@ use Innmind\TimeContinuum\{
 
 final class Factory
 {
-    public static function build(Clock $clock = null): OperatingSystem
-    {
+    public static function build(
+        Clock $clock = null,
+        Config $config = null,
+    ): OperatingSystem {
         switch (\PHP_OS) {
             case 'Darwin':
             case 'Linux':
-                return OperatingSystem\Unix::of($clock ?? new Earth\Clock);
+                return OperatingSystem\Unix::of($clock ?? new Earth\Clock, $config);
         }
 
         throw new \LogicException('Unuspported operating system');

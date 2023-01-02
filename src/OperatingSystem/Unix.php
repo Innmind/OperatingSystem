@@ -10,6 +10,7 @@ use Innmind\OperatingSystem\{
     Sockets,
     Remote,
     CurrentProcess,
+    Config,
 };
 use Innmind\Server\Status\{
     Server as ServerStatus,
@@ -26,6 +27,7 @@ use Innmind\Stream\Watch\Select;
 final class Unix implements OperatingSystem
 {
     private Clock $clock;
+    private Config $config;
     private ?Filesystem $filesystem = null;
     private ?ServerStatus $status = null;
     private ?ServerControl $control = null;
@@ -34,14 +36,15 @@ final class Unix implements OperatingSystem
     private ?Remote $remote = null;
     private ?CurrentProcess $process = null;
 
-    private function __construct(Clock $clock)
+    private function __construct(Clock $clock, Config $config)
     {
         $this->clock = $clock;
+        $this->config = $config;
     }
 
-    public static function of(Clock $clock): self
+    public static function of(Clock $clock, Config $config = null): self
     {
-        return new self($clock);
+        return new self($clock, $config ?? Config::of());
     }
 
     public function clock(): Clock
@@ -55,6 +58,7 @@ final class Unix implements OperatingSystem
             $this->control()->processes(),
             new Usleep,
             $this->clock,
+            $this->config,
         );
     }
 
