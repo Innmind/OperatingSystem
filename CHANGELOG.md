@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.5.0 - 2023-01-29
+
+### Added
+
+- `Innmind\OperatingSystem\Config::useStreamCapabilities()`
+- `Innmind\OperatingSystem\Config::withEnvironmentPath()`
+
+### Changed
+
+- Requires `innmind/server-status:~4.0`
+- Requires `innmind/server-control:~5.0`
+- Requires `innmind/filesystem:~6.2`
+- Requires `innmind/socket:~6.0`
+- Requires `innmind/http-transport:~6.3`
+- Requires `innmind/file-watch:~3.1`
+- Requires `innmind/stream:~4.0`
+
 ## 3.4.0 - 2023-01-02
 
 ### Added

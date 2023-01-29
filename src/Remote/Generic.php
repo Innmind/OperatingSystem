@@ -3,11 +3,15 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\Remote;
 
-use Innmind\OperatingSystem\Remote;
+use Innmind\OperatingSystem\{
+    Remote,
+    Config,
+};
 use Innmind\Server\Control\{
     Server,
     Servers,
 };
+use Innmind\Filesystem\Chunk;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
@@ -29,17 +33,22 @@ final class Generic implements Remote
 {
     private Server $server;
     private Clock $clock;
+    private Config $config;
     private ?HttpTransport $http = null;
 
-    private function __construct(Server $server, Clock $clock)
+    private function __construct(Server $server, Clock $clock, Config $config)
     {
         $this->server = $server;
         $this->clock = $clock;
+        $this->config = $config;
     }
 
-    public static function of(Server $server, Clock $clock): self
-    {
-        return new self($server, $clock);
+    public static function of(
+        Server $server,
+        Clock $clock,
+        Config $config = null,
+    ): self {
+        return new self($server, $clock, $config ?? Config::of());
     }
 
     public function ssh(Url $server): Server
@@ -66,7 +75,11 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        return $this->http ??= Curl::of($this->clock);
+        return $this->http ??= Curl::of(
+            $this->clock,
+            new Chunk,
+            $this->config->streamCapabilities(),
+        );
     }
 
     public function sql(Url $server): Connection

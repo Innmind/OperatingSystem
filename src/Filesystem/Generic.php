@@ -57,9 +57,10 @@ final class Generic implements Filesystem
             }
         }
 
-        $adapter = Adapter\Filesystem::mount($path)->withCaseSensitivity(
-            $this->config->filesystemCaseSensitivity(),
-        );
+        $adapter = Adapter\Filesystem::mount($path, $this->config->streamCapabilities())
+            ->withCaseSensitivity(
+                $this->config->filesystemCaseSensitivity(),
+            );
         $this->mounted[$adapter] = $path->toString();
 
         return $adapter;
