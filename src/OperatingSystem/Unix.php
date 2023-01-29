@@ -22,7 +22,6 @@ use Innmind\Server\Control\{
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Watch\Select;
 
 final class Unix implements OperatingSystem
 {
@@ -64,14 +63,18 @@ final class Unix implements OperatingSystem
 
     public function status(): ServerStatus
     {
-        return $this->status ??= ServerFactory::build($this->clock());
+        return $this->status ??= ServerFactory::build(
+            $this->clock(),
+            $this->control(),
+            $this->config->environment(),
+        );
     }
 
     public function control(): ServerControl
     {
         return $this->control ??= Servers\Unix::of(
             $this->clock(),
-            Select::timeoutAfter(...),
+            $this->config->streamCapabilities(),
             new Usleep,
         );
     }
@@ -88,7 +91,11 @@ final class Unix implements OperatingSystem
 
     public function remote(): Remote
     {
-        return $this->remote ??= Remote\Generic::of($this->control(), $this->clock());
+        return $this->remote ??= Remote\Generic::of(
+            $this->control(),
+            $this->clock(),
+            $this->config,
+        );
     }
 
     public function process(): CurrentProcess
