@@ -4,46 +4,34 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem;
 
 use Innmind\Filesystem\CaseSensitivity;
+use Innmind\Server\Status\EnvironmentPath;
 use Innmind\Stream\{
     Capabilities,
     Streams,
 };
-use Innmind\Immutable\Map;
 
 final class Config
 {
     private CaseSensitivity $caseSensitivity;
     private Capabilities $streamCapabilities;
-    /** @var Map<non-empty-string, string> */
-    private Map $environment;
+    private EnvironmentPath $path;
 
-    /**
-     * @param Map<non-empty-string, string> $environment
-     */
     private function __construct(
         CaseSensitivity $caseSensitivity,
         Capabilities $streamCapabilities,
-        Map $environment,
+        EnvironmentPath $path,
     ) {
         $this->caseSensitivity = $caseSensitivity;
         $this->streamCapabilities = $streamCapabilities;
-        $this->environment = $environment;
+        $this->path = $path;
     }
 
     public static function of(): self
     {
-        /** @var Map<non-empty-string, string> */
-        $environment = Map::of();
-
-        // this is required for innmind/server-status to work
-        if (\array_key_exists('PATH', $_SERVER)) {
-            $environment = ($environment)('PATH', $_SERVER['PATH']);
-        }
-
         return new self(
             CaseSensitivity::sensitive,
             Streams::fromAmbientAuthority(),
-            $environment,
+            EnvironmentPath::of(\getenv('PATH') ?: ''),
         );
     }
 
@@ -55,7 +43,7 @@ final class Config
         return new self(
             CaseSensitivity::insensitive,
             $this->streamCapabilities,
-            $this->environment,
+            $this->path,
         );
     }
 
@@ -67,21 +55,19 @@ final class Config
         return new self(
             $this->caseSensitivity,
             $capabilities,
-            $this->environment,
+            $this->path,
         );
     }
 
     /**
      * @psalm-mutation-free
-     *
-     * @param Map<non-empty-string, string> $environment
      */
-    public function withEnvironment(Map $environment): self
+    public function withEnvironmentPath(EnvironmentPath $path): self
     {
         return new self(
             $this->caseSensitivity,
             $this->streamCapabilities,
-            $environment,
+            $path,
         );
     }
 
@@ -103,11 +89,9 @@ final class Config
 
     /**
      * @internal
-     *
-     * @return Map<non-empty-string, string>
      */
-    public function environment(): Map
+    public function environmentPath(): EnvironmentPath
     {
-        return $this->environment;
+        return $this->path;
     }
 }

@@ -66,7 +66,7 @@ final class Unix implements OperatingSystem
         return $this->status ??= ServerFactory::build(
             $this->clock(),
             $this->control(),
-            $this->config->environment(),
+            $this->config->environmentPath(),
         );
     }
 
