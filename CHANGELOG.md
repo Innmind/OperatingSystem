@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.6.0 - 2023-02-11
+
+### Added
+
+- `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()`
+
+### Changed
+
+- Requires `innmind/http-transport:~6.4`
+
 ## 3.5.0 - 2023-01-29
 
 ### Added

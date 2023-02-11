@@ -9,29 +9,41 @@ use Innmind\Stream\{
     Capabilities,
     Streams,
 };
+use Innmind\Immutable\Maybe;
 
 final class Config
 {
     private CaseSensitivity $caseSensitivity;
     private Capabilities $streamCapabilities;
     private EnvironmentPath $path;
+    /** @var Maybe<positive-int> */
+    private Maybe $maxHttpConcurrency;
 
+    /**
+     * @param Maybe<positive-int> $maxHttpConcurrency
+     */
     private function __construct(
         CaseSensitivity $caseSensitivity,
         Capabilities $streamCapabilities,
         EnvironmentPath $path,
+        Maybe $maxHttpConcurrency,
     ) {
         $this->caseSensitivity = $caseSensitivity;
         $this->streamCapabilities = $streamCapabilities;
         $this->path = $path;
+        $this->maxHttpConcurrency = $maxHttpConcurrency;
     }
 
     public static function of(): self
     {
+        /** @var Maybe<positive-int> */
+        $maxHttpConcurrency = Maybe::nothing();
+
         return new self(
             CaseSensitivity::sensitive,
             Streams::fromAmbientAuthority(),
             EnvironmentPath::of(\getenv('PATH') ?: ''),
+            $maxHttpConcurrency,
         );
     }
 
@@ -44,6 +56,7 @@ final class Config
             CaseSensitivity::insensitive,
             $this->streamCapabilities,
             $this->path,
+            $this->maxHttpConcurrency,
         );
     }
 
@@ -56,6 +69,7 @@ final class Config
             $this->caseSensitivity,
             $capabilities,
             $this->path,
+            $this->maxHttpConcurrency,
         );
     }
 
@@ -68,6 +82,20 @@ final class Config
             $this->caseSensitivity,
             $this->streamCapabilities,
             $path,
+            $this->maxHttpConcurrency,
+        );
+    }
+
+    /**
+     * @param positive-int $max
+     */
+    public function limitHttpConcurrencyTo(int $max): self
+    {
+        return new self(
+            $this->caseSensitivity,
+            $this->streamCapabilities,
+            $this->path,
+            Maybe::just($max),
         );
     }
 
@@ -93,5 +121,15 @@ final class Config
     public function environmentPath(): EnvironmentPath
     {
         return $this->path;
+    }
+
+    /**
+     * @internal
+     *
+     * @return Maybe<positive-int>
+     */
+    public function maxHttpConcurrency(): Maybe
+    {
+        return $this->maxHttpConcurrency;
     }
 }
