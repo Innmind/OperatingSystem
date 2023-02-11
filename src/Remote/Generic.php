@@ -75,10 +75,19 @@ final class Generic implements Remote
 
     public function http(): HttpTransport
     {
-        return $this->http ??= Curl::of(
+        if ($this->http) {
+            return $this->http;
+        }
+
+        $http = Curl::of(
             $this->clock,
             new Chunk,
             $this->config->streamCapabilities(),
+        );
+
+        return $this->http = $this->config->maxHttpConcurrency()->match(
+            static fn($max) => $http->maxConcurrency($max),
+            static fn() => $http,
         );
     }
 
