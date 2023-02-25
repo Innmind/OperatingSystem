@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem\Sockets;
 
-use Innmind\OperatingSystem\Sockets;
+use Innmind\OperatingSystem\{
+    Sockets,
+    Config,
+};
 use Innmind\Socket\{
     Address\Unix as Address,
     Server,
@@ -15,13 +18,16 @@ use Innmind\Immutable\Maybe;
 
 final class Unix implements Sockets
 {
-    private function __construct()
+    private Config $config;
+
+    private function __construct(Config $config)
     {
+        $this->config = $config;
     }
 
-    public static function of(): self
+    public static function of(Config $config = null): self
     {
-        return new self;
+        return new self($config ?? Config::of());
     }
 
     public function open(Address $address): Maybe
@@ -45,9 +51,17 @@ final class Unix implements Sockets
     public function watch(ElapsedPeriod $timeout = null): Watch
     {
         if (\is_null($timeout)) {
-            return Watch\Select::waitForever();
+            return $this
+                ->config
+                ->streamCapabilities()
+                ->watch()
+                ->waitForever();
         }
 
-        return Watch\Select::timeoutAfter($timeout);
+        return $this
+            ->config
+            ->streamCapabilities()
+            ->watch()
+            ->timeoutAfter($timeout);
     }
 }

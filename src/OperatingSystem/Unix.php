@@ -46,6 +46,14 @@ final class Unix implements OperatingSystem
         return new self($clock, $config ?? Config::of());
     }
 
+    /**
+     * @internal
+     */
+    public function config(): Config
+    {
+        return $this->config;
+    }
+
     public function clock(): Clock
     {
         return $this->clock;
@@ -86,7 +94,7 @@ final class Unix implements OperatingSystem
 
     public function sockets(): Sockets
     {
-        return $this->sockets ??= Sockets\Unix::of();
+        return $this->sockets ??= Sockets\Unix::of($this->config);
     }
 
     public function remote(): Remote

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.7.0 - 2023-02-25
+
+### Added
+
+- `Innmind\OperatingSystem\OperatingSystem\Unix::config()` (declared as `internal`)
+
+### Changed
+
+- `Innmind\OperatingSystem\Sockets\Unix` now uses the stream `Capabilities` from the `Config`
+
 ## 3.6.0 - 2023-02-11
 
 ### Added
