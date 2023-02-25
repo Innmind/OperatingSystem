@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `Innmind\OperatingSystem\OperatingSystem\Unix::config()` (declared as `internal`)
+
 ## 3.6.0 - 2023-02-11
 
 ### Added

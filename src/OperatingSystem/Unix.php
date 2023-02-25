@@ -46,6 +46,14 @@ final class Unix implements OperatingSystem
         return new self($clock, $config ?? Config::of());
     }
 
+    /**
+     * @internal
+     */
+    public function config(): Config
+    {
+        return $this->config;
+    }
+
     public function clock(): Clock
     {
         return $this->clock;
