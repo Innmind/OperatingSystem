@@ -94,7 +94,7 @@ final class Unix implements OperatingSystem
 
     public function sockets(): Sockets
     {
-        return $this->sockets ??= Sockets\Unix::of();
+        return $this->sockets ??= Sockets\Unix::of($this->config);
     }
 
     public function remote(): Remote
