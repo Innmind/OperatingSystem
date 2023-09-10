@@ -87,6 +87,8 @@ final class Config
     }
 
     /**
+     * @psalm-mutation-free
+     *
      * @param positive-int $max
      */
     public function limitHttpConcurrencyTo(int $max): self

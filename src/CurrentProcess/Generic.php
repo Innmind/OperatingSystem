@@ -18,7 +18,10 @@ use Innmind\Immutable\{
 final class Generic implements CurrentProcess
 {
     private Halt $halt;
-    /** @var Set<Child> */
+    /**
+     * @psalm-suppress DeprecatedClass
+     * @var Set<Child>
+     */
     private Set $children;
     private ?Handler $signalsHandler = null;
     private ?Signals\Wrapper $signals = null;
@@ -26,7 +29,10 @@ final class Generic implements CurrentProcess
     private function __construct(Halt $halt)
     {
         $this->halt = $halt;
-        /** @var Set<Child> */
+        /**
+         * @psalm-suppress DeprecatedClass
+         * @var Set<Child>
+         */
         $this->children = Set::of();
     }
 
@@ -45,6 +51,7 @@ final class Generic implements CurrentProcess
     {
         /**
          * @psalm-suppress ArgumentTypeCoercion
+         * @psalm-suppress DeprecatedClass
          * @var Either<ForkFailed|Child, SideEffect>
          */
         $result = match ($pid = \pcntl_fork()) {
@@ -53,6 +60,9 @@ final class Generic implements CurrentProcess
             default => Either::left(Child::of(new Pid($pid))),
         };
 
+        /**
+         * @psalm-suppress DeprecatedClass
+         */
         return $result
             ->map(function($sideEffect) {
                 $this->children = $this->children->clear();
@@ -67,8 +77,12 @@ final class Generic implements CurrentProcess
             });
     }
 
+    /**
+     * @psalm-suppress DeprecatedClass
+     */
     public function children(): Children
     {
+        /** @psalm-suppress DeprecatedClass */
         return Children::of(...$this->children->toList());
     }
 
@@ -89,6 +103,9 @@ final class Generic implements CurrentProcess
         return new Bytes(\memory_get_usage());
     }
 
+    /**
+     * @psalm-suppress DeprecatedClass
+     */
     private function register(Child $child): Child
     {
         $this->children = ($this->children)($child);

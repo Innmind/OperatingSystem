@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.8.0 - 2023-09-10
+
+### Deprecated
+
+- `Innmind\OperatingSystem\CurrentProcess::fork()`
+- `Innmind\OperatingSystem\CurrentProcess::children()`
+- `Innmind\OperatingSystem\CurrentProcess\Children`
+- `Innmind\OperatingSystem\CurrentProcess\Child`
+- `Innmind\OperatingSystem\CurrentProcess\ForkFailed`
+
 ## 3.7.0 - 2023-02-25
 
 ### Added
