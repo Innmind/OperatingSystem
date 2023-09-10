@@ -13,6 +13,10 @@ use Innmind\Immutable\{
     Maybe,
 };
 
+/**
+ * @deprecated This Class will be removed in the next major version
+ * @psalm-suppress DeprecatedClass
+ */
 final class Children
 {
     /** @var Map<int<2, max>, Child> */

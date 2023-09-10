@@ -43,6 +43,10 @@ final class Logger implements CurrentProcess
     {
         $this->logger->debug('Forking process');
 
+        /**
+         * @psalm-suppress DeprecatedMethod
+         * @psalm-suppress DeprecatedClass
+         */
         return $this
             ->process
             ->fork()
@@ -58,8 +62,12 @@ final class Logger implements CurrentProcess
             });
     }
 
+    /**
+     * @psalm-suppress DeprecatedClass
+     */
     public function children(): Children
     {
+        /** @psalm-suppress DeprecatedMethod */
         return $this->process->children();
     }
 

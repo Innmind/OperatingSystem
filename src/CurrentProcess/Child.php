@@ -8,6 +8,9 @@ use Innmind\Server\Control\Server\Process\{
     ExitCode,
 };
 
+/**
+ * @deprecated This Class will be removed in the next major version
+ */
 final class Child
 {
     private Pid $pid;
