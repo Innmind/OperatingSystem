@@ -11,7 +11,6 @@ use Innmind\Server\Control\{
     Server,
     Servers,
 };
-use Innmind\Filesystem\Chunk;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
@@ -81,7 +80,6 @@ final class Generic implements Remote
 
         $http = Curl::of(
             $this->clock,
-            new Chunk,
             $this->config->streamCapabilities(),
         );
 

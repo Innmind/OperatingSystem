@@ -13,9 +13,9 @@ use Innmind\TimeContinuum\{
     Earth,
 };
 use Innmind\Filesystem\{
-    File\File,
+    File,
     File\Content,
-    Directory\Directory,
+    Directory,
 };
 use Innmind\Url\Path;
 use Symfony\Component\Filesystem\Filesystem as FS;
@@ -55,9 +55,9 @@ class FactoryTest extends TestCase
             ->mount(Path::of($path));
         $adapter->add(
             $directory = Directory::named('0')
-                ->add($file = File::named('L', Content\None::of()))
+                ->add($file = File::named('L', Content::none()))
                 ->remove($file->name())
-                ->add($file = File::named('l', Content\None::of()))
+                ->add($file = File::named('l', Content::none()))
                 ->remove($file->name())
                 ->add($file),
         );
