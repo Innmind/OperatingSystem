@@ -39,11 +39,11 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "~9.0",
+        "phpunit/phpunit": "~10.2",
         "innmind/url": "~4.0",
         "innmind/ip": "~3.0",
         "vimeo/psalm": "~5.15",
-        "innmind/black-box": "^4.8",
+        "innmind/black-box": "~5.5",
         "innmind/coding-standard": "~2.0"
     }
 }

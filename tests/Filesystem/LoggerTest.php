@@ -143,7 +143,7 @@ class LoggerTest extends TestCase
         $this
             ->forAll(
                 Path::any(),
-                Set\AnyType::any(),
+                Set\Type::any(),
             )
             ->then(function($path, $value) {
                 $inner = $this->createMock(Filesystem::class);
