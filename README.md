@@ -40,7 +40,7 @@ $adapter = $os->filesystem()->mount(Path::of('/var/data/'));
 
 ### Want to list processes running on the system ?
 
-`$os->status()->processes()->all()` will return a map of [`Inmmind\Immutable\Map<int, Innmind\Server\Status\Server\Process>`](https://github.com/innmind/serverstatus#usage).
+`$os->status()->processes()->all()` will return a map of [`Inmmind\Immutable\Set<Innmind\Server\Status\Server\Process>`](https://github.com/innmind/serverstatus#usage).
 
 ### Want to run a command on the system ?
 
@@ -140,54 +140,6 @@ $response = $os
 $os->process()->id();
 ```
 
-### Want to fork the current process ?
-
-```php
-use Innmind\OperatingSystem\CurrentProcess\{
-    Child,
-    ForkFailed,
-};
-
-$childSide = static function(): void {
-    try {
-        // do something in the child process
-        exit(0);
-    } catch (\Throwable $e) {
-        exit(1);
-    }
-};
-$parentSide = static function(Child $child): void {
-    // do something with the child
-};
-$os
-    ->process()
-    ->fork()
-    ->match(
-        static fn() => $childSide(),
-        static fn($left) => match (true) {
-            $left instanceof Child => $parentSide($left),
-            $left instanceof ForkFailed => throw new \RuntimeException('Unable to fork the process'),
-        },
-    );
-```
-
-### Want to wait for child process to finish ?
-
-```php
-use Innmind\OperatingSystem\CurrentProcess\Child;
-
-$os
-    ->process()
-    ->fork()
-    ->match(
-        static fn() => \sleep(10), // child side
-        static fn($left) => match (true) {
-            $left instanceof Child => $left->wait(),
-            default => null,
-        },
-    );
-```
-
 ### Want to pause the current process ?
 
 ```php
@@ -205,7 +157,3 @@ $os->process()->signals()->listen(Signal::terminate, function() {
     // handle the signal here
 });
 ```
-
-**Note**: when forking the process the child will have all listeners resetted to avoid having the listener called twice (in the parent and the child).
-
-**Important**: beware when sending a signal right after a fork, there is a [case](tests/CurrentProcess/GenericTest.php#L126) where the listeners can still be called in the child.

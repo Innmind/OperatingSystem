@@ -35,12 +35,13 @@ use Innmind\Filesystem\{
     Name,
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Predicate\Instance;
 
 $addUserPicture = function(Adapter $filesystem, string $userId, File $picture): void {
     $filesystem
-        ->get(new Name($userId))
-        ->filter(static fn($file) => $file instanceof Directory)
-        ->otherwise(static fn() => Directory\Directory::named($userId))
+        ->get(Name::of($userId))
+        ->keep(Instance::of(Directory::class))
+        ->otherwise(static fn() => Directory::named($userId))
         ->map(static fn($directory) => $directory->add($picture))
         ->match(
             static fn($directory) => $filesystem->add($directory),
@@ -50,10 +51,10 @@ $addUserPicture = function(Adapter $filesystem, string $userId, File $picture): 
 $addUserPicture(
     $os->filesystem()->mount(Path::of('/path/to/users/data/')),
     'some-unique-id',
-    File\File::named(
+    File::named(
         'picture.png',
-        Content\AtPath::of(
-            Path::of($_FILES['some_file']['tmp_name']),
+        Content::ofString(
+            \file_get_contents($_FILES['some_file']['tmp_name']),
         ),
     ),
 );
