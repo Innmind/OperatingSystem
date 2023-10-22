@@ -45,9 +45,9 @@ final class Generic implements Remote
     public static function of(
         Server $server,
         Clock $clock,
-        Config $config = null,
+        Config $config,
     ): self {
-        return new self($server, $clock, $config ?? Config::of());
+        return new self($server, $clock, $config);
     }
 
     public function ssh(Url $server): Server

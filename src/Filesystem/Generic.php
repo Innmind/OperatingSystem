@@ -44,9 +44,9 @@ final class Generic implements Filesystem
         Processes $processes,
         Halt $halt,
         Clock $clock,
-        Config $config = null,
+        Config $config,
     ): self {
-        return new self($processes, $halt, $clock, $config ?? Config::of());
+        return new self($processes, $halt, $clock, $config);
     }
 
     public function mount(Path $path): Adapter

@@ -6,6 +6,7 @@ namespace Tests\Innmind\OperatingSystem\Filesystem;
 use Innmind\OperatingSystem\{
     Filesystem\Generic,
     Filesystem,
+    Config,
 };
 use Innmind\Filesystem\Adapter\Filesystem as FilesystemAdapter;
 use Innmind\Url\Path;
@@ -29,6 +30,7 @@ class GenericTest extends TestCase
                 $this->createMock(Processes::class),
                 $this->createMock(Halt::class),
                 $this->createMock(Clock::class),
+                Config::of(),
             ),
         );
     }
@@ -39,6 +41,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $adapter = $filesystem->mount(Path::of('/tmp/'));
@@ -52,6 +55,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $adapter = $filesystem->mount(Path::of('/tmp/'));
@@ -65,6 +69,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/foo')));
@@ -79,6 +84,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/some-dir/')));
@@ -93,6 +99,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
@@ -107,6 +114,7 @@ class GenericTest extends TestCase
                     $this->createMock(Processes::class),
                     $this->createMock(Halt::class),
                     $this->createMock(Clock::class),
+                    Config::of(),
                 );
 
                 $this->assertFalse($filesystem->require($path)->match(
@@ -122,6 +130,7 @@ class GenericTest extends TestCase
             $this->createMock(Processes::class),
             $this->createMock(Halt::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $this->assertSame(42, $filesystem->require(Path::of(__DIR__.'/fixture.php'))->match(

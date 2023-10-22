@@ -25,9 +25,9 @@ final class Unix implements Sockets
         $this->config = $config;
     }
 
-    public static function of(Config $config = null): self
+    public static function of(Config $config): self
     {
-        return new self($config ?? Config::of());
+        return new self($config);
     }
 
     public function open(Address $address): Maybe

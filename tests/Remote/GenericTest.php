@@ -6,6 +6,7 @@ namespace Tests\Innmind\OperatingSystem\Remote;
 use Innmind\OperatingSystem\{
     Remote\Generic,
     Remote,
+    Config,
 };
 use Innmind\Server\Control\{
     Server,
@@ -40,6 +41,7 @@ class GenericTest extends TestCase
             Generic::of(
                 $this->createMock(Server::class),
                 $this->createMock(Clock::class),
+                Config::of(),
             ),
         );
     }
@@ -49,6 +51,7 @@ class GenericTest extends TestCase
         $remote = Generic::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
         $server
             ->expects($this->once())
@@ -72,6 +75,7 @@ class GenericTest extends TestCase
         $remote = Generic::of(
             $server = $this->createMock(Server::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
         $server
             ->expects($this->once())
@@ -95,6 +99,7 @@ class GenericTest extends TestCase
         $remote = Generic::of(
             $this->createMock(Server::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
         $server = InternetServer::of(Transport::tcp(), IPv4::localhost(), Port::of(1234))->match(
             static fn($server) => $server,
@@ -116,6 +121,7 @@ class GenericTest extends TestCase
         $remote = Generic::of(
             $this->createMock(Server::class),
             $this->createMock(Clock::class),
+            Config::of(),
         );
 
         $http = $remote->http();
@@ -132,6 +138,7 @@ class GenericTest extends TestCase
                 $remote = Generic::of(
                     $this->createMock(Server::class),
                     $this->createMock(Clock::class),
+                    Config::of(),
                 );
 
                 $sql = $remote->sql($server);
