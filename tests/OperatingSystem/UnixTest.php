@@ -11,6 +11,7 @@ use Innmind\OperatingSystem\{
     Sockets,
     Remote,
     CurrentProcess,
+    Config,
 };
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
@@ -23,7 +24,7 @@ class UnixTest extends TestCase
     {
         $clock = $this->createMock(Clock::class);
 
-        $os = Unix::of($clock);
+        $os = Unix::of(Config::of()->withClock($clock));
 
         $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());

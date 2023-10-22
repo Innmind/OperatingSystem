@@ -25,7 +25,6 @@ use Innmind\TimeWarp\Halt\Usleep;
 
 final class Unix implements OperatingSystem
 {
-    private Clock $clock;
     private Config $config;
     private ?Filesystem $filesystem = null;
     private ?ServerStatus $status = null;
@@ -35,20 +34,19 @@ final class Unix implements OperatingSystem
     private ?Remote $remote = null;
     private ?CurrentProcess $process = null;
 
-    private function __construct(Clock $clock, Config $config)
+    private function __construct(Config $config)
     {
-        $this->clock = $clock;
         $this->config = $config;
     }
 
-    public static function of(Clock $clock, Config $config = null): self
+    public static function of(Config $config = null): self
     {
-        return new self($clock, $config ?? Config::of());
+        return new self($config ?? Config::of());
     }
 
     public function clock(): Clock
     {
-        return $this->clock;
+        return $this->config->clock();
     }
 
     public function filesystem(): Filesystem
@@ -56,7 +54,7 @@ final class Unix implements OperatingSystem
         return $this->filesystem ??= Filesystem\Generic::of(
             $this->control()->processes(),
             new Usleep,
-            $this->clock,
+            $this->clock(),
             $this->config,
         );
     }

@@ -27,7 +27,7 @@ class FactoryTest extends TestCase
     {
         $clock = $this->createMock(Clock::class);
 
-        $os = Factory::build($clock);
+        $os = Factory::build(Config::of()->withClock($clock));
 
         $this->assertInstanceOf(Unix::class, $os);
         $this->assertSame($clock, $os->clock());
@@ -49,7 +49,7 @@ class FactoryTest extends TestCase
         $path = \sys_get_temp_dir().'/innmind/filesystem/';
         (new FS)->remove($path);
 
-        $os = Factory::build(null, Config::of()->caseInsensitiveFilesystem());
+        $os = Factory::build(Config::of()->caseInsensitiveFilesystem());
         $adapter = $os
             ->filesystem()
             ->mount(Path::of($path));

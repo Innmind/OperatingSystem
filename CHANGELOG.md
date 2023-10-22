@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `Innmind\OperatingSystem\Factory::build()` now only accept a `Config` object, use `Config::withClock()` to change the default clock
+
 ### Removed
 
 - `Innmind\OperatingSystem\CurrentProcess::fork()`
