@@ -51,6 +51,10 @@ final class Generic implements Filesystem
 
     public function mount(Path $path): Adapter
     {
+        /**
+         * @var Adapter $adapter
+         * @var string $mounted
+         */
         foreach ($this->mounted as $adapter => $mounted) {
             if ($path->toString() === $mounted) {
                 return $adapter;
