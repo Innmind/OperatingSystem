@@ -17,7 +17,6 @@ use Innmind\Url\{
     Url,
     Authority\Port,
 };
-use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client\Internet,
@@ -40,7 +39,6 @@ class GenericTest extends TestCase
             Remote::class,
             Generic::of(
                 $this->createMock(Server::class),
-                $this->createMock(Clock::class),
                 Config::of(),
             ),
         );
@@ -50,7 +48,6 @@ class GenericTest extends TestCase
     {
         $remote = Generic::of(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class),
             Config::of(),
         );
         $server
@@ -74,7 +71,6 @@ class GenericTest extends TestCase
     {
         $remote = Generic::of(
             $server = $this->createMock(Server::class),
-            $this->createMock(Clock::class),
             Config::of(),
         );
         $server
@@ -98,7 +94,6 @@ class GenericTest extends TestCase
     {
         $remote = Generic::of(
             $this->createMock(Server::class),
-            $this->createMock(Clock::class),
             Config::of(),
         );
         $server = InternetServer::of(Transport::tcp(), IPv4::localhost(), Port::of(1234))->match(
@@ -120,7 +115,6 @@ class GenericTest extends TestCase
     {
         $remote = Generic::of(
             $this->createMock(Server::class),
-            $this->createMock(Clock::class),
             Config::of(),
         );
 
@@ -137,7 +131,6 @@ class GenericTest extends TestCase
             ->then(function($server) {
                 $remote = Generic::of(
                     $this->createMock(Server::class),
-                    $this->createMock(Clock::class),
                     Config::of(),
                 );
 

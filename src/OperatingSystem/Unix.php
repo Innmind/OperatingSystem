@@ -90,7 +90,6 @@ final class Unix implements OperatingSystem
     {
         return $this->remote ??= Remote\Generic::of(
             $this->control(),
-            $this->clock(),
             $this->config,
         );
     }
