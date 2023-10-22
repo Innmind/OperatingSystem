@@ -15,7 +15,7 @@
         "issues": "http://github.com/Innmind/OperatingSystem/issues"
     },
     "require": {
-        "php": "~8.1",
+        "php": "~8.2",
         "innmind/time-continuum": "~3.0",
         "innmind/server-status": "~4.0",
         "innmind/server-control": "~5.0",

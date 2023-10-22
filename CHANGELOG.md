@@ -9,6 +9,7 @@
 - `Innmind\OperatingSystem\CurrentProcess\Children`
 - `Innmind\OperatingSystem\CurrentProcess\Child`
 - `Innmind\OperatingSystem\CurrentProcess\ForkFailed`
+- Support for PHP `8.1`
 
 ## 3.8.0 - 2023-09-10
 
