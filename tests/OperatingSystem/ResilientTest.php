@@ -5,6 +5,7 @@ namespace Tests\Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
     OperatingSystem\Resilient,
+    OperatingSystem\Unix,
     OperatingSystem,
     Filesystem,
     Ports,
@@ -32,5 +33,20 @@ class ResilientTest extends TestCase
         $this->assertInstanceOf(Sockets::class, $os->sockets());
         $this->assertInstanceOf(Remote\Resilient::class, $os->remote());
         $this->assertInstanceOf(CurrentProcess::class, $os->process());
+    }
+
+    public function testMap()
+    {
+        $underlying = Unix::of();
+        $os = Resilient::of($underlying);
+
+        $result = $os->map(function($os) use ($underlying) {
+            $this->assertSame($underlying, $os);
+
+            return Unix::of();
+        });
+
+        $this->assertInstanceOf(Resilient::class, $result);
+        $this->assertNotSame($os, $result);
     }
 }

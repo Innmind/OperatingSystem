@@ -25,26 +25,23 @@ final class Unix implements Sockets
         $this->config = $config;
     }
 
-    public static function of(Config $config = null): self
+    public static function of(Config $config): self
     {
-        return new self($config ?? Config::of());
+        return new self($config);
     }
 
     public function open(Address $address): Maybe
     {
-        /** @var Maybe<Server> */
         return Server\Unix::of($address);
     }
 
     public function takeOver(Address $address): Maybe
     {
-        /** @var Maybe<Server> */
         return Server\Unix::recoverable($address);
     }
 
     public function connectTo(Address $address): Maybe
     {
-        /** @var Maybe<Client> */
         return Client\Unix::of($address);
     }
 

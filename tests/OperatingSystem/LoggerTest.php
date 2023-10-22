@@ -5,6 +5,7 @@ namespace Tests\Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
     OperatingSystem\Logger,
+    OperatingSystem\Unix,
     OperatingSystem,
     Filesystem,
     Sockets,
@@ -27,11 +28,12 @@ class LoggerTest extends TestCase
     use BlackBox;
 
     private OperatingSystem $os;
+    private OperatingSystem $underlying;
 
     public function setUp(): void
     {
         $this->os = Logger::psr(
-            $this->createMock(OperatingSystem::class),
+            $this->underlying = Unix::of(),
             $this->createMock(LoggerInterface::class),
         );
     }
@@ -106,5 +108,17 @@ class LoggerTest extends TestCase
             CurrentProcess\Logger::class,
             $this->os->process(),
         );
+    }
+
+    public function testMap()
+    {
+        $result = $this->os->map(function($os) {
+            $this->assertSame($this->underlying, $os);
+
+            return Unix::of();
+        });
+
+        $this->assertInstanceOf(Logger::class, $result);
+        $this->assertNotSame($this->os, $result);
     }
 }

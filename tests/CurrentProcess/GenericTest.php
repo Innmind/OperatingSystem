@@ -5,8 +5,6 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
-    CurrentProcess\Children,
-    CurrentProcess\Child,
     CurrentProcess\Signals,
     CurrentProcess,
 };
@@ -14,7 +12,6 @@ use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
-use Innmind\Signals\Signal;
 use PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
@@ -33,49 +30,6 @@ class GenericTest extends TestCase
 
         $this->assertInstanceOf(Pid::class, $process->id());
         $this->assertSame($process->id()->toInt(), $process->id()->toInt());
-    }
-
-    public function testFork()
-    {
-        $process = Generic::of($this->createMock(Halt::class));
-
-        $parentId = $process->id()->toInt();
-
-        $result = $process->fork()->match(
-            static fn() => null,
-            static fn($left) => $left,
-        );
-
-        if (\is_null($result)) {
-            // child cannot be tested as it can't reference the current output
-            // (otherwise it will result in a weird output)
-            exit(0);
-        }
-
-        $this->assertInstanceOf(Child::class, $result);
-        $this->assertSame($parentId, $process->id()->toInt());
-        $this->assertNotSame($parentId, $result->id()->toInt());
-    }
-
-    public function testChildren()
-    {
-        $process = Generic::of($this->createMock(Halt::class));
-
-        $child = $process->fork()->match(
-            static fn() => null,
-            static fn($left) => $left,
-        );
-
-        if (\is_null($child)) {
-            $code = $process->children()->contains($process->id()) ? 1 : 0;
-
-            exit($code);
-        }
-
-        $this->assertInstanceOf(Children::class, $process->children());
-        $this->assertInstanceOf(Child::class, $child);
-        $this->assertTrue($process->children()->contains($child->id()));
-        $this->assertSame(0, $child->wait()->toInt());
     }
 
     public function testHalt()
@@ -98,42 +52,6 @@ class GenericTest extends TestCase
 
         $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
-    }
-
-    public function testSignalsAreResettedInForkChild()
-    {
-        $process = Generic::of($this->createMock(Halt::class));
-        $signals = $process->signals();
-        $signals->listen(Signal::terminate, static function(...$args) {
-            exit(1);
-        });
-
-        $child = $process->fork()->match(
-            static fn() => null,
-            static fn($left) => $left,
-        );
-
-        if (\is_null($child)) {
-            if ($process->signals() === $signals) {
-                exit(2);
-            }
-
-            \sleep(2);
-
-            exit(0);
-        }
-
-        // for some reason if we don't wait the signal handlers are still active
-        // in the child process, the current guess is that without this sleep the
-        // terminate all below is done before the child is correctly initialized
-        // and had the chance to reset the signal handler
-        // the intriguing thing is that instead of a sleep we do a (symfony)
-        // dump(true) it have the time to remove the child signal handler
-        \sleep(1);
-
-        $this->assertInstanceOf(Child::class, $child);
-        $child->terminate(); // should not trigger the listener in the child
-        $this->assertSame(0, $child->wait()->toInt());
     }
 
     public function testMemory()

@@ -10,8 +10,6 @@ use Innmind\OperatingSystem\{
 use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
-use Innmind\TimeWarp\Halt;
-use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\{
     Ping,
     Factory,
@@ -22,42 +20,40 @@ use Innmind\Immutable\Maybe;
 final class Generic implements Filesystem
 {
     private Watch $watch;
-    private Clock $clock;
     private Config $config;
     /** @var \WeakMap<Adapter, string> */
     private \WeakMap $mounted;
 
-    private function __construct(
-        Processes $processes,
-        Halt $halt,
-        Clock $clock,
-        Config $config,
-    ) {
-        $this->watch = Factory::build($processes, $halt);
-        $this->clock = $clock;
+    private function __construct(Processes $processes, Config $config)
+    {
+        $this->watch = Factory::build($processes, $config->halt());
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
     }
 
-    public static function of(
-        Processes $processes,
-        Halt $halt,
-        Clock $clock,
-        Config $config = null,
-    ): self {
-        return new self($processes, $halt, $clock, $config ?? Config::of());
+    public static function of(Processes $processes, Config $config): self
+    {
+        return new self($processes, $config);
     }
 
     public function mount(Path $path): Adapter
     {
+        /**
+         * @var Adapter $adapter
+         * @var string $mounted
+         */
         foreach ($this->mounted as $adapter => $mounted) {
             if ($path->toString() === $mounted) {
                 return $adapter;
             }
         }
 
-        $adapter = Adapter\Filesystem::mount($path, $this->config->streamCapabilities())
+        $adapter = Adapter\Filesystem::mount(
+            $path,
+            $this->config->streamCapabilities(),
+            $this->config->io(),
+        )
             ->withCaseSensitivity(
                 $this->config->filesystemCaseSensitivity(),
             );

@@ -6,6 +6,7 @@ namespace Tests\Innmind\OperatingSystem\Sockets;
 use Innmind\OperatingSystem\{
     Sockets\Unix,
     Sockets,
+    Config,
 };
 use Innmind\Socket\{
     Address\Unix as Address,
@@ -20,12 +21,12 @@ class UnixTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Sockets::class, Unix::of());
+        $this->assertInstanceOf(Sockets::class, Unix::of(Config::of()));
     }
 
     public function testOpen()
     {
-        $sockets = Unix::of();
+        $sockets = Unix::of(Config::of());
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -44,7 +45,7 @@ class UnixTest extends TestCase
 
     public function testTakeOver()
     {
-        $sockets = Unix::of();
+        $sockets = Unix::of(Config::of());
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -62,7 +63,7 @@ class UnixTest extends TestCase
 
     public function testConnectTo()
     {
-        $sockets = Unix::of();
+        $sockets = Unix::of(Config::of());
 
         $server = $sockets->open(Address::of('/tmp/foo'))->match(
             static fn($server) => $server,
@@ -80,7 +81,7 @@ class UnixTest extends TestCase
 
     public function testWatch()
     {
-        $sockets = Unix::of();
+        $sockets = Unix::of(Config::of());
 
         $this->assertInstanceOf(
             Watch::class,

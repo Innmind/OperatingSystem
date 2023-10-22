@@ -32,6 +32,14 @@ final class Logger implements OperatingSystem
         return new self($os, $logger);
     }
 
+    public function map(callable $map): OperatingSystem
+    {
+        return new self(
+            $this->os->map($map),
+            $this->logger,
+        );
+    }
+
     public function clock(): TimeContinuum\Clock
     {
         return new TimeContinuum\Logger\Clock(

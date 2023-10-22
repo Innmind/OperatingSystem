@@ -6,16 +6,11 @@ namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 use Innmind\OperatingSystem\{
     CurrentProcess\Logger,
     CurrentProcess\Signals,
-    CurrentProcess\Children,
     CurrentProcess,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
-use Innmind\Immutable\{
-    Either,
-    SideEffect,
-};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -70,79 +65,6 @@ class LoggerTest extends TestCase
 
         $this->assertInstanceOf(Signals\Logger::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
-    }
-
-    public function testFork()
-    {
-        $this
-            ->forAll(new Set\Either(
-                Set\Elements::of(Either::right(new SideEffect)),
-                Set\Decorate::immutable(
-                    static fn($id) => Either::left(new Pid($id)),
-                    Set\Integers::above(2),
-                ),
-            ))
-            ->then(function($expected) {
-                $inner = $this->createMock(CurrentProcess::class);
-                $inner
-                    ->expects($this->once())
-                    ->method('fork')
-                    ->willReturn($expected);
-                $logger = $this->createMock(LoggerInterface::class);
-                $logger
-                    ->expects($this->once())
-                    ->method('debug')
-                    ->with('Forking process');
-                $process = Logger::psr($inner, $logger);
-
-                $this->assertEquals($expected, $process->fork());
-            });
-    }
-
-    public function testSignalsInstanceIsResettedInTheChildProcessWhenForking()
-    {
-        $inner = $this->createMock(CurrentProcess::class);
-        $inner
-            ->expects($this->once())
-            ->method('fork')
-            ->willReturn(Either::right(new SideEffect));
-        $logger = $this->createMock(LoggerInterface::class);
-        $process = Logger::psr($inner, $logger);
-        $original = $process->signals();
-        $process->fork();
-
-        $this->assertNotSame($original, $process->signals());
-    }
-
-    public function testSignalsInstanceIsKeptInTheParentProcessWhenForking()
-    {
-        $this
-            ->forAll(Set\Integers::above(2))
-            ->then(function($child) {
-                $inner = $this->createMock(CurrentProcess::class);
-                $inner
-                    ->expects($this->once())
-                    ->method('fork')
-                    ->willReturn(Either::left(new Pid($child)));
-                $logger = $this->createMock(LoggerInterface::class);
-                $process = Logger::psr($inner, $logger);
-                $original = $process->signals();
-                $process->fork();
-
-                $this->assertSame($original, $process->signals());
-            });
-    }
-
-    public function testChildren()
-    {
-        $inner = $this->createMock(CurrentProcess::class);
-        $inner
-            ->expects($this->once())
-            ->method('children')
-            ->willReturn($expected = Children::of());
-        $process = Logger::psr($inner, $this->createMock(LoggerInterface::class));
-
-        $this->assertSame($expected, $process->children());
     }
 
     public function testHalt()

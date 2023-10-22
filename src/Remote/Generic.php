@@ -11,8 +11,6 @@ use Innmind\Server\Control\{
     Server,
     Servers,
 };
-use Innmind\Filesystem\Chunk;
-use Innmind\TimeContinuum\Clock;
 use Innmind\Socket\{
     Internet\Transport,
     Client,
@@ -32,23 +30,18 @@ use Formal\AccessLayer\Connection;
 final class Generic implements Remote
 {
     private Server $server;
-    private Clock $clock;
     private Config $config;
     private ?HttpTransport $http = null;
 
-    private function __construct(Server $server, Clock $clock, Config $config)
+    private function __construct(Server $server, Config $config)
     {
         $this->server = $server;
-        $this->clock = $clock;
         $this->config = $config;
     }
 
-    public static function of(
-        Server $server,
-        Clock $clock,
-        Config $config = null,
-    ): self {
-        return new self($server, $clock, $config ?? Config::of());
+    public static function of(Server $server, Config $config): self
+    {
+        return new self($server, $config);
     }
 
     public function ssh(Url $server): Server
@@ -80,9 +73,9 @@ final class Generic implements Remote
         }
 
         $http = Curl::of(
-            $this->clock,
-            new Chunk,
+            $this->config->clock(),
             $this->config->streamCapabilities(),
+            $this->config->io(),
         );
 
         return $this->http = $this->config->maxHttpConcurrency()->match(
