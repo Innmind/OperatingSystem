@@ -81,15 +81,17 @@ class LoggerTest extends TestCase
                     }));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
-                    ->expects($this->exactly(2))
+                    ->expects($matcher = $this->exactly(2))
                     ->method('debug')
-                    ->withConsecutive(
-                        [],
-                        [
-                            'Handling signal {signal}',
-                            ['signal' => $signal->toInt()],
-                        ],
-                    );
+                    ->willReturnCallback(function($message, $context) use ($matcher, $signal) {
+                        if ($matcher->numberOfInvocations() === 2) {
+                            $this->assertSame('Handling signal {signal}', $message);
+                            $this->assertSame(
+                                ['signal' => $signal->toInt()],
+                                $context,
+                            );
+                        }
+                    });
                 $signals = Logger::psr($inner, $logger);
                 $called = false;
 
@@ -126,12 +128,16 @@ class LoggerTest extends TestCase
                     }));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
-                    ->expects($this->exactly(2))
+                    ->expects($matcher = $this->exactly(2))
                     ->method('debug')
-                    ->withConsecutive(
-                        [],
-                        ['Removing a signal listener'],
-                    );
+                    ->willReturnCallback(function($message) use ($matcher) {
+                        if ($matcher->numberOfInvocations() === 2) {
+                            $this->assertSame(
+                                'Removing a signal listener',
+                                $message,
+                            );
+                        }
+                    });
                 $signals = Logger::psr($inner, $logger);
                 $listener = static fn() => null;
 

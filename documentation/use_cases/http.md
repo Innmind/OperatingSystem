@@ -4,16 +4,16 @@
 
 ```php
 use Innmind\Http\{
-    Message\Request\Request,
-    Message\Method,
-    Message\Response,
+    Request,
+    Method,
+    Response,
     ProtocolVersion,
 };
 use Innmind\Url\Url;
 
 $http = $os->remote()->http();
 
-$response = $http(new Request(
+$response = $http(Request::of(
     Url::of('https://github.com'),
     Method::get,
     ProtocolVersion::v20,
@@ -38,7 +38,7 @@ One of the first things taught when working with distributed systems is that the
 use Innmind\OperatingSystem\OperatingSystem\Resilient;
 use Innmind\HttpTransport\ExponentialBackoff;
 
-$os = new Resilient($os);
+$os = Resilient::of($os);
 $http = $os->remote()->http();
 $http instanceof ExponentialBackoff; // true
 ```
@@ -54,7 +54,7 @@ $http = CircuitBreaker::of(
     $os->clock(),
     new Minute(1),
 );
-$request = new Request(/* ...args */)
+$request = Request::of(/* ...args */)
 $response = $http($request);
 // if the previous call failed then the next call wil not even be sent to the
 // server and the client will respond immediately unless 1 minute has elapsed

@@ -13,9 +13,9 @@ use Innmind\TimeContinuum\{
     Earth,
 };
 use Innmind\Filesystem\{
-    File\File,
+    File,
     File\Content,
-    Directory\Directory,
+    Directory,
 };
 use Innmind\Url\Path;
 use Symfony\Component\Filesystem\Filesystem as FS;
@@ -27,7 +27,7 @@ class FactoryTest extends TestCase
     {
         $clock = $this->createMock(Clock::class);
 
-        $os = Factory::build($clock);
+        $os = Factory::build(Config::of()->withClock($clock));
 
         $this->assertInstanceOf(Unix::class, $os);
         $this->assertSame($clock, $os->clock());
@@ -49,15 +49,15 @@ class FactoryTest extends TestCase
         $path = \sys_get_temp_dir().'/innmind/filesystem/';
         (new FS)->remove($path);
 
-        $os = Factory::build(null, Config::of()->caseInsensitiveFilesystem());
+        $os = Factory::build(Config::of()->caseInsensitiveFilesystem());
         $adapter = $os
             ->filesystem()
             ->mount(Path::of($path));
         $adapter->add(
             $directory = Directory::named('0')
-                ->add($file = File::named('L', Content\None::of()))
+                ->add($file = File::named('L', Content::none()))
                 ->remove($file->name())
-                ->add($file = File::named('l', Content\None::of()))
+                ->add($file = File::named('l', Content::none()))
                 ->remove($file->name())
                 ->add($file),
         );

@@ -1,5 +1,25 @@
 # Changelog
 
+## 4.0.0 - 2023-10-22
+
+### Added
+
+- `Innmind\OperatingSystem\OperatingSystem::map()`
+- `Innmind\OperatingSystem\Config::haltProcessVia()`
+
+### Changed
+
+- `Innmind\OperatingSystem\Factory::build()` now only accept a `Config` object, use `Config::withClock()` to change the default clock
+
+### Removed
+
+- `Innmind\OperatingSystem\CurrentProcess::fork()`
+- `Innmind\OperatingSystem\CurrentProcess::children()`
+- `Innmind\OperatingSystem\CurrentProcess\Children`
+- `Innmind\OperatingSystem\CurrentProcess\Child`
+- `Innmind\OperatingSystem\CurrentProcess\ForkFailed`
+- Support for PHP `8.1`
+
 ## 3.8.0 - 2023-09-10
 
 ### Deprecated
