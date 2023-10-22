@@ -10,7 +10,6 @@ use Innmind\OperatingSystem\{
 use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
-use Innmind\TimeWarp\Halt;
 use Innmind\FileWatch\{
     Ping,
     Factory,
@@ -25,23 +24,17 @@ final class Generic implements Filesystem
     /** @var \WeakMap<Adapter, string> */
     private \WeakMap $mounted;
 
-    private function __construct(
-        Processes $processes,
-        Halt $halt,
-        Config $config,
-    ) {
-        $this->watch = Factory::build($processes, $halt);
+    private function __construct(Processes $processes, Config $config)
+    {
+        $this->watch = Factory::build($processes, $config->halt());
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
     }
 
-    public static function of(
-        Processes $processes,
-        Halt $halt,
-        Config $config,
-    ): self {
-        return new self($processes, $halt, $config);
+    public static function of(Processes $processes, Config $config): self
+    {
+        return new self($processes, $config);
     }
 
     public function mount(Path $path): Adapter

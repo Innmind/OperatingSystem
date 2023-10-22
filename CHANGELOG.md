@@ -5,6 +5,7 @@
 ### Added
 
 - `Innmind\OperatingSystem\OperatingSystem::map()`
+- `Innmind\OperatingSystem\Config::haltProcessVia()`
 
 ### Changed
 

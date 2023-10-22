@@ -10,6 +10,7 @@ use Innmind\TimeContinuum\{
 };
 use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
+use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Stream\{
     Capabilities,
@@ -23,6 +24,7 @@ final class Config
     private CaseSensitivity $caseSensitivity;
     private Capabilities $streamCapabilities;
     private IO $io;
+    private Halt $halt;
     private EnvironmentPath $path;
     /** @var Maybe<positive-int> */
     private Maybe $maxHttpConcurrency;
@@ -35,6 +37,7 @@ final class Config
         CaseSensitivity $caseSensitivity,
         Capabilities $streamCapabilities,
         IO $io,
+        Halt $halt,
         EnvironmentPath $path,
         Maybe $maxHttpConcurrency,
     ) {
@@ -42,6 +45,7 @@ final class Config
         $this->caseSensitivity = $caseSensitivity;
         $this->streamCapabilities = $streamCapabilities;
         $this->io = $io;
+        $this->halt = $halt;
         $this->path = $path;
         $this->maxHttpConcurrency = $maxHttpConcurrency;
     }
@@ -59,6 +63,7 @@ final class Config
                 null => $streams->watch()->waitForever(),
                 default => $streams->watch()->timeoutAfter($timeout),
             }),
+            new Halt\Usleep,
             EnvironmentPath::of(\getenv('PATH') ?: ''),
             $maxHttpConcurrency,
         );
@@ -74,6 +79,7 @@ final class Config
             $this->caseSensitivity,
             $this->streamCapabilities,
             $this->io,
+            $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -89,6 +95,7 @@ final class Config
             CaseSensitivity::insensitive,
             $this->streamCapabilities,
             $this->io,
+            $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -108,6 +115,23 @@ final class Config
                 null => $capabilities->watch()->waitForever(),
                 default => $capabilities->watch()->timeoutAfter($timeout),
             }),
+            $this->halt,
+            $this->path,
+            $this->maxHttpConcurrency,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    public function haltProcessVia(Halt $halt): self
+    {
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->streamCapabilities,
+            $this->io,
+            $halt,
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -123,6 +147,7 @@ final class Config
             $this->caseSensitivity,
             $this->streamCapabilities,
             $this->io,
+            $this->halt,
             $path,
             $this->maxHttpConcurrency,
         );
@@ -140,6 +165,7 @@ final class Config
             $this->caseSensitivity,
             $this->streamCapabilities,
             $this->io,
+            $this->halt,
             $this->path,
             Maybe::just($max),
         );
@@ -175,6 +201,14 @@ final class Config
     public function io(): IO
     {
         return $this->io;
+    }
+
+    /**
+     * @internal
+     */
+    public function halt(): Halt
+    {
+        return $this->halt;
     }
 
     /**

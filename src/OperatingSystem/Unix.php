@@ -21,7 +21,6 @@ use Innmind\Server\Control\{
     Servers,
 };
 use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
 
 final class Unix implements OperatingSystem
 {
@@ -58,7 +57,6 @@ final class Unix implements OperatingSystem
     {
         return $this->filesystem ??= Filesystem\Generic::of(
             $this->control()->processes(),
-            new Usleep,
             $this->config,
         );
     }
@@ -77,7 +75,7 @@ final class Unix implements OperatingSystem
         return $this->control ??= Servers\Unix::of(
             $this->clock(),
             $this->config->streamCapabilities(),
-            new Usleep,
+            $this->config->halt(),
         );
     }
 
@@ -101,6 +99,6 @@ final class Unix implements OperatingSystem
 
     public function process(): CurrentProcess
     {
-        return $this->process ??= CurrentProcess\Generic::of(new Usleep);
+        return $this->process ??= CurrentProcess\Generic::of($this->config->halt());
     }
 }

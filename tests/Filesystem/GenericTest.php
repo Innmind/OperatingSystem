@@ -11,7 +11,6 @@ use Innmind\OperatingSystem\{
 use Innmind\Filesystem\Adapter\Filesystem as FilesystemAdapter;
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
-use Innmind\TimeWarp\Halt;
 use Innmind\FileWatch\Ping;
 use Fixtures\Innmind\Url\Path as FPath;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +26,6 @@ class GenericTest extends TestCase
             Filesystem::class,
             Generic::of(
                 $this->createMock(Processes::class),
-                $this->createMock(Halt::class),
                 Config::of(),
             ),
         );
@@ -37,7 +35,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
@@ -50,7 +47,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
@@ -63,7 +59,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
@@ -77,7 +72,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
@@ -91,7 +85,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
@@ -105,7 +98,6 @@ class GenericTest extends TestCase
             ->then(function($path) {
                 $filesystem = Generic::of(
                     $this->createMock(Processes::class),
-                    $this->createMock(Halt::class),
                     Config::of(),
                 );
 
@@ -120,7 +112,6 @@ class GenericTest extends TestCase
     {
         $filesystem = Generic::of(
             $this->createMock(Processes::class),
-            $this->createMock(Halt::class),
             Config::of(),
         );
 
