@@ -81,6 +81,7 @@ final class Generic implements Remote
         $http = Curl::of(
             $this->clock,
             $this->config->streamCapabilities(),
+            $this->config->io(),
         );
 
         return $this->http = $this->config->maxHttpConcurrency()->match(

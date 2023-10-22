@@ -26,7 +26,8 @@
         "innmind/signals": "~3.0",
         "innmind/file-watch": "~3.1",
         "innmind/stream": "~4.0",
-        "formal/access-layer": "^2.0"
+        "formal/access-layer": "^2.0",
+        "innmind/io": "~2.2"
     },
     "autoload": {
         "psr-4": {

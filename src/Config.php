@@ -6,9 +6,11 @@ namespace Innmind\OperatingSystem;
 use Innmind\TimeContinuum\{
     Clock,
     Earth,
+    ElapsedPeriod,
 };
 use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
+use Innmind\IO\IO;
 use Innmind\Stream\{
     Capabilities,
     Streams,
@@ -20,6 +22,7 @@ final class Config
     private Clock $clock;
     private CaseSensitivity $caseSensitivity;
     private Capabilities $streamCapabilities;
+    private IO $io;
     private EnvironmentPath $path;
     /** @var Maybe<positive-int> */
     private Maybe $maxHttpConcurrency;
@@ -31,12 +34,14 @@ final class Config
         Clock $clock,
         CaseSensitivity $caseSensitivity,
         Capabilities $streamCapabilities,
+        IO $io,
         EnvironmentPath $path,
         Maybe $maxHttpConcurrency,
     ) {
         $this->clock = $clock;
         $this->caseSensitivity = $caseSensitivity;
         $this->streamCapabilities = $streamCapabilities;
+        $this->io = $io;
         $this->path = $path;
         $this->maxHttpConcurrency = $maxHttpConcurrency;
     }
@@ -49,7 +54,11 @@ final class Config
         return new self(
             new Earth\Clock,
             CaseSensitivity::sensitive,
-            Streams::fromAmbientAuthority(),
+            $streams = Streams::fromAmbientAuthority(),
+            IO::of(static fn(?ElapsedPeriod $timeout) => match ($timeout) {
+                null => $streams->watch()->waitForever(),
+                default => $streams->watch()->timeoutAfter($timeout),
+            }),
             EnvironmentPath::of(\getenv('PATH') ?: ''),
             $maxHttpConcurrency,
         );
@@ -64,6 +73,7 @@ final class Config
             $clock,
             $this->caseSensitivity,
             $this->streamCapabilities,
+            $this->io,
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -78,6 +88,7 @@ final class Config
             $this->clock,
             CaseSensitivity::insensitive,
             $this->streamCapabilities,
+            $this->io,
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -88,10 +99,15 @@ final class Config
      */
     public function useStreamCapabilities(Capabilities $capabilities): self
     {
+        /** @psalm-suppress ImpureMethodCall This should be solved in the next innmind/io release */
         return new self(
             $this->clock,
             $this->caseSensitivity,
             $capabilities,
+            IO::of(static fn(?ElapsedPeriod $timeout) => match ($timeout) {
+                null => $capabilities->watch()->waitForever(),
+                default => $capabilities->watch()->timeoutAfter($timeout),
+            }),
             $this->path,
             $this->maxHttpConcurrency,
         );
@@ -106,6 +122,7 @@ final class Config
             $this->clock,
             $this->caseSensitivity,
             $this->streamCapabilities,
+            $this->io,
             $path,
             $this->maxHttpConcurrency,
         );
@@ -122,6 +139,7 @@ final class Config
             $this->clock,
             $this->caseSensitivity,
             $this->streamCapabilities,
+            $this->io,
             $this->path,
             Maybe::just($max),
         );
@@ -149,6 +167,14 @@ final class Config
     public function streamCapabilities(): Capabilities
     {
         return $this->streamCapabilities;
+    }
+
+    /**
+     * @internal
+     */
+    public function io(): IO
+    {
+        return $this->io;
     }
 
     /**
