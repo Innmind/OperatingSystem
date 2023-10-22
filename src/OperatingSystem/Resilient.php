@@ -32,6 +32,11 @@ final class Resilient implements OperatingSystem
         return new self($os);
     }
 
+    public function map(callable $map): OperatingSystem
+    {
+        return new self($this->os->map($map));
+    }
+
     public function clock(): Clock
     {
         return $this->os->clock();

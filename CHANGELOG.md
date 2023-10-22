@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Innmind\OperatingSystem\OperatingSystem::map()`
+
 ### Changed
 
 - `Innmind\OperatingSystem\Factory::build()` now only accept a `Config` object, use `Config::withClock()` to change the default clock

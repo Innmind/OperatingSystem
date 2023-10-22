@@ -43,4 +43,19 @@ class UnixTest extends TestCase
         $this->assertSame($os->remote(), $os->remote());
         $this->assertSame($os->process(), $os->process());
     }
+
+    public function testMap()
+    {
+        $os = Unix::of($config = Config::of());
+        $expected = Unix::of();
+
+        $result = $os->map(function($os_, $config_) use ($os, $config, $expected) {
+            $this->assertSame($os, $os_);
+            $this->assertSame($config, $config_);
+
+            return $expected;
+        });
+
+        $this->assertSame($expected, $result);
+    }
 }

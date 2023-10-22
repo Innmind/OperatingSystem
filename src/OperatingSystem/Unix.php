@@ -44,6 +44,11 @@ final class Unix implements OperatingSystem
         return new self($config ?? Config::of());
     }
 
+    public function map(callable $map): OperatingSystem
+    {
+        return $map($this, $this->config);
+    }
+
     public function clock(): Clock
     {
         return $this->config->clock();

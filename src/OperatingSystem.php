@@ -9,6 +9,13 @@ use Innmind\TimeContinuum\Clock;
 
 interface OperatingSystem
 {
+    /**
+     * This method allows to change the underlying OS implementation while being
+     * able to keep any decorators on top of it.
+     *
+     * @param callable(self, Config): self $map
+     */
+    public function map(callable $map): self;
     public function clock(): Clock;
     public function filesystem(): Filesystem;
     public function status(): ServerStatus;
