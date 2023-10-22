@@ -11,7 +11,6 @@ use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\TimeWarp\Halt;
-use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\{
     Ping,
     Factory,
@@ -22,7 +21,6 @@ use Innmind\Immutable\Maybe;
 final class Generic implements Filesystem
 {
     private Watch $watch;
-    private Clock $clock;
     private Config $config;
     /** @var \WeakMap<Adapter, string> */
     private \WeakMap $mounted;
@@ -30,11 +28,9 @@ final class Generic implements Filesystem
     private function __construct(
         Processes $processes,
         Halt $halt,
-        Clock $clock,
         Config $config,
     ) {
         $this->watch = Factory::build($processes, $halt);
-        $this->clock = $clock;
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
@@ -43,10 +39,9 @@ final class Generic implements Filesystem
     public static function of(
         Processes $processes,
         Halt $halt,
-        Clock $clock,
         Config $config,
     ): self {
-        return new self($processes, $halt, $clock, $config);
+        return new self($processes, $halt, $config);
     }
 
     public function mount(Path $path): Adapter

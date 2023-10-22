@@ -54,7 +54,6 @@ final class Unix implements OperatingSystem
         return $this->filesystem ??= Filesystem\Generic::of(
             $this->control()->processes(),
             new Usleep,
-            $this->clock(),
             $this->config,
         );
     }
