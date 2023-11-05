@@ -28,9 +28,12 @@ final class Config
     private EnvironmentPath $path;
     /** @var Maybe<positive-int> */
     private Maybe $maxHttpConcurrency;
+    /** @var Maybe<array{ElapsedPeriod, callable(): void}> */
+    private Maybe $httpHeartbeat;
 
     /**
      * @param Maybe<positive-int> $maxHttpConcurrency
+     * @param Maybe<array{ElapsedPeriod, callable(): void}> $httpHeartbeat
      */
     private function __construct(
         Clock $clock,
@@ -40,6 +43,7 @@ final class Config
         Halt $halt,
         EnvironmentPath $path,
         Maybe $maxHttpConcurrency,
+        Maybe $httpHeartbeat,
     ) {
         $this->clock = $clock;
         $this->caseSensitivity = $caseSensitivity;
@@ -48,12 +52,15 @@ final class Config
         $this->halt = $halt;
         $this->path = $path;
         $this->maxHttpConcurrency = $maxHttpConcurrency;
+        $this->httpHeartbeat = $httpHeartbeat;
     }
 
     public static function of(): self
     {
         /** @var Maybe<positive-int> */
         $maxHttpConcurrency = Maybe::nothing();
+        /** @var Maybe<array{ElapsedPeriod, callable(): void}> */
+        $httpHeartbeat = Maybe::nothing();
 
         return new self(
             new Earth\Clock,
@@ -66,6 +73,7 @@ final class Config
             new Halt\Usleep,
             EnvironmentPath::of(\getenv('PATH') ?: ''),
             $maxHttpConcurrency,
+            $httpHeartbeat,
         );
     }
 
@@ -82,6 +90,7 @@ final class Config
             $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
         );
     }
 
@@ -98,6 +107,7 @@ final class Config
             $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
         );
     }
 
@@ -118,6 +128,7 @@ final class Config
             $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
         );
     }
 
@@ -134,6 +145,7 @@ final class Config
             $halt,
             $this->path,
             $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
         );
     }
 
@@ -150,6 +162,7 @@ final class Config
             $this->halt,
             $path,
             $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
         );
     }
 
@@ -168,6 +181,26 @@ final class Config
             $this->halt,
             $this->path,
             Maybe::just($max),
+            $this->httpHeartbeat,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param callable(): void $heartbeat
+     */
+    public function withHttpHeartbeat(ElapsedPeriod $timeout, callable $heartbeat): self
+    {
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->streamCapabilities,
+            $this->io,
+            $this->halt,
+            $this->path,
+            $this->maxHttpConcurrency,
+            Maybe::just([$timeout, $heartbeat]),
         );
     }
 
@@ -227,5 +260,15 @@ final class Config
     public function maxHttpConcurrency(): Maybe
     {
         return $this->maxHttpConcurrency;
+    }
+
+    /**
+     * @internal
+     *
+     * @return Maybe<array{ElapsedPeriod, callable(): void}>
+     */
+    public function httpHeartbeat(): Maybe
+    {
+        return $this->httpHeartbeat;
     }
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.0 - 2023-11-05
+
+### Added
+
+- `Innmind\OperatingSystem\Config::withHttpHeartbeat()`
+
 ## 4.0.0 - 2023-10-22
 
 ### Added
