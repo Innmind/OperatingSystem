@@ -77,11 +77,16 @@ final class Generic implements Remote
             $this->config->streamCapabilities(),
             $this->config->io(),
         );
-
-        return $this->http = $this->config->maxHttpConcurrency()->match(
+        $http = $this->config->maxHttpConcurrency()->match(
             static fn($max) => $http->maxConcurrency($max),
             static fn() => $http,
         );
+        $http = $this->config->httpHeartbeat()->match(
+            static fn($config) => $http->heartbeat($config[0], $config[1]),
+            static fn() => $http,
+        );
+
+        return $this->http = $http;
     }
 
     public function sql(Url $server): Connection
