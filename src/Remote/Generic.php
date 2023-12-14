@@ -85,6 +85,10 @@ final class Generic implements Remote
             static fn($config) => $http->heartbeat($config[0], $config[1]),
             static fn() => $http,
         );
+        $http = match ($this->config->mustDisableSSLVerification()) {
+            true => $http->disableSSLVerification(),
+            false => $http,
+        };
 
         return $this->http = $http;
     }
