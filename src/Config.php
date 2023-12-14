@@ -30,6 +30,7 @@ final class Config
     private Maybe $maxHttpConcurrency;
     /** @var Maybe<array{ElapsedPeriod, callable(): void}> */
     private Maybe $httpHeartbeat;
+    private bool $disableSSLVerification;
 
     /**
      * @param Maybe<positive-int> $maxHttpConcurrency
@@ -44,6 +45,7 @@ final class Config
         EnvironmentPath $path,
         Maybe $maxHttpConcurrency,
         Maybe $httpHeartbeat,
+        bool $disableSSLVerification,
     ) {
         $this->clock = $clock;
         $this->caseSensitivity = $caseSensitivity;
@@ -53,6 +55,7 @@ final class Config
         $this->path = $path;
         $this->maxHttpConcurrency = $maxHttpConcurrency;
         $this->httpHeartbeat = $httpHeartbeat;
+        $this->disableSSLVerification = $disableSSLVerification;
     }
 
     public static function of(): self
@@ -74,6 +77,7 @@ final class Config
             EnvironmentPath::of(\getenv('PATH') ?: ''),
             $maxHttpConcurrency,
             $httpHeartbeat,
+            false,
         );
     }
 
@@ -91,6 +95,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -108,6 +113,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -129,6 +135,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -146,6 +153,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -163,6 +171,7 @@ final class Config
             $path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -182,6 +191,7 @@ final class Config
             $this->path,
             Maybe::just($max),
             $this->httpHeartbeat,
+            $this->disableSSLVerification,
         );
     }
 
@@ -201,6 +211,25 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             Maybe::just([$timeout, $heartbeat]),
+            $this->disableSSLVerification,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    public function disableSSLVerification(): self
+    {
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->streamCapabilities,
+            $this->io,
+            $this->halt,
+            $this->path,
+            $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
+            true,
         );
     }
 
@@ -270,5 +299,13 @@ final class Config
     public function httpHeartbeat(): Maybe
     {
         return $this->httpHeartbeat;
+    }
+
+    /**
+     * @internal
+     */
+    public function mustDisableSSLVerification(): bool
+    {
+        return $this->disableSSLVerification;
     }
 }

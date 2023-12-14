@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.0 - 2023-12-14
+
+### Added
+
+- `Innmind\OperatingSystem\Config::disableSSLVerification()`
+
 ## 4.1.0 - 2023-11-05
 
 ### Added
