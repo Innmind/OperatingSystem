@@ -3,11 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\TimeContinuum\{
-    Clock,
-    Earth,
-};
-
 final class Factory
 {
     public static function build(Config $config = null): OperatingSystem

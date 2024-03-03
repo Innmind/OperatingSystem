@@ -18,15 +18,9 @@ use Innmind\Server\Status;
 use Innmind\Server\Control;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
-use Innmind\BlackBox\{
-    PHPUnit\BlackBox,
-    Set,
-};
 
 class LoggerTest extends TestCase
 {
-    use BlackBox;
-
     private OperatingSystem $os;
     private OperatingSystem $underlying;
 
