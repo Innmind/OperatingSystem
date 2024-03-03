@@ -4,10 +4,8 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem;
 
 use Innmind\Server\Control\Server;
-use Innmind\Socket\{
-    Internet\Transport,
-    Client,
-};
+use Innmind\Socket\Internet\Transport;
+use Innmind\IO\Sockets\Client;
 use Innmind\Url\{
     Url,
     Authority,

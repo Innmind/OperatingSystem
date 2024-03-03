@@ -62,8 +62,9 @@ final class Generic implements Remote
 
     public function socket(Transport $transport, Authority $authority): Maybe
     {
-        /** @var Maybe<Client> */
-        return Client\Internet::of($transport, $authority);
+        return Client\Internet::of($transport, $authority)->map(
+            $this->config->io()->sockets()->clients()->wrap(...),
+        );
     }
 
     public function http(): HttpTransport

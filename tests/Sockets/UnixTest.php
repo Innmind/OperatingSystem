@@ -70,7 +70,7 @@ class UnixTest extends TestCase
             static fn() => null,
         );
         $client = $sockets->connectTo(Address::of('/tmp/foo'))->match(
-            static fn($client) => $client,
+            static fn($client) => $client->unwrap(),
             static fn() => null,
         );
 

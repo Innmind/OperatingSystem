@@ -6,6 +6,11 @@
 
 - `Innmind\OperatingSystem\Filesystem::temporary()`
 
+### Changed
+
+- `Innmind\OperatingSystem\Remote::socket()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
+- `Innmind\OperatingSystem\Sockets::connectTo()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
+
 ## 4.2.0 - 2023-12-14
 
 ### Added

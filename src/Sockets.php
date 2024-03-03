@@ -6,9 +6,9 @@ namespace Innmind\OperatingSystem;
 use Innmind\Socket\{
     Address\Unix,
     Server,
-    Client,
 };
 use Innmind\TimeContinuum\ElapsedPeriod;
+use Innmind\IO\Sockets\Client;
 use Innmind\Stream\Watch;
 use Innmind\Immutable\Maybe;
 

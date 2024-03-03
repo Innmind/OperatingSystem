@@ -42,7 +42,9 @@ final class Unix implements Sockets
 
     public function connectTo(Address $address): Maybe
     {
-        return Client\Unix::of($address);
+        return Client\Unix::of($address)->map(
+            $this->config->io()->sockets()->clients()->wrap(...),
+        );
     }
 
     public function watch(ElapsedPeriod $timeout = null): Watch
