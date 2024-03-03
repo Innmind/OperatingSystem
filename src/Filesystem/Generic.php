@@ -7,7 +7,10 @@ use Innmind\OperatingSystem\{
     Filesystem,
     Config,
 };
-use Innmind\Filesystem\Adapter;
+use Innmind\Filesystem\{
+    Adapter,
+    File\Content,
+};
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\{
@@ -15,7 +18,13 @@ use Innmind\FileWatch\{
     Factory,
     Watch,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Stream\Bidirectional;
+use Innmind\Immutable\{
+    Maybe,
+    Sequence,
+    Str,
+    Predicate\Instance,
+};
 
 final class Generic implements Filesystem
 {
@@ -95,5 +104,28 @@ final class Generic implements Filesystem
     public function watch(Path $path): Ping
     {
         return ($this->watch)($path);
+    }
+
+    public function temporary(Sequence $chunks): Maybe
+    {
+        $temporary = $this
+            ->config
+            ->streamCapabilities()
+            ->temporary()
+            ->new();
+
+        $temporary = $chunks->reduce(
+            Maybe::just($temporary),
+            static fn(Maybe $temporary, $chunk) => Maybe::all($temporary, $chunk)->flatMap(
+                static fn(Bidirectional $temporary, Str $chunk) => $temporary
+                    ->write($chunk->toEncoding(Str\Encoding::ascii))
+                    ->maybe()
+                    ->keep(Instance::of(Bidirectional::class)),
+            ),
+        );
+
+        return $temporary
+            ->map($this->config->io()->readable()->wrap(...))
+            ->map(Content::io(...));
     }
 }

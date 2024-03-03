@@ -8,13 +8,24 @@ use Innmind\OperatingSystem\{
     Filesystem,
     Config,
 };
-use Innmind\Filesystem\Adapter\Filesystem as FilesystemAdapter;
+use Innmind\Filesystem\{
+    Adapter\Filesystem as FilesystemAdapter,
+    File\Content,
+};
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\Ping;
 use Fixtures\Innmind\Url\Path as FPath;
+use Innmind\Immutable\{
+    Sequence,
+    Str,
+    Maybe,
+};
 use PHPUnit\Framework\TestCase;
-use Innmind\BlackBox\PHPUnit\BlackBox;
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
+};
 
 class GenericTest extends TestCase
 {
@@ -119,5 +130,62 @@ class GenericTest extends TestCase
             static fn($value) => $value,
             static fn() => null,
         ));
+    }
+
+    public function testCreateTemporaryFile()
+    {
+        $this
+            ->forAll(Set\Sequence::of(Set\Unicode::strings()))
+            ->then(function($chunks) {
+                $filesystem = Generic::of(
+                    $this->createMock(Processes::class),
+                    Config::of(),
+                );
+
+                $content = $filesystem
+                    ->temporary(
+                        Sequence::of(...$chunks)
+                            ->map(Str::of(...))
+                            ->map(Maybe::just(...)),
+                    )
+                    ->match(
+                        static fn($content) => $content,
+                        static fn() => null,
+                    );
+
+                $this->assertInstanceOf(Content::class, $content);
+                $this->assertSame(
+                    \implode('', $chunks),
+                    $content->toString(),
+                );
+            });
+    }
+
+    public function testCreateTemporaryFileFailure()
+    {
+        $this
+            ->forAll(
+                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
+                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
+            )
+            ->then(function($leading, $trailing) {
+                $filesystem = Generic::of(
+                    $this->createMock(Processes::class),
+                    Config::of(),
+                );
+
+                $content = $filesystem
+                    ->temporary(
+                        Sequence::of(...[...$leading, null, ...$trailing])
+                            ->map(Maybe::of(...))
+                            ->map(static fn($chunk) => $chunk->map(Str::of(...))),
+                    )
+                    ->match(
+                        static fn($content) => $content,
+                        static fn() => null,
+                    );
+
+                $this->assertNull($content);
+            });
     }
 }

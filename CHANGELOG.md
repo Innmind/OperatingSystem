@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `Innmind\OperatingSystem\Filesystem::temporary()`
+
 ## 4.2.0 - 2023-12-14
 
 ### Added
