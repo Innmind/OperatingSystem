@@ -20,6 +20,9 @@ final class Generic implements CurrentProcess
         $this->halt = $halt;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Halt $halt): self
     {
         return new self($halt);

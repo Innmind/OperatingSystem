@@ -39,6 +39,9 @@ final class Generic implements Remote
         $this->config = $config;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Server $server, Config $config): self
     {
         return new self($server, $config);

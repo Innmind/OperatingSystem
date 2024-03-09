@@ -41,6 +41,9 @@ final class Generic implements Filesystem
         $this->mounted = new \WeakMap;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Processes $processes, Config $config): self
     {
         return new self($processes, $config);

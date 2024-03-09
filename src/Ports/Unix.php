@@ -25,6 +25,9 @@ final class Unix implements Ports
         $this->config = $config;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Config $config): self
     {
         return new self($config);
