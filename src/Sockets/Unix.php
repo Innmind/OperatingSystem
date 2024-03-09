@@ -32,12 +32,16 @@ final class Unix implements Sockets
 
     public function open(Address $address): Maybe
     {
-        return Server\Unix::of($address);
+        return Server\Unix::of($address)->map(
+            $this->config->io()->sockets()->servers()->wrap(...),
+        );
     }
 
     public function takeOver(Address $address): Maybe
     {
-        return Server\Unix::recoverable($address);
+        return Server\Unix::recoverable($address)->map(
+            $this->config->io()->sockets()->servers()->wrap(...),
+        );
     }
 
     public function connectTo(Address $address): Maybe

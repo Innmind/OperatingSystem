@@ -10,6 +10,9 @@
 
 - `Innmind\OperatingSystem\Remote::socket()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
 - `Innmind\OperatingSystem\Sockets::connectTo()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
+- `Innmind\OperatingSystem\Sockets::open()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
+- `Innmind\OperatingSystem\Sockets::takeOver()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
+- `Innmind\OperatingSystem\Ports::open()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
 
 ## 4.2.0 - 2023-12-14
 

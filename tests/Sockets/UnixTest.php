@@ -29,7 +29,7 @@ class UnixTest extends TestCase
         $sockets = Unix::of(Config::of());
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server,
+            static fn($server) => $server->unwrap(),
             static fn() => null,
         );
 
@@ -48,11 +48,11 @@ class UnixTest extends TestCase
         $sockets = Unix::of(Config::of());
 
         $socket = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server,
+            static fn($server) => $server->unwrap(),
             static fn() => null,
         );
         $socket2 = $sockets->takeOver(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server,
+            static fn($server) => $server->unwrap(),
             static fn() => null,
         );
 
@@ -66,7 +66,7 @@ class UnixTest extends TestCase
         $sockets = Unix::of(Config::of());
 
         $server = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server,
+            static fn($server) => $server->unwrap(),
             static fn() => null,
         );
         $client = $sockets->connectTo(Address::of('/tmp/foo'))->match(

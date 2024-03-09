@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Socket\{
-    Address\Unix,
+use Innmind\IO\Sockets\{
+    Client,
     Server,
 };
+use Innmind\Socket\Address\Unix;
 use Innmind\TimeContinuum\ElapsedPeriod;
-use Innmind\IO\Sockets\Client;
 use Innmind\Stream\Watch;
 use Innmind\Immutable\Maybe;
 
