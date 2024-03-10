@@ -131,4 +131,5 @@ Here it will run phpunit tests every time the `src/` folder changes. Concrete ex
 
 This operation is a bit like an `array_reduce` as you can keep a state record between each calls of the callable via the first argument (here `0`, but it can be anything) and the argument of your callable will be the previous value returned by `$continuation->continue()`.
 
-**Important**: since there is no builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.
+> [!WARNING]
+> since there is no builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.

@@ -52,7 +52,8 @@ $client->unwrap()->close();
 
 When the process receive the `SIGTERM` signal it will be paused then the anonymous function will be called and the process will then be resumed.
 
-**Note**: signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
+> [!NOTE]
+> signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
 
 ## Prevent process from being stopped
 

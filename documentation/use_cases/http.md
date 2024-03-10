@@ -28,7 +28,8 @@ $response instanceof Response; // true
 
 All elements of a request/response call is built using objects to enforce correctness of the formatted messages.
 
-**Note**: since request and responses messages can be viewed either from a client or a server the model is abstracted in the standalone [`innmind/http` library](https://github.com/innmind/http).
+> [!NOTE]
+> since request and responses messages can be viewed either from a client or a server the model is abstracted in the standalone [`innmind/http` library](https://github.com/innmind/http).
 
 ## Resiliency in a distributed system
 
@@ -62,4 +63,5 @@ $response = $http($request);
 $response = $http($request);
 ```
 
-**Note**: the circuit breaker works on host per host basis meaning if `server1.com` fails then calls to `server2.com` will still be sent.
+> [!NOTE]
+> the circuit breaker works on host per host basis meaning if `server1.com` fails then calls to `server2.com` will still be sent.

@@ -8,7 +8,8 @@ Abstraction for most of the operating system the PHP code run on.
 
 The goal is to deal with the operating system in a more abstract way (instead of dealing with concrete, low level, details).
 
-**Important**: you must use [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm) to make sure you use this library correctly.
+> [!IMPORTANT]
+> you must use [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm) to make sure you use this library correctly.
 
 ## Installation
 

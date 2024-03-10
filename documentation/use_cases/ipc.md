@@ -4,7 +4,8 @@ To communicate between processes on a same system there is 2 approaches: sharing
 
 The later is the safest of the two (but not exempt of problems) and you will find here the building blocks to communicate via a socket.
 
-**Note**: the adage `share state through messages and not messages through state` is a pillar of the [actor model](https://en.wikipedia.org/wiki/Actor_model) and [initially of object oriented programming](https://www.youtube.com/watch?v=7erJ1DV_Tlo).
+> [!TIP]
+> the adage `share state through messages and not messages through state` is a pillar of the [actor model](https://en.wikipedia.org/wiki/Actor_model) and [initially of object oriented programming](https://www.youtube.com/watch?v=7erJ1DV_Tlo).
 
 ```php
 # process acting as a server
@@ -60,4 +61,5 @@ echo $client
 
 In the case the server is started first then the client would print `Hello`.
 
-**Important**: this is a very rough implementation of communication between processes. **DO NOT** use this simple implementation in your code, instead use a higher level API such as [`innmind/ipc`](https://github.com/innmind/ipc).
+> [!WARNING]
+> this is a very rough implementation of communication between processes. **DO NOT** use this simple implementation in your code, instead use a higher level API such as [`innmind/ipc`](https://github.com/innmind/ipc).

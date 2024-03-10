@@ -2,7 +2,8 @@
 
 Directly accessing time in a PHP code is straightforward (either via `DateTime` or time functions) but it prevents you to build testable code or require to use some hard to understand hacks. Instead it is simpler to think of time as another dependency that you need to inject in your code, thus easier to change the implementation when testing.
 
-**Note** for a more in length presentation of why directly accessing time is problematic you can watch this [talk](https://www.youtube.com/watch?v=T_I6HhP9-6w) (in french).
+> [!TIP]
+> for a more in length presentation of why directly accessing time is problematic you can watch this [talk](https://www.youtube.com/watch?v=T_I6HhP9-6w) (in french).
 
 ## Accessing time
 
