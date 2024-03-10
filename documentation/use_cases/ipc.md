@@ -10,7 +10,10 @@ The later is the safest of the two (but not exempt of problems) and you will fin
 # process acting as a server
 use Innmind\Socket\Address\Unix as Address;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Sequence,
+    Str,
+};
 
 $server = $os->sockets()->open(Address::of('/tmp/foo'))->match(
     static fn($server) => $server,
@@ -19,45 +22,42 @@ $server = $os->sockets()->open(Address::of('/tmp/foo'))->match(
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
 
 while (true) {
-    $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($socket) => $socket === $stream))
-        ->flatMap(static fn($server) => $server->accept())
+    $_ = $server
+        ->timeoutAfter(ElapsedPeriod::of(1_000))
+        ->accept()
         ->match(
             static fn($client) => $client
-                ->write(Str::of('Hello 👋'))
-                ->flatMap(static fn($client) => $client->close())
+                ->send(Sequence::of(Str::of('Hello')))
+                ->flatMap(static fn() => $client->close())
                 ->match(
                     static fn() => null, // everyhting is ok
                     static fn() => throw new \RuntimeException('Unable to send data or close the connection'),
                 ),
             static fn() => null, // no new connection available
-        );
+        ),
 }
 ```
 
 ```php
 # process acting as client
 use Innmind\Socket\Address\Unix as Address;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+use Innmind\IO\Readable\Frame;
 
-$client = $os->sockets()->connectTo(Address::of('/tmp/foo'));
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
-
-do {
-    $ready = $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
-        ->match(
-            static fn() => true,
-            static fn() => false,
-        );
-} while (!$ready);
-
-echo $client->read()->match(
-    static fn($data) => $data->toString(),
-    static fn() => 'unable to read the stream',
+$client = $os->sockets()->connectTo(Address::of('/tmp/foo'))->match(
+    static fn($client) => $client,
+    static fn() => throw new \RuntimeException('Unable to connect to the server'),
 );
+
+echo $client
+    ->watch()
+    ->frames(Frame\Chunk::of(5))
+    ->one()
+    ->match(
+        static fn($data) => $data->toString(),
+        static fn() => 'unable to read the stream',
+    );
 ```
 
-In the case the server is started first then the client would print `Hello 👋`.
+In the case the server is started first then the client would print `Hello`.
 
 **Important**: this is a very rough implementation of communication between processes. **DO NOT** use this simple implementation in your code, instead use a higher level API such as [`innmind/ipc`](https://github.com/innmind/ipc).

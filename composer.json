@@ -24,10 +24,10 @@
         "innmind/http-transport": "~7.2",
         "innmind/time-warp": "~3.0",
         "innmind/signals": "~3.0",
-        "innmind/file-watch": "~3.1",
+        "innmind/file-watch": "~4.0",
         "innmind/stream": "~4.0",
         "formal/access-layer": "^2.0",
-        "innmind/io": "~2.2"
+        "innmind/io": "~2.7"
     },
     "autoload": {
         "psr-4": {

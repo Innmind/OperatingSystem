@@ -8,10 +8,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess,
 };
 use Innmind\Server\Control\Server;
-use Innmind\Socket\{
-    Internet\Transport,
-    Client,
-};
+use Innmind\Socket\Internet\Transport;
 use Innmind\Url\{
     Url,
     Authority,

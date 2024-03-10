@@ -102,7 +102,7 @@ class GenericTest extends TestCase
         );
 
         $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority())->match(
-            static fn($client) => $client,
+            static fn($client) => $client->unwrap(),
             static fn() => null,
         );
 
