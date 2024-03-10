@@ -17,6 +17,10 @@ The goal is to deal with the operating system in a more abstract way (instead of
 composer require innmind/operating-system
 ```
 
+## Documentation
+
+Documentation is located in the [`documentation/`](documentation) folder.
+
 ## Usage
 
 ```php

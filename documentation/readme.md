@@ -29,3 +29,19 @@ There's nothing more to add to start using this abstraction. Head toward the use
 
 > [!WARNING]
 > This library doesn't work on windows environments.
+
+## Use cases
+
+- [Manipulating time](use_cases/time.md)
+- [Filesystem](use_cases/filesystem.md)
+- [HTTP Client](use_cases/http.md)
+- [Processes](use_cases/processes.md)
+- [Inter Process Communication](use_cases/ipc.md)
+- [Socket communication](use_cases/socket.md)
+- [Handling process signals](use_cases/signals.md)
+- [SQL connection](use_cases/sql.md)
+
+## Advanced usage
+
+- [Logging all operations](advanced/logging.md)
+- [Extensions](advanced/extensions.md)
