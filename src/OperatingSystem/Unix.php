@@ -81,7 +81,7 @@ final class Unix implements OperatingSystem
 
     public function ports(): Ports
     {
-        return $this->ports ??= Ports\Unix::of();
+        return $this->ports ??= Ports\Unix::of($this->config);
     }
 
     public function sockets(): Sockets

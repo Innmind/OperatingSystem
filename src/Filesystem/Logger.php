@@ -4,10 +4,16 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Filesystem;
 
 use Innmind\OperatingSystem\Filesystem;
-use Innmind\Filesystem\Adapter;
+use Innmind\Filesystem\{
+    Adapter,
+    File\Content,
+};
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\{
+    Maybe,
+    Sequence,
+};
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Filesystem
@@ -72,5 +78,17 @@ final class Logger implements Filesystem
             $path,
             $this->logger,
         );
+    }
+
+    public function temporary(Sequence $chunks): Maybe
+    {
+        return $this
+            ->filesystem
+            ->temporary($chunks)
+            ->map(function(Content $content) {
+                $this->logger->debug('Temporary file created');
+
+                return $content;
+            });
     }
 }

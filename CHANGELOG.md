@@ -1,5 +1,25 @@
 # Changelog
 
+## 5.0.0 - 2024-03-10
+
+### Added
+
+- `Innmind\OperatingSystem\Filesystem::temporary()`
+
+### Changed
+
+- `Innmind\OperatingSystem\Remote::socket()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
+- `Innmind\OperatingSystem\Sockets::connectTo()` returned socket is now wrapped in a `Innmind\IO\Sockets\Client`
+- `Innmind\OperatingSystem\Sockets::open()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
+- `Innmind\OperatingSystem\Sockets::takeOver()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
+- `Innmind\OperatingSystem\Ports::open()` returned socket is now wrapped in a `Innmind\IO\Sockets\Server`
+- `Innmind\OperatingSystem\CurrentProcess\Generic::of()` is now declared `internal`
+- `Innmind\OperatingSystem\Filesystem\Generic::of()` is now declared `internal`
+- `Innmind\OperatingSystem\Ports\Unix::of()` is now declared `internal`
+- `Innmind\OperatingSystem\Remote\Generic::of()` is now declared `internal`
+- `Innmind\OperatingSystem\Ports\Sockets::of()` is now declared `internal`
+- Requires `innmind/file-watch:~4.0`
+
 ## 4.2.0 - 2023-12-14
 
 ### Added

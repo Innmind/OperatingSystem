@@ -4,11 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Sockets;
 
 use Innmind\OperatingSystem\Sockets;
-use Innmind\Socket\{
-    Address\Unix as Address,
-    Server,
-    Client,
-};
+use Innmind\Socket\Address\Unix as Address;
 use Innmind\TimeContinuum\ElapsedPeriod;
 use Innmind\Stream\Watch;
 use Innmind\Immutable\Maybe;

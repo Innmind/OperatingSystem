@@ -9,11 +9,6 @@ use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
-use Innmind\Immutable\{
-    Set,
-    Either,
-    SideEffect,
-};
 
 final class Generic implements CurrentProcess
 {
@@ -25,6 +20,9 @@ final class Generic implements CurrentProcess
         $this->halt = $halt;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Halt $halt): self
     {
         return new self($halt);

@@ -74,7 +74,10 @@ final class Config
                 default => $streams->watch()->timeoutAfter($timeout),
             }),
             new Halt\Usleep,
-            EnvironmentPath::of(\getenv('PATH') ?: ''),
+            EnvironmentPath::of(match ($path = \getenv('PATH')) {
+                false => '',
+                default => $path,
+            }),
             $maxHttpConcurrency,
             $httpHeartbeat,
             false,

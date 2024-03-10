@@ -8,7 +8,8 @@ The other advantage to use higher level abstractions is to enable end user to bu
 
 For concrete examples have a look at the use cases available in the sidebar.
 
-**Note**: this library is a small overlay on top of a set of individual libraries that contain the concrete abstractions. So you can start using only a subset of abstractions in your code as a starting point.
+> [!NOTE]
+> this library is a small overlay on top of a set of individual libraries that contain the concrete abstractions. So you can start using only a subset of abstractions in your code as a starting point.
 
 ## Installation
 
@@ -26,4 +27,21 @@ $os = Factory::build();
 
 There's nothing more to add to start using this abstraction. Head toward the use cases to understand all the things you can do with it.
 
-**Note**: This library doesn't work on windows environments.
+> [!WARNING]
+> This library doesn't work on windows environments.
+
+## Use cases
+
+- [Manipulating time](use_cases/time.md)
+- [Filesystem](use_cases/filesystem.md)
+- [HTTP Client](use_cases/http.md)
+- [Processes](use_cases/processes.md)
+- [Inter Process Communication](use_cases/ipc.md)
+- [Socket communication](use_cases/socket.md)
+- [Handling process signals](use_cases/signals.md)
+- [SQL connection](use_cases/sql.md)
+
+## Advanced usage
+
+- [Logging all operations](advanced/logging.md)
+- [Extensions](advanced/extensions.md)

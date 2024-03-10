@@ -25,6 +25,9 @@ final class Unix implements Sockets
         $this->config = $config;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Config $config): self
     {
         return new self($config);
@@ -32,17 +35,23 @@ final class Unix implements Sockets
 
     public function open(Address $address): Maybe
     {
-        return Server\Unix::of($address);
+        return Server\Unix::of($address)->map(
+            $this->config->io()->sockets()->servers()->wrap(...),
+        );
     }
 
     public function takeOver(Address $address): Maybe
     {
-        return Server\Unix::recoverable($address);
+        return Server\Unix::recoverable($address)->map(
+            $this->config->io()->sockets()->servers()->wrap(...),
+        );
     }
 
     public function connectTo(Address $address): Maybe
     {
-        return Client\Unix::of($address);
+        return Client\Unix::of($address)->map(
+            $this->config->io()->sockets()->clients()->wrap(...),
+        );
     }
 
     public function watch(ElapsedPeriod $timeout = null): Watch

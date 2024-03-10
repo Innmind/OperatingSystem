@@ -39,6 +39,9 @@ final class Generic implements Remote
         $this->config = $config;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Server $server, Config $config): self
     {
         return new self($server, $config);
@@ -62,8 +65,9 @@ final class Generic implements Remote
 
     public function socket(Transport $transport, Authority $authority): Maybe
     {
-        /** @var Maybe<Client> */
-        return Client\Internet::of($transport, $authority);
+        return Client\Internet::of($transport, $authority)->map(
+            $this->config->io()->sockets()->clients()->wrap(...),
+        );
     }
 
     public function http(): HttpTransport

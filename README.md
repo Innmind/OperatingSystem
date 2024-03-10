@@ -8,13 +8,18 @@ Abstraction for most of the operating system the PHP code run on.
 
 The goal is to deal with the operating system in a more abstract way (instead of dealing with concrete, low level, details).
 
-**Important**: you must use [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm) to make sure you use this library correctly.
+> [!IMPORTANT]
+> you must use [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm) to make sure you use this library correctly.
 
 ## Installation
 
 ```sh
 composer require innmind/operating-system
 ```
+
+## Documentation
+
+Documentation is located in the [`documentation/`](documentation) folder.
 
 ## Usage
 
@@ -70,7 +75,7 @@ $server = $os
         Port::of(1337),
     )
     ->match(
-        static fn($server) => $server,
+        static fn($server) => $server->unwrap(),
         static fn() => throw new \RuntimeException('Cannot open the socket'),
     );
 ```
@@ -84,7 +89,7 @@ $server = $os
 use Innmind\Socket\Address\Unix;
 
 $server = $os->sockets()->open(Unix::of('/tmp/foo.sock'))->match(
-    static fn($server) => $server,
+    static fn($server) => $server->unwrap(),
     static fn() => throw new \RuntimeException('Cannot open the socket'),
 );
 ```
@@ -95,7 +100,10 @@ $server = $os->sockets()->open(Unix::of('/tmp/foo.sock'))->match(
 # process B
 use Innmind\Socket\Address\Unix;
 
-$client = $os->sockets()->connectTo(Unix::of('/tmp/foo.sock'));
+$client = $os->sockets()->connectTo(Unix::of('/tmp/foo.sock'))->match(
+    static fn($client) => $client->unwrap(),
+    static fn() => throw new \RuntimeException('Cannot connect to the socket'),
+);
 ```
 
 `$client` is an instance of `Innmind\Socket\Client`.

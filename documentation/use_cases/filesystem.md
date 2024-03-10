@@ -112,24 +112,24 @@ It is a great way to forget about where the tmp folder is located and simply foc
 A pattern we don't see much in PHP is an infinite loop to react to an event to perform another task. Here we can build such pattern by watching for changes in a file or a directory.
 
 ```php
-use Innmind\FileWatch\Stop;
-use Innmind\Immutable\Either;
+use Innmind\FileWatch\Continuation;
 
 $runTests = $os->filesystem()->watch(Path::of('/path/to/project/src/'));
 
-$count = $runTests(0, function(int $count) use ($os): Either {
+$count = $runTests(0, function(int $count, Continuation $continuation) use ($os): Continuation {
     if ($count === 42) {
-        return Either::left(Stop::of($count));
+        return $continuation->stop($count);
     }
 
     $os->control()->processes()->execute($phpunitCommand);
 
-    return Either::right(++$count);
+    return $continuation->continue(++$count);
 });
 ```
 
-Here it will run phpunit tests every time the `src/` folder changes. Concrete examples of this pattern can be found in [`innmind/lab-station`](https://github.com/Innmind/LabStation/blob/develop/src/Agent/WatchSources.php#L38) to run a suite of tools when sources change or in [`halsey/journal`](https://github.com/halsey-php/journal/blob/develop/src/Command/Preview.php#L58) to rebuild the website when the markdown files change.
+Here it will run phpunit tests every time the `src/` folder changes. Concrete examples of this pattern can be found in [`innmind/lab-station`](https://github.com/Innmind/LabStation/blob/develop/src/Agent/WatchSources.php#L38) to run a suite of tools when sources change.
 
-This operation is a bit like an `array_reduce` as you can keep a state record between each calls of the callable via the first argument (here `0`, but it can be anything) and the argument of your callable will be the previous value returned by `Either::right()`.
+This operation is a bit like an `array_reduce` as you can keep a state record between each calls of the callable via the first argument (here `0`, but it can be anything) and the argument of your callable will be the previous value returned by `$continuation->continue()`.
 
-**Important**: since there is not builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.
+> [!WARNING]
+> since there is no builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.

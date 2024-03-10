@@ -2,7 +2,7 @@
 
 Any process can receive [signals](https://en.wikipedia.org/wiki/Signal_(IPC)) either through user interaction (in a terminal), from another process or via the `kill` command. PHP processes can handle them and perform actions to safely free resources or prevent the process from being terminated.
 
-Examples below only use one listener per signal but you can add as many as you want (which is complicated when dealing manually with PHP builtin functions).
+Examples below only use one listener per signal but you can add as many as you wish (which is complicated when dealing manually with PHP builtin functions).
 
 ## Free resources before stopping
 
@@ -10,38 +10,50 @@ This is a reuse of the [socket example](socket.md).
 
 ```php
 use Innmind\Url\Url;
+use Innmind\IO\Readable\Frame;
 use Innmind\Socket\Internet\Transport;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 use Innmind\Signals\Signal;
+use Innmind\Immutable\{
+    Sequence,
+    Str,
+};
 
 $client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
     static fn($client) => $client,
     static fn() => throw new \RuntimeException('Unable to connect to the server'),
 );
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
-$continue = true;
-$os->process()->signals()->listen(Signal::terminate, function() use (&$continue, $client) {
-    $continue = false;
-    $client->close();
+$signaled = true;
+$os->process()->signals()->listen(Signal::terminate, function() use (&$signaled) {
+    $signaled = false;
 });
 
-do {
-    $ready = $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
-        ->match(
-            static fn() => true,
-            static fn() => false,
-        );
-} while ($continue && !$ready);
+$receivedData = $client
+    ->timeoutAfter(ElapsedPeriod::of(1_000))
+    // it sends this every second to keep the connection alive
+    ->heartbeatWith(static fn() => Sequence::of(Str::of('foo')))
+    ->abortWhen(function() use (&$signaled) {
+        return $signaled;
+    })
+    ->frames(Frame\Chunk::of(1))
+    ->one()
+    ->match(
+        static fn() => true,
+        static fn() => false,
+    );
 
-if (!$client->closed()) {
+if ($receivedData) {
     echo 'Server has responded'.
 }
+
+$client->unwrap()->close();
 ```
 
 When the process receive the `SIGTERM` signal it will be paused then the anonymous function will be called and the process will then be resumed.
 
-**Note**: signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
+> [!NOTE]
+> signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
 
 ## Prevent process from being stopped
 
