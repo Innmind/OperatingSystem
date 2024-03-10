@@ -21,12 +21,11 @@ $server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080)
     static fn($server) => $server,
     static fn() => throw new \RuntimeException('Unable to start the server'),
 );
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
 
 while (true) {
-    $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $server))
-        ->flatMap(static fn($server) => $server->accept())
+    $server
+        ->timeoutAfter(ElapsedPeriod::of(1_000))
+        ->accept()
         ->match(
             static fn($client) => /* talk to the client */,
             static fn() => null, // no client available yet
@@ -42,23 +41,24 @@ This example will open a connection to the server defined above but can be chang
 
 ```php
 use Innmind\Url\Url;
+use Innmind\IO\Readable\Frame;
 use Innmind\Socket\Internet\Transport;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 
-$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
+$client = $os->remote()->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())->match(
     static fn($client) => $client,
     static fn() => throw new \RuntimeException('Unable to connect to the client'),
 );
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
 
-do {
-    $ready = $watch()
-        ->flatMap(static fn($ready) => $ready->toRead()->find(static fn($ready) => $ready === $client))
-        ->match(
-            static fn() => true,
-            static fn() => false,
-        );
-} while (!$ready);
+$receivedData = $client
+    ->watch()
+    ->frames(Frame\Chunk::of(1))
+    ->one()
+    ->match(
+        static fn() => true,
+        static fn() => false,
+    );
 
-echo 'Server has responded'.
+if ($receivedData) {
+    echo 'Server has responded'.
+}
 ```
