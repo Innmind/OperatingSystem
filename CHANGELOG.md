@@ -18,6 +18,7 @@
 - `Innmind\OperatingSystem\Ports\Unix::of()` is now declared `internal`
 - `Innmind\OperatingSystem\Remote\Generic::of()` is now declared `internal`
 - `Innmind\OperatingSystem\Ports\Sockets::of()` is now declared `internal`
+- Requires `innmind/file-watch:~4.0`
 
 ## 4.2.0 - 2023-12-14
 
