@@ -2,8 +2,8 @@
 
 Directly accessing time in a PHP code is straightforward (either via `DateTime` or time functions) but it prevents you to build testable code or require to use some hard to understand hacks. Instead it is simpler to think of time as another dependency that you need to inject in your code, thus easier to change the implementation when testing.
 
-> [!TIP]
-> for a more in length presentation of why directly accessing time is problematic you can watch this [talk](https://www.youtube.com/watch?v=T_I6HhP9-6w) (in french).
+??? tip
+    For a more in length presentation of why directly accessing time is problematic you can watch this [talk](https://www.youtube.com/watch?v=T_I6HhP9-6w) (in french).
 
 ## Accessing time
 
@@ -36,8 +36,8 @@ $crawl = function(CurrentProcess $process, string ...$urls): void {
         // crawl the $url and do something with the result
 
         // here for the sake of simplicity we specify 1 second but it can be
-        // any instance of Innmind\TimeContinuum\Period and you could build it
-        // from a robots.txt Crawler-Delay directive
+        // any instance of Innmind\TimeContinuum\Period and you could build
+        // it from a robots.txt Crawler-Delay directive
         $process->halt(new Second(1));
     }
 };

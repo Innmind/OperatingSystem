@@ -37,7 +37,11 @@ use Innmind\Filesystem\{
 use Innmind\Url\Path;
 use Innmind\Immutable\Predicate\Instance;
 
-$addUserPicture = function(Adapter $filesystem, string $userId, File $picture): void {
+$addUserPicture = function(
+    Adapter $filesystem,
+    string $userId,
+    File $picture,
+): void {
     $filesystem
         ->get(Name::of($userId))
         ->keep(Instance::of(Directory::class))
@@ -73,7 +77,9 @@ Example of checking if a `maintenance.lock` exist to prevent your webapp from ru
 ```php
 use Innmind\Url\Path;
 
-if ($os->filesystem()->contains(Path::of('/path/to/project/maintenance.lock'))) {
+$path = Path::of('/path/to/project/maintenance.lock');
+
+if ($os->filesystem()->contains($path)) {
     throw new \RuntimeException('Application still in maintenance');
 }
 
@@ -85,7 +91,9 @@ Or you could check the existence of a directory that is required for another sub
 ```php
 use Innmind\Url\Path;
 
-if (!$os->filesystem()->contains(Path::of('/path/to/some/required/folder/'))) {
+$path = Path::of('/path/to/some/required/folder/');
+
+if (!$os->filesystem()->contains($path)) {
     $os->control()->processes()->execute($mkdirCommand);
 }
 
@@ -116,20 +124,23 @@ use Innmind\FileWatch\Continuation;
 
 $runTests = $os->filesystem()->watch(Path::of('/path/to/project/src/'));
 
-$count = $runTests(0, function(int $count, Continuation $continuation) use ($os): Continuation {
-    if ($count === 42) {
-        return $continuation->stop($count);
-    }
+$count = $runTests(
+    0,
+    function(int $count, Continuation $continuation) use ($os): Continuation {
+        if ($count === 42) {
+            return $continuation->stop($count);
+        }
 
-    $os->control()->processes()->execute($phpunitCommand);
+        $os->control()->processes()->execute($phpunitCommand);
 
-    return $continuation->continue(++$count);
-});
+        return $continuation->continue(++$count);
+    },
+);
 ```
 
 Here it will run phpunit tests every time the `src/` folder changes. Concrete examples of this pattern can be found in [`innmind/lab-station`](https://github.com/Innmind/LabStation/blob/develop/src/Agent/WatchSources.php#L38) to run a suite of tools when sources change.
 
 This operation is a bit like an `array_reduce` as you can keep a state record between each calls of the callable via the first argument (here `0`, but it can be anything) and the argument of your callable will be the previous value returned by `$continuation->continue()`.
 
-> [!WARNING]
-> since there is no builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.
+!!! warning ""
+    Since there is no builtin way to watch for changes in a directory it checks the directory every second, so use it with care. Watching an individual file is a bit safer as it uses the `tail` command so there is no `sleep()` used.

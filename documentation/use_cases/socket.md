@@ -17,10 +17,13 @@ use Innmind\Socket\Internet\Transport;
 use Innmind\IP\IPv4;
 use Innmind\TimeContinuum\Earth\ElapsedPeriod;
 
-$server = $os->ports()->open(Transport::tcp(), IPv4::localhost(), Port::of(8080))->match(
-    static fn($server) => $server,
-    static fn() => throw new \RuntimeException('Unable to start the server'),
-);
+$server = $os
+    ->ports()
+    ->open(Transport::tcp(), IPv4::localhost(), Port::of(8080))
+    ->match(
+        static fn($server) => $server,
+        static fn() => throw new \RuntimeException('Unable to start the server'),
+    );
 
 while (true) {
     $server
@@ -44,10 +47,13 @@ use Innmind\Url\Url;
 use Innmind\IO\Readable\Frame;
 use Innmind\Socket\Internet\Transport;
 
-$client = $os->remote()->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())->match(
-    static fn($client) => $client,
-    static fn() => throw new \RuntimeException('Unable to connect to the client'),
-);
+$client = $os
+    ->remote()
+    ->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())
+    ->match(
+        static fn($client) => $client,
+        static fn() => throw new \RuntimeException('Unable to connect to the client'),
+    );
 
 $receivedData = $client
     ->watch()
