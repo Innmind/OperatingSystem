@@ -6,7 +6,9 @@ You can build a connection to a SQL server like so:
 use Innmind\Url\Url;
 use Formal\AccessLayer\Connection;
 
-$connection = $os->remote()->sql(Url::of('mysql://127.0.0.1:3306/database_name'));
+$connection = $os
+    ->remote()
+    ->sql(Url::of('mysql://127.0.0.1:3306/database_name'));
 
 $connection instanceof Connection; // true
 ```

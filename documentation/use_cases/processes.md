@@ -90,7 +90,11 @@ $backupRunning = $os
     ->status()
     ->processes()
     ->all()
-    ->any(fn($process): bool => $process->command()->matches(RegExp::of('~my-backup-tool~')));
+    ->any(
+        fn($process): bool => $process
+            ->command()
+            ->matches(RegExp::of('~my-backup-tool~')),
+    );
 
 if (!$backupRunning) {
     $os->control()->processes()->execute(
