@@ -3,7 +3,7 @@ repo_name: Innmind/OperatingSystem
 docs_dir: documentation
 
 nav:
-  - Getting Started: readme.md
+  - Getting Started: index.md
 
 theme:
   name: material
