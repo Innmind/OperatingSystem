@@ -19,15 +19,21 @@ use Innmind\Immutable\{
     Str,
 };
 
-$client = $os->remote()->socket(Transport::tcp(), Ur::of('tcp://127.0.0.1:8080')->authority())->match(
-    static fn($client) => $client,
-    static fn() => throw new \RuntimeException('Unable to connect to the server'),
-);
+$client = $os
+    ->remote()
+    ->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())
+    ->match(
+        static fn($client) => $client,
+        static fn() => throw new \RuntimeException('Unable to connect to the server'),
+    );
 $watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
 $signaled = true;
-$os->process()->signals()->listen(Signal::terminate, function() use (&$signaled) {
-    $signaled = false;
-});
+$os
+    ->process()
+    ->signals()
+    ->listen(Signal::terminate, function() use (&$signaled) {
+        $signaled = false;
+    });
 
 $receivedData = $client
     ->timeoutAfter(ElapsedPeriod::of(1_000))
@@ -52,8 +58,8 @@ $client->unwrap()->close();
 
 When the process receive the `SIGTERM` signal it will be paused then the anonymous function will be called and the process will then be resumed.
 
-> [!NOTE]
-> signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
+!!! note ""
+    Signal handling is already performed when using [`innmind/ipc`](https://github.com/innmind/ipc) or [`innmind/amqp`](https://github.com/innmind/amqp) so you don't have to think about it.
 
 ## Prevent process from being stopped
 
