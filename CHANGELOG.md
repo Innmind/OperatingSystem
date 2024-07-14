@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.0 - 2024-07-14
+
+### Changed
+
+- Requires `formal/access-layer:~3.0`
+
 ## 5.0.0 - 2024-03-10
 
 ### Added
