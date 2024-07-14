@@ -99,6 +99,6 @@ final class Generic implements Remote
 
     public function sql(Url $server): Connection
     {
-        return new Connection\Lazy(static fn() => Connection\PDO::of($server));
+        return Connection\Lazy::of(static fn() => Connection\PDO::of($server));
     }
 }
