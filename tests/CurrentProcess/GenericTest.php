@@ -12,6 +12,7 @@ use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
+use Innmind\Immutable\SideEffect;
 use PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
@@ -38,7 +39,12 @@ class GenericTest extends TestCase
             Halt\Usleep::new(),
         );
 
-        $this->assertNull($process->halt(Period::millisecond(1)));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $process
+                ->halt(Period::millisecond(1))
+                ->unwrap(),
+        );
     }
 
     public function testSignals()

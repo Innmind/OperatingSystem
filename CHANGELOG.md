@@ -14,6 +14,7 @@
 - Requires `innmind/io:~3.2`
 - Requires `innmind/immutable:~5.15`
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` period is now expressed with a `Innmind\TimeContinuum\Period`
+- `Innmind\OperatingSystem\CurrentProcess::halt()` now returns `Innmind\Immutable\Attempt<Innmind\Immutable\SideEffect>`
 
 ### Fixed
 
