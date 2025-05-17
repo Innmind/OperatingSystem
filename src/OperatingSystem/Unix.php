@@ -38,7 +38,7 @@ final class Unix implements OperatingSystem
         $this->config = $config;
     }
 
-    public static function of(Config $config = null): self
+    public static function of(?Config $config = null): self
     {
         return new self($config ?? Config::of());
     }

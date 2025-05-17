@@ -54,7 +54,7 @@ final class Unix implements Sockets
         );
     }
 
-    public function watch(ElapsedPeriod $timeout = null): Watch
+    public function watch(?ElapsedPeriod $timeout = null): Watch
     {
         if (\is_null($timeout)) {
             return $this
