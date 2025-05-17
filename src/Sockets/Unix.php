@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\{
     Config,
 };
 use Innmind\IO\Sockets\Unix\Address;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 final class Unix implements Sockets
 {
@@ -28,38 +28,35 @@ final class Unix implements Sockets
     }
 
     #[\Override]
-    public function open(Address $address): Maybe
+    public function open(Address $address): Attempt
     {
         return $this
             ->config
             ->io()
             ->sockets()
             ->servers()
-            ->unix($address)
-            ->maybe();
+            ->unix($address);
     }
 
     #[\Override]
-    public function takeOver(Address $address): Maybe
+    public function takeOver(Address $address): Attempt
     {
         return $this
             ->config
             ->io()
             ->sockets()
             ->servers()
-            ->takeOver($address)
-            ->maybe();
+            ->takeOver($address);
     }
 
     #[\Override]
-    public function connectTo(Address $address): Maybe
+    public function connectTo(Address $address): Attempt
     {
         return $this
             ->config
             ->io()
             ->sockets()
             ->clients()
-            ->unix($address)
-            ->maybe();
+            ->unix($address);
     }
 }

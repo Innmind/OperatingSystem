@@ -11,6 +11,7 @@ use Innmind\Filesystem\{
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
 use Innmind\Immutable\{
+    Attempt,
     Maybe,
     Sequence,
 };
@@ -82,7 +83,7 @@ final class Logger implements Filesystem
     }
 
     #[\Override]
-    public function temporary(Sequence $chunks): Maybe
+    public function temporary(Sequence $chunks): Attempt
     {
         return $this
             ->filesystem

@@ -15,6 +15,12 @@
 - Requires `innmind/immutable:~5.15`
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` period is now expressed with a `Innmind\TimeContinuum\Period`
 - `Innmind\OperatingSystem\CurrentProcess::halt()` now returns `Innmind\Immutable\Attempt<Innmind\Immutable\SideEffect>`
+- `Innmind\OperatingSystem\Filesystem::temporary()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Ports::open()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Remote::socket()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::open()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::takeOver()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::connectTo()` now returns an `Innmind\Immutable\Attempt`
 
 ### Fixed
 

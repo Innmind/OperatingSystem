@@ -5,7 +5,7 @@ namespace Innmind\OperatingSystem\Sockets;
 
 use Innmind\OperatingSystem\Sockets;
 use Innmind\IO\Sockets\Unix\Address;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Sockets
@@ -25,7 +25,7 @@ final class Logger implements Sockets
     }
 
     #[\Override]
-    public function open(Address $address): Maybe
+    public function open(Address $address): Attempt
     {
         $this->logger->debug(
             'Opening socket at {address}',
@@ -36,7 +36,7 @@ final class Logger implements Sockets
     }
 
     #[\Override]
-    public function takeOver(Address $address): Maybe
+    public function takeOver(Address $address): Attempt
     {
         $this->logger->debug(
             'Taking over the socket at {address}',
@@ -47,7 +47,7 @@ final class Logger implements Sockets
     }
 
     #[\Override]
-    public function connectTo(Address $address): Maybe
+    public function connectTo(Address $address): Attempt
     {
         $this->logger->debug(
             'Connecting to socket at {address}',

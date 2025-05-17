@@ -14,7 +14,7 @@ use Innmind\IO\Sockets\{
     Internet\Transport,
     Clients\Client,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -82,7 +82,7 @@ class ResilientTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = Maybe::just(null /* hack to avoid creating real client */));
+                    ->willReturn($expected = Attempt::result(null /* hack to avoid creating real client */));
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });

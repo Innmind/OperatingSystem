@@ -111,7 +111,7 @@ final class Generic implements Filesystem
     }
 
     #[\Override]
-    public function temporary(Sequence $chunks): Maybe
+    public function temporary(Sequence $chunks): Attempt
     {
         return Attempt::of(
             fn() => $this
@@ -129,6 +129,6 @@ final class Generic implements Filesystem
                 ->map(static fn($tmp) => $tmp->read())
                 ->map(Content::io(...))
                 ->unwrap(),
-        )->maybe();
+        );
     }
 }

@@ -19,10 +19,7 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     ExponentialBackoff,
 };
-use Innmind\Immutable\{
-    Maybe,
-    Attempt,
-};
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 
 final class Resilient implements Remote
@@ -48,7 +45,7 @@ final class Resilient implements Remote
     }
 
     #[\Override]
-    public function socket(Transport $transport, Authority $authority): Maybe
+    public function socket(Transport $transport, Authority $authority): Attempt
     {
         return $this->remote->socket($transport, $authority);
     }

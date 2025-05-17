@@ -9,12 +9,12 @@ use Innmind\IO\{
     Sockets\Internet\Transport,
 };
 use Innmind\IP\IP;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 interface Ports
 {
     /**
-     * @return Maybe<Server>
+     * @return Attempt<Server>
      */
-    public function open(Transport $transport, IP $ip, Port $port): Maybe;
+    public function open(Transport $transport, IP $ip, Port $port): Attempt;
 }

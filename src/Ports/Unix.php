@@ -10,7 +10,7 @@ use Innmind\OperatingSystem\{
 use Innmind\Url\Authority\Port;
 use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IP;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 final class Unix implements Ports
 {
@@ -30,14 +30,13 @@ final class Unix implements Ports
     }
 
     #[\Override]
-    public function open(Transport $transport, IP $ip, Port $port): Maybe
+    public function open(Transport $transport, IP $ip, Port $port): Attempt
     {
         return $this
             ->config
             ->io()
             ->sockets()
             ->servers()
-            ->internet($transport, $ip, $port)
-            ->maybe();
+            ->internet($transport, $ip, $port);
     }
 }
