@@ -13,7 +13,7 @@ use Innmind\Url\{
     Authority,
 };
 use Innmind\HttpTransport\Transport as HttpTransport;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 
 interface Remote
@@ -21,9 +21,9 @@ interface Remote
     public function ssh(Url $server): Server;
 
     /**
-     * @return Maybe<Client>
+     * @return Attempt<Client>
      */
-    public function socket(Transport $transport, Authority $authority): Maybe;
+    public function socket(Transport $transport, Authority $authority): Attempt;
     public function http(): HttpTransport;
     public function sql(Url $server): Connection;
 }

@@ -49,7 +49,7 @@ class GenericTest extends TestCase
             Config::of(),
         );
 
-        $adapter = $filesystem->mount(Path::of('/tmp/'));
+        $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
         $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
     }
@@ -61,9 +61,9 @@ class GenericTest extends TestCase
             Config::of(),
         );
 
-        $adapter = $filesystem->mount(Path::of('/tmp/'));
+        $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
-        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/')));
+        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/'))->unwrap());
     }
 
     public function testContainsFile()

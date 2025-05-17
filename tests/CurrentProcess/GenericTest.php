@@ -29,8 +29,11 @@ class GenericTest extends TestCase
     {
         $process = Generic::of($this->createMock(Halt::class));
 
-        $this->assertInstanceOf(Pid::class, $process->id());
-        $this->assertSame($process->id()->toInt(), $process->id()->toInt());
+        $this->assertInstanceOf(Pid::class, $process->id()->unwrap());
+        $this->assertSame(
+            $process->id()->unwrap()->toInt(),
+            $process->id()->unwrap()->toInt(),
+        );
     }
 
     public function testHalt()

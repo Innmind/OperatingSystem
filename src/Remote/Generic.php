@@ -21,7 +21,7 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     Curl,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 
 final class Generic implements Remote
@@ -62,15 +62,14 @@ final class Generic implements Remote
     }
 
     #[\Override]
-    public function socket(Transport $transport, Authority $authority): Maybe
+    public function socket(Transport $transport, Authority $authority): Attempt
     {
         return $this
             ->config
             ->io()
             ->sockets()
             ->clients()
-            ->internet($transport, $authority)
-            ->maybe();
+            ->internet($transport, $authority);
     }
 
     #[\Override]

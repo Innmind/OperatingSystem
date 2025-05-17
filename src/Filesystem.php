@@ -10,6 +10,7 @@ use Innmind\Filesystem\{
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
 use Innmind\Immutable\{
+    Attempt,
     Maybe,
     Str,
     Sequence,
@@ -17,7 +18,10 @@ use Innmind\Immutable\{
 
 interface Filesystem
 {
-    public function mount(Path $path): Adapter;
+    /**
+     * @return Attempt<Adapter>
+     */
+    public function mount(Path $path): Attempt;
     public function contains(Path $path): bool;
 
     /**
@@ -36,7 +40,7 @@ interface Filesystem
      *
      * @param Sequence<Maybe<Str>> $chunks
      *
-     * @return Maybe<Content>
+     * @return Attempt<Content>
      */
-    public function temporary(Sequence $chunks): Maybe;
+    public function temporary(Sequence $chunks): Attempt;
 }

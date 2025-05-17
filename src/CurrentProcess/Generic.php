@@ -30,13 +30,15 @@ final class Generic implements CurrentProcess
     }
 
     #[\Override]
-    public function id(): Pid
+    public function id(): Attempt
     {
-        /**
-         * @psalm-suppress ArgumentTypeCoercion
-         * @psalm-suppress PossiblyFalseArgument
-         */
-        return new Pid(\getmypid());
+        $pid = \getmypid();
+
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return match ($pid) {
+            false => Attempt::error(new \RuntimeException('Failed to retrieve process id')),
+            default => Attempt::result(new Pid($pid)),
+        };
     }
 
     #[\Override]

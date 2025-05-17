@@ -14,7 +14,10 @@ use Innmind\{
     FileWatch\Ping,
 };
 use Innmind\TimeWarp\Halt;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\{
+    Attempt,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -47,11 +50,15 @@ class LoggerTest extends TestCase
                 $inner
                     ->expects($this->once())
                     ->method('mount')
-                    ->with($path);
+                    ->with($path)
+                    ->willReturn(Attempt::result($this->createMock(Adapter::class)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $filesystem = Logger::psr($inner, $logger);
 
-                $this->assertInstanceOf(Adapter\Logger::class, $filesystem->mount($path));
+                $this->assertInstanceOf(
+                    Adapter\Logger::class,
+                    $filesystem->mount($path)->unwrap(),
+                );
             });
     }
 

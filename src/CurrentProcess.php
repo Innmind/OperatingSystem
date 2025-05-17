@@ -14,7 +14,10 @@ use Innmind\Immutable\{
 
 interface CurrentProcess
 {
-    public function id(): Pid;
+    /**
+     * @return Attempt<Pid>
+     */
+    public function id(): Attempt;
     public function signals(): Signals;
 
     /**

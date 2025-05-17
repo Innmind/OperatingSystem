@@ -48,7 +48,7 @@ final class Generic implements Filesystem
     }
 
     #[\Override]
-    public function mount(Path $path): Adapter
+    public function mount(Path $path): Attempt
     {
         /**
          * @var Adapter $adapter
@@ -56,20 +56,22 @@ final class Generic implements Filesystem
          */
         foreach ($this->mounted as $adapter => $mounted) {
             if ($path->toString() === $mounted) {
-                return $adapter;
+                return Attempt::result($adapter);
             }
         }
 
-        $adapter = Adapter\Filesystem::mount(
-            $path,
-            $this->config->io(),
-        )
-            ->withCaseSensitivity(
-                $this->config->filesystemCaseSensitivity(),
-            );
-        $this->mounted[$adapter] = $path->toString();
+        return Attempt::of(function() use ($path) {
+            $adapter = Adapter\Filesystem::mount(
+                $path,
+                $this->config->io(),
+            )
+                ->withCaseSensitivity(
+                    $this->config->filesystemCaseSensitivity(),
+                );
+            $this->mounted[$adapter] = $path->toString();
 
-        return $adapter;
+            return $adapter;
+        });
     }
 
     #[\Override]
@@ -111,7 +113,7 @@ final class Generic implements Filesystem
     }
 
     #[\Override]
-    public function temporary(Sequence $chunks): Maybe
+    public function temporary(Sequence $chunks): Attempt
     {
         return Attempt::of(
             fn() => $this
@@ -129,6 +131,6 @@ final class Generic implements Filesystem
                 ->map(static fn($tmp) => $tmp->read())
                 ->map(Content::io(...))
                 ->unwrap(),
-        )->maybe();
+        );
     }
 }

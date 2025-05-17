@@ -7,7 +7,7 @@ use Innmind\OperatingSystem\Ports;
 use Innmind\Url\Authority\Port;
 use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IP;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Ports
@@ -27,7 +27,7 @@ final class Logger implements Ports
     }
 
     #[\Override]
-    public function open(Transport $transport, IP $ip, Port $port): Maybe
+    public function open(Transport $transport, IP $ip, Port $port): Attempt
     {
         $this->logger->debug(
             'Opening new port at {address}',

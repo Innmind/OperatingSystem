@@ -16,7 +16,7 @@ use Innmind\IP\{
     IPv4,
     IPv6,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -63,7 +63,7 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('open')
                     ->with($transport, $ip, Port::of($port))
-                    ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
+                    ->willReturn($expected = Attempt::result(null /* hack to avoid creating real server */));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())

@@ -11,6 +11,7 @@ use Innmind\Filesystem\{
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
 use Innmind\Immutable\{
+    Attempt,
     Maybe,
     Sequence,
 };
@@ -37,11 +38,13 @@ final class Logger implements Filesystem
     }
 
     #[\Override]
-    public function mount(Path $path): Adapter
+    public function mount(Path $path): Attempt
     {
-        return Adapter\Logger::psr(
-            $this->filesystem->mount($path),
-            $this->logger,
+        return $this->filesystem->mount($path)->map(
+            fn($adapter) => Adapter\Logger::psr(
+                $adapter,
+                $this->logger,
+            ),
         );
     }
 
@@ -82,7 +85,7 @@ final class Logger implements Filesystem
     }
 
     #[\Override]
-    public function temporary(Sequence $chunks): Maybe
+    public function temporary(Sequence $chunks): Attempt
     {
         return $this
             ->filesystem

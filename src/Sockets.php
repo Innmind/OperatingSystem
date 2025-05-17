@@ -8,26 +8,26 @@ use Innmind\IO\{
     Sockets\Servers\Server,
     Sockets\Unix\Address,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 interface Sockets
 {
     /**
      * This method will fail if the socket already exist
      *
-     * @return Maybe<Server>
+     * @return Attempt<Server>
      */
-    public function open(Address $address): Maybe;
+    public function open(Address $address): Attempt;
 
     /**
      * This will take control of the socket if it already exist (use carefully)
      *
-     * @return Maybe<Server>
+     * @return Attempt<Server>
      */
-    public function takeOver(Address $address): Maybe;
+    public function takeOver(Address $address): Attempt;
 
     /**
-     * @return Maybe<Client>
+     * @return Attempt<Client>
      */
-    public function connectTo(Address $address): Maybe;
+    public function connectTo(Address $address): Attempt;
 }

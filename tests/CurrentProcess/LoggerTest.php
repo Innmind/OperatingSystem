@@ -46,7 +46,7 @@ class LoggerTest extends TestCase
                 $inner
                     ->expects($this->once())
                     ->method('id')
-                    ->willReturn($expected = new Pid($id));
+                    ->willReturn(Attempt::result($expected = new Pid($id)));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())
@@ -57,7 +57,7 @@ class LoggerTest extends TestCase
                     );
                 $process = Logger::psr($inner, $logger);
 
-                $this->assertSame($expected, $process->id());
+                $this->assertSame($expected, $process->id()->unwrap());
             });
     }
 

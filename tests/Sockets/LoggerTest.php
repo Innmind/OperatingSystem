@@ -13,7 +13,7 @@ use Innmind\IO\Sockets\{
     Clients\Client,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -38,7 +38,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('open')
             ->with($address)
-            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
+            ->willReturn($expected = Attempt::result(null /* hack to avoid creating real server */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -60,7 +60,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('takeOver')
             ->with($address)
-            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
+            ->willReturn($expected = Attempt::result(null /* hack to avoid creating real server */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -82,7 +82,7 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('connectTo')
             ->with($address)
-            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real client */));
+            ->willReturn($expected = Attempt::result(null /* hack to avoid creating real client */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

@@ -11,7 +11,7 @@ use Innmind\Url\{
     Authority,
 };
 use Innmind\HttpTransport;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 
@@ -41,7 +41,7 @@ final class Logger implements Remote
     }
 
     #[\Override]
-    public function socket(Transport $transport, Authority $authority): Maybe
+    public function socket(Transport $transport, Authority $authority): Attempt
     {
         $this->logger->debug(
             'Opening remote socket at {address}',
