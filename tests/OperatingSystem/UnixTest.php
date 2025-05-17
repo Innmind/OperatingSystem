@@ -22,7 +22,7 @@ class UnixTest extends TestCase
 {
     public function testInterface()
     {
-        $clock = $this->createMock(Clock::class);
+        $clock = Clock::live();
 
         $os = Unix::of(Config::of()->withClock($clock));
 

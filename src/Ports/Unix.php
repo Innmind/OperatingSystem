@@ -8,11 +8,7 @@ use Innmind\OperatingSystem\{
     Config,
 };
 use Innmind\Url\Authority\Port;
-use Innmind\IO\Sockets\Server;
-use Innmind\Socket\{
-    Internet\Transport,
-    Server\Internet,
-};
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IP;
 use Innmind\Immutable\Maybe;
 
@@ -36,9 +32,12 @@ final class Unix implements Ports
     #[\Override]
     public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
-        /** @var Maybe<Server> */
-        return Internet::of($transport, $ip, $port)->map(
-            $this->config->io()->sockets()->servers()->wrap(...),
-        );
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->internet($transport, $ip, $port)
+            ->maybe();
     }
 }

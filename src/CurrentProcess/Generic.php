@@ -53,6 +53,7 @@ final class Generic implements CurrentProcess
     #[\Override]
     public function memory(): Bytes
     {
-        return new Bytes(\memory_get_usage());
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return Bytes::of(\memory_get_usage());
     }
 }

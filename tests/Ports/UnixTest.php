@@ -8,9 +8,9 @@ use Innmind\OperatingSystem\{
     Ports,
     Config,
 };
-use Innmind\Socket\{
+use Innmind\IO\Sockets\{
     Internet\Transport,
-    Server\Internet,
+    Servers\Server,
 };
 use Innmind\IP\IPv4;
 use Innmind\Url\Authority\Port;
@@ -32,11 +32,11 @@ class UnixTest extends TestCase
             IPv4::localhost(),
             Port::of(1234),
         )->match(
-            static fn($server) => $server->unwrap(),
+            static fn($server) => $server,
             static fn() => null,
         );
 
-        $this->assertInstanceOf(Internet::class, $socket);
+        $this->assertInstanceOf(Server::class, $socket);
         $socket->close();
     }
 }

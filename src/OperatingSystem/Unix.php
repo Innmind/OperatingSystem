@@ -79,7 +79,7 @@ final class Unix implements OperatingSystem
     {
         return $this->control ??= Servers\Unix::of(
             $this->clock(),
-            $this->config->streamCapabilities(),
+            $this->config->io(),
             $this->config->halt(),
         );
     }

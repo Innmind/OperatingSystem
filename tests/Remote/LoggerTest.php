@@ -9,9 +9,9 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\Servers;
 use Innmind\HttpTransport\Logger as LoggerTransport;
-use Innmind\Socket\{
+use Innmind\IO\Sockets\{
     Internet\Transport,
-    Client,
+    Clients\Client,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\Maybe;
@@ -82,7 +82,7 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
+                    ->willReturn($expected = Maybe::just(null /* hack to avoid creating real client */));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())

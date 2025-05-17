@@ -10,9 +10,9 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\HttpTransport\ExponentialBackoff;
 use Innmind\Server\Control\Server;
-use Innmind\Socket\{
+use Innmind\IO\Sockets\{
     Internet\Transport,
-    Client,
+    Clients\Client,
 };
 use Innmind\Immutable\Maybe;
 use Formal\AccessLayer\Connection;
@@ -82,7 +82,7 @@ class ResilientTest extends TestCase
                     ->expects($this->once())
                     ->method('socket')
                     ->with($transport, $authority)
-                    ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
+                    ->willReturn($expected = Maybe::just(null /* hack to avoid creating real client */));
 
                 $this->assertSame($expected, $remote->socket($transport, $authority));
             });

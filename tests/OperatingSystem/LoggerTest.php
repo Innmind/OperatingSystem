@@ -43,7 +43,7 @@ class LoggerTest extends TestCase
     public function testClock()
     {
         $this->assertInstanceOf(
-            TimeContinuum\Logger\Clock::class,
+            TimeContinuum\Clock::class,
             $this->os->clock(),
         );
     }

@@ -7,6 +7,7 @@ use Innmind\OperatingSystem\{
     Remote\Generic,
     Remote,
     Config,
+    Factory,
 };
 use Innmind\Server\Control\{
     Server,
@@ -17,13 +18,13 @@ use Innmind\Url\{
     Url,
     Authority\Port,
 };
-use Innmind\Socket\{
+use Innmind\IO\Sockets\{
     Internet\Transport,
-    Client\Internet,
-    Server\Internet as InternetServer,
+    Clients\Client,
 };
 use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\PHPUnit\BlackBox;
@@ -59,7 +60,8 @@ class GenericTest extends TestCase
             ->method('execute')
             ->with($this->callback(static function($command): bool {
                 return $command->toString() === "ssh '-p' '42' 'user@my-vps' 'ls'";
-            }));
+            }))
+            ->willReturn(Attempt::result(null /* hack to avoid creating real process */));
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
@@ -82,7 +84,8 @@ class GenericTest extends TestCase
             ->method('execute')
             ->with($this->callback(static function($command): bool {
                 return $command->toString() === "ssh 'user@my-vps' 'ls'";
-            }));
+            }))
+            ->willReturn(Attempt::result(null /* hack to avoid creating real process */));
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
 
@@ -96,17 +99,20 @@ class GenericTest extends TestCase
             $this->createMock(Server::class),
             Config::of(),
         );
-        $server = InternetServer::of(Transport::tcp(), IPv4::localhost(), Port::of(1234))->match(
-            static fn($server) => $server,
-            static fn() => null,
-        );
+        $server = Factory::build()
+            ->ports()
+            ->open(Transport::tcp(), IPv4::localhost(), Port::of(1234))
+            ->match(
+                static fn($server) => $server,
+                static fn() => null,
+            );
 
         $socket = $remote->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:1234')->authority())->match(
-            static fn($client) => $client->unwrap(),
+            static fn($client) => $client,
             static fn() => null,
         );
 
-        $this->assertInstanceOf(Internet::class, $socket);
+        $this->assertInstanceOf(Client::class, $socket);
         $server->close();
         $socket->close();
     }

@@ -6,9 +6,14 @@ namespace Tests\Innmind\OperatingSystem\Filesystem;
 use Innmind\OperatingSystem\{
     Filesystem\Logger,
     Filesystem,
+    Factory,
 };
 use Innmind\Filesystem\Adapter;
-use Innmind\FileWatch\Ping;
+use Innmind\{
+    FileWatch,
+    FileWatch\Ping,
+};
+use Innmind\TimeWarp\Halt;
 use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
@@ -105,15 +110,21 @@ class LoggerTest extends TestCase
         $this
             ->forAll(Path::any())
             ->then(function($path) {
+                $os = Factory::build();
+                $watch = FileWatch\Factory::build(
+                    $os->control()->processes(),
+                    Halt\Usleep::new(),
+                );
                 $inner = $this->createMock(Filesystem::class);
                 $inner
                     ->expects($this->once())
                     ->method('watch')
-                    ->with($path);
+                    ->with($path)
+                    ->willReturn($watch($path));
                 $logger = $this->createMock(LoggerInterface::class);
                 $filesystem = Logger::psr($inner, $logger);
 
-                $this->assertInstanceOf(Ping\Logger::class, $filesystem->watch($path));
+                $this->assertInstanceOf(Ping::class, $filesystem->watch($path));
             });
     }
 

@@ -4,9 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Sockets;
 
 use Innmind\OperatingSystem\Sockets;
-use Innmind\Socket\Address\Unix as Address;
-use Innmind\TimeContinuum\ElapsedPeriod;
-use Innmind\Stream\Watch;
+use Innmind\IO\Sockets\Unix\Address;
 use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
@@ -57,14 +55,5 @@ final class Logger implements Sockets
         );
 
         return $this->sockets->connectTo($address);
-    }
-
-    #[\Override]
-    public function watch(?ElapsedPeriod $timeout = null): Watch
-    {
-        return Watch\Logger::psr(
-            $this->sockets->watch($timeout),
-            $this->logger,
-        );
     }
 }

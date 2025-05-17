@@ -7,13 +7,7 @@ use Innmind\OperatingSystem\{
     Sockets,
     Config,
 };
-use Innmind\Socket\{
-    Address\Unix as Address,
-    Server,
-    Client,
-};
-use Innmind\TimeContinuum\ElapsedPeriod;
-use Innmind\Stream\Watch;
+use Innmind\IO\Sockets\Unix\Address;
 use Innmind\Immutable\Maybe;
 
 final class Unix implements Sockets
@@ -36,42 +30,36 @@ final class Unix implements Sockets
     #[\Override]
     public function open(Address $address): Maybe
     {
-        return Server\Unix::of($address)->map(
-            $this->config->io()->sockets()->servers()->wrap(...),
-        );
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->unix($address)
+            ->maybe();
     }
 
     #[\Override]
     public function takeOver(Address $address): Maybe
     {
-        return Server\Unix::recoverable($address)->map(
-            $this->config->io()->sockets()->servers()->wrap(...),
-        );
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->takeOver($address)
+            ->maybe();
     }
 
     #[\Override]
     public function connectTo(Address $address): Maybe
     {
-        return Client\Unix::of($address)->map(
-            $this->config->io()->sockets()->clients()->wrap(...),
-        );
-    }
-
-    #[\Override]
-    public function watch(?ElapsedPeriod $timeout = null): Watch
-    {
-        if (\is_null($timeout)) {
-            return $this
-                ->config
-                ->streamCapabilities()
-                ->watch()
-                ->waitForever();
-        }
-
         return $this
             ->config
-            ->streamCapabilities()
-            ->watch()
-            ->timeoutAfter($timeout);
+            ->io()
+            ->sockets()
+            ->clients()
+            ->unix($address)
+            ->maybe();
     }
 }
