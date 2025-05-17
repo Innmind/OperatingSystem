@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\OperatingSystem\CurrentProcess;
-use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\Immutable\Attempt;
@@ -28,16 +27,16 @@ final class Logger implements CurrentProcess
     }
 
     #[\Override]
-    public function id(): Pid
+    public function id(): Attempt
     {
-        $pid = $this->process->id();
+        return $this->process->id()->map(function($pid) {
+            $this->logger->debug(
+                'Current process id is {pid}',
+                ['pid' => $pid->toInt()],
+            );
 
-        $this->logger->debug(
-            'Current process id is {pid}',
-            ['pid' => $pid->toInt()],
-        );
-
-        return $pid;
+            return $pid;
+        });
     }
 
     #[\Override]
