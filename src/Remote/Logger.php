@@ -5,7 +5,7 @@ namespace Innmind\OperatingSystem\Remote;
 
 use Innmind\OperatingSystem\Remote;
 use Innmind\Server\Control;
-use Innmind\Socket\Internet\Transport;
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\Url\{
     Url,
     Authority,

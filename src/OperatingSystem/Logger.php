@@ -44,7 +44,7 @@ final class Logger implements OperatingSystem
     #[\Override]
     public function clock(): TimeContinuum\Clock
     {
-        return new TimeContinuum\Logger\Clock(
+        return TimeContinuum\Clock::logger(
             $this->os->clock(),
             $this->logger,
         );
@@ -62,7 +62,7 @@ final class Logger implements OperatingSystem
     #[\Override]
     public function status(): Status\Server
     {
-        return new Status\Servers\Logger(
+        return Status\Servers\Logger::of(
             $this->os->status(),
             $this->logger,
         );

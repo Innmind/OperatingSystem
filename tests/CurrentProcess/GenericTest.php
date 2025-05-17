@@ -35,15 +35,10 @@ class GenericTest extends TestCase
     public function testHalt()
     {
         $process = Generic::of(
-            $halt = $this->createMock(Halt::class),
+            Halt\Usleep::new(),
         );
-        $period = $this->createMock(Period::class);
-        $halt
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($period);
 
-        $this->assertNull($process->halt($period));
+        $this->assertNull($process->halt(Period::millisecond(1)));
     }
 
     public function testSignals()

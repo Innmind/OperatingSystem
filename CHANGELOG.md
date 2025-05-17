@@ -2,9 +2,27 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Requires `innmind/time-continuum:^4.1.1`
+- Requires `innmind/server-status:~5.0`
+- Requires `innmind/server-control:~6.0`
+- Requires `innmind/filesystem:~8.1`
+- Requires `innmind/file-watch:~5.0`
+- Requires `innmind/http-transport:~8.0`
+- Requires `innmind/time-warp:~4.0`
+- Requires `innmind/io:~3.2`
+- Requires `innmind/immutable:~5.15`
+- `Innmind\OperatingSystem\Config::withHttpHeartbeat()` period is now expressed with a `Innmind\TimeContinuum\Period`
+
 ### Fixed
 
 - PHP `8.4` deprecations
+
+### Removed
+
+- `Innmind\OperatingSystem\Config::useStreamCapabilities()`
+- `Innmind\OperatingSystem\Sockets::watch()`
 
 ## 5.2.0 - 2024-07-14
 

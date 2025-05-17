@@ -18,12 +18,10 @@ use Innmind\FileWatch\{
     Factory,
     Watch,
 };
-use Innmind\Stream\Bidirectional;
 use Innmind\Immutable\{
     Maybe,
+    Attempt,
     Sequence,
-    Str,
-    Predicate\Instance,
 };
 
 final class Generic implements Filesystem
@@ -64,7 +62,6 @@ final class Generic implements Filesystem
 
         $adapter = Adapter\Filesystem::mount(
             $path,
-            $this->config->streamCapabilities(),
             $this->config->io(),
         )
             ->withCaseSensitivity(
@@ -116,24 +113,22 @@ final class Generic implements Filesystem
     #[\Override]
     public function temporary(Sequence $chunks): Maybe
     {
-        $temporary = $this
-            ->config
-            ->streamCapabilities()
-            ->temporary()
-            ->new();
-
-        $temporary = $chunks->reduce(
-            Maybe::just($temporary),
-            static fn(Maybe $temporary, $chunk) => Maybe::all($temporary, $chunk)->flatMap(
-                static fn(Bidirectional $temporary, Str $chunk) => $temporary
-                    ->write($chunk->toEncoding(Str\Encoding::ascii))
-                    ->maybe()
-                    ->keep(Instance::of(Bidirectional::class)),
-            ),
-        );
-
-        return $temporary
-            ->map($this->config->io()->readable()->wrap(...))
-            ->map(Content::io(...));
+        return Attempt::of(
+            fn() => $this
+                ->config
+                ->io()
+                ->files()
+                ->temporary(
+                    $chunks->map(
+                        static fn($chunk) => $chunk
+                            ->attempt(static fn() => new \RuntimeException('Failed to load chunk'))
+                            ->unwrap(),
+                    ),
+                )
+                ->memoize() // to make sure writing the chunks has been done
+                ->map(static fn($tmp) => $tmp->read())
+                ->map(Content::io(...))
+                ->unwrap(),
+        )->maybe();
     }
 }

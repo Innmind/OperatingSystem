@@ -8,13 +8,12 @@ use Innmind\OperatingSystem\{
     Sockets,
     Config,
 };
-use Innmind\Socket\{
-    Address\Unix as Address,
-    Server,
-    Client,
+use Innmind\IO\Sockets\{
+    Unix\Address,
+    Servers\Server,
+    Clients\Client,
 };
-use Innmind\TimeContinuum\ElapsedPeriod;
-use Innmind\Stream\Watch;
+use Innmind\Url\Path;
 use PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
@@ -28,15 +27,15 @@ class UnixTest extends TestCase
     {
         $sockets = Unix::of(Config::of());
 
-        $socket = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server->unwrap(),
+        $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
+            static fn($server) => $server,
             static fn() => null,
         );
 
-        $this->assertInstanceOf(Server\Unix::class, $socket);
+        $this->assertInstanceOf(Server::class, $socket);
 
         // return nothing as the socket already exist
-        $this->assertNull($sockets->open(Address::of('/tmp/foo'))->match(
+        $this->assertNull($sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
             static fn() => null,
         ));
@@ -47,16 +46,16 @@ class UnixTest extends TestCase
     {
         $sockets = Unix::of(Config::of());
 
-        $socket = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server->unwrap(),
+        $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
+            static fn($server) => $server,
             static fn() => null,
         );
-        $socket2 = $sockets->takeOver(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server->unwrap(),
+        $socket2 = $sockets->takeOver(Address::of(Path::of('/tmp/foo')))->match(
+            static fn($server) => $server,
             static fn() => null,
         );
 
-        $this->assertInstanceOf(Server\Unix::class, $socket2);
+        $this->assertInstanceOf(Server::class, $socket2);
         $this->assertNotSame($socket, $socket2);
         $socket2->close();
     }
@@ -65,27 +64,17 @@ class UnixTest extends TestCase
     {
         $sockets = Unix::of(Config::of());
 
-        $server = $sockets->open(Address::of('/tmp/foo'))->match(
-            static fn($server) => $server->unwrap(),
+        $server = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
+            static fn($server) => $server,
             static fn() => null,
         );
-        $client = $sockets->connectTo(Address::of('/tmp/foo'))->match(
-            static fn($client) => $client->unwrap(),
+        $client = $sockets->connectTo(Address::of(Path::of('/tmp/foo')))->match(
+            static fn($client) => $client,
             static fn() => null,
         );
 
-        $this->assertInstanceOf(Client\Unix::class, $client);
+        $this->assertInstanceOf(Client::class, $client);
         $client->close();
         $server->close();
-    }
-
-    public function testWatch()
-    {
-        $sockets = Unix::of(Config::of());
-
-        $this->assertInstanceOf(
-            Watch::class,
-            $sockets->watch($this->createMock(ElapsedPeriod::class)),
-        );
     }
 }

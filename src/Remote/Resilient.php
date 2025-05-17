@@ -8,7 +8,9 @@ use Innmind\OperatingSystem\{
     CurrentProcess,
 };
 use Innmind\Server\Control\Server;
-use Innmind\Socket\Internet\Transport;
+use Innmind\TimeWarp\Halt;
+use Innmind\TimeContinuum\Period;
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\Url\{
     Url,
     Authority,
@@ -17,7 +19,11 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     ExponentialBackoff,
 };
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\{
+    Maybe,
+    Attempt,
+    SideEffect,
+};
 use Formal\AccessLayer\Connection;
 
 final class Resilient implements Remote
@@ -53,7 +59,20 @@ final class Resilient implements Remote
     {
         return ExponentialBackoff::of(
             $this->remote->http(),
-            $this->process->halt(...),
+            new class($this->process) implements Halt {
+                public function __construct(
+                    private CurrentProcess $process,
+                ) {
+                }
+
+                #[\Override]
+                public function __invoke(Period $period): Attempt
+                {
+                    $this->process->halt($period);
+
+                    return Attempt::result(SideEffect::identity());
+                }
+            },
         );
     }
 

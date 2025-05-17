@@ -12,6 +12,7 @@ use Innmind\OperatingSystem\{
     Sockets,
     Remote,
     CurrentProcess,
+    Factory,
 };
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
@@ -22,7 +23,7 @@ class ResilientTest extends TestCase
 {
     public function testInterface()
     {
-        $os = Resilient::of($this->createMock(OperatingSystem::class));
+        $os = Resilient::of(Factory::build());
 
         $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertInstanceOf(Clock::class, $os->clock());

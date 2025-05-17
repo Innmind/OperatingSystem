@@ -8,10 +8,7 @@ use Innmind\OperatingSystem\{
     OperatingSystem\Unix,
     Config,
 };
-use Innmind\TimeContinuum\{
-    Clock,
-    Earth,
-};
+use Innmind\TimeContinuum\Clock;
 use Innmind\Filesystem\{
     File,
     File\Content,
@@ -25,7 +22,7 @@ class FactoryTest extends TestCase
 {
     public function testBuild()
     {
-        $clock = $this->createMock(Clock::class);
+        $clock = Clock::live();
 
         $os = Factory::build(Config::of()->withClock($clock));
 
@@ -37,7 +34,7 @@ class FactoryTest extends TestCase
     {
         $os = Factory::build();
 
-        $this->assertInstanceOf(Earth\Clock::class, $os->clock());
+        $this->assertInstanceOf(Clock::class, $os->clock());
     }
 
     public function testPersistingFileOnCaseInsensitiveFilesystem()

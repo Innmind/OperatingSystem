@@ -7,25 +7,18 @@ use Innmind\OperatingSystem\{
     Sockets\Logger,
     Sockets,
 };
-use Innmind\Socket\{
-    Address\Unix as Address,
-    Server,
-    Client,
+use Innmind\IO\Sockets\{
+    Unix\Address,
+    Servers\Server,
+    Clients\Client,
 };
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
-use Innmind\Stream\Watch;
+use Innmind\Url\Path;
 use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
-use Innmind\BlackBox\{
-    PHPUnit\BlackBox,
-    Set,
-};
 
 class LoggerTest extends TestCase
 {
-    use BlackBox;
-
     public function testInterface()
     {
         $this->assertInstanceOf(
@@ -39,13 +32,13 @@ class LoggerTest extends TestCase
 
     public function testOpen()
     {
-        $address = Address::of('/tmp/foo');
+        $address = Address::of(Path::of('/tmp/foo'));
         $inner = $this->createMock(Sockets::class);
         $inner
             ->expects($this->once())
             ->method('open')
             ->with($address)
-            ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
+            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -61,13 +54,13 @@ class LoggerTest extends TestCase
 
     public function testTakeOver()
     {
-        $address = Address::of('/tmp/foo');
+        $address = Address::of(Path::of('/tmp/foo'));
         $inner = $this->createMock(Sockets::class);
         $inner
             ->expects($this->once())
             ->method('takeOver')
             ->with($address)
-            ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
+            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -83,13 +76,13 @@ class LoggerTest extends TestCase
 
     public function testConnectTo()
     {
-        $address = Address::of('/tmp/foo');
+        $address = Address::of(Path::of('/tmp/foo'));
         $inner = $this->createMock(Sockets::class);
         $inner
             ->expects($this->once())
             ->method('connectTo')
             ->with($address)
-            ->willReturn($expected = Maybe::just($this->createMock(Client::class)));
+            ->willReturn($expected = Maybe::just(null /* hack to avoid creating real client */));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -101,25 +94,5 @@ class LoggerTest extends TestCase
         $sockets = Logger::psr($inner, $logger);
 
         $this->assertSame($expected, $sockets->connectTo($address));
-    }
-
-    public function testWatch()
-    {
-        $this
-            ->forAll(Set\Integers::above(0))
-            ->then(function($milliseconds) {
-                $inner = $this->createMock(Sockets::class);
-                $inner
-                    ->expects($this->once())
-                    ->method('watch')
-                    ->with(new ElapsedPeriod($milliseconds));
-                $logger = $this->createMock(LoggerInterface::class);
-                $sockets = Logger::psr($inner, $logger);
-
-                $this->assertInstanceOf(
-                    Watch\Logger::class,
-                    $sockets->watch(new ElapsedPeriod($milliseconds)),
-                );
-            });
     }
 }

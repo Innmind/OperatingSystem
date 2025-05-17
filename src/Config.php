@@ -5,41 +5,34 @@ namespace Innmind\OperatingSystem;
 
 use Innmind\TimeContinuum\{
     Clock,
-    Earth,
-    ElapsedPeriod,
+    Period,
 };
 use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
-use Innmind\Stream\{
-    Capabilities,
-    Streams,
-};
 use Innmind\Immutable\Maybe;
 
 final class Config
 {
     private Clock $clock;
     private CaseSensitivity $caseSensitivity;
-    private Capabilities $streamCapabilities;
     private IO $io;
     private Halt $halt;
     private EnvironmentPath $path;
     /** @var Maybe<positive-int> */
     private Maybe $maxHttpConcurrency;
-    /** @var Maybe<array{ElapsedPeriod, callable(): void}> */
+    /** @var Maybe<array{Period, callable(): void}> */
     private Maybe $httpHeartbeat;
     private bool $disableSSLVerification;
 
     /**
      * @param Maybe<positive-int> $maxHttpConcurrency
-     * @param Maybe<array{ElapsedPeriod, callable(): void}> $httpHeartbeat
+     * @param Maybe<array{Period, callable(): void}> $httpHeartbeat
      */
     private function __construct(
         Clock $clock,
         CaseSensitivity $caseSensitivity,
-        Capabilities $streamCapabilities,
         IO $io,
         Halt $halt,
         EnvironmentPath $path,
@@ -49,7 +42,6 @@ final class Config
     ) {
         $this->clock = $clock;
         $this->caseSensitivity = $caseSensitivity;
-        $this->streamCapabilities = $streamCapabilities;
         $this->io = $io;
         $this->halt = $halt;
         $this->path = $path;
@@ -62,18 +54,14 @@ final class Config
     {
         /** @var Maybe<positive-int> */
         $maxHttpConcurrency = Maybe::nothing();
-        /** @var Maybe<array{ElapsedPeriod, callable(): void}> */
+        /** @var Maybe<array{Period, callable(): void}> */
         $httpHeartbeat = Maybe::nothing();
 
         return new self(
-            new Earth\Clock,
+            Clock::live(),
             CaseSensitivity::sensitive,
-            $streams = Streams::fromAmbientAuthority(),
-            IO::of(static fn(?ElapsedPeriod $timeout) => match ($timeout) {
-                null => $streams->watch()->waitForever(),
-                default => $streams->watch()->timeoutAfter($timeout),
-            }),
-            new Halt\Usleep,
+            IO::fromAmbientAuthority(),
+            Halt\Usleep::new(),
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
                 false => '',
                 default => $path,
@@ -92,7 +80,6 @@ final class Config
         return new self(
             $clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $this->halt,
             $this->path,
@@ -110,30 +97,7 @@ final class Config
         return new self(
             $this->clock,
             CaseSensitivity::insensitive,
-            $this->streamCapabilities,
             $this->io,
-            $this->halt,
-            $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
-            $this->disableSSLVerification,
-        );
-    }
-
-    /**
-     * @psalm-mutation-free
-     */
-    public function useStreamCapabilities(Capabilities $capabilities): self
-    {
-        /** @psalm-suppress ImpureMethodCall This should be solved in the next innmind/io release */
-        return new self(
-            $this->clock,
-            $this->caseSensitivity,
-            $capabilities,
-            IO::of(static fn(?ElapsedPeriod $timeout) => match ($timeout) {
-                null => $capabilities->watch()->waitForever(),
-                default => $capabilities->watch()->timeoutAfter($timeout),
-            }),
             $this->halt,
             $this->path,
             $this->maxHttpConcurrency,
@@ -150,7 +114,6 @@ final class Config
         return new self(
             $this->clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $halt,
             $this->path,
@@ -168,7 +131,6 @@ final class Config
         return new self(
             $this->clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $this->halt,
             $path,
@@ -188,7 +150,6 @@ final class Config
         return new self(
             $this->clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $this->halt,
             $this->path,
@@ -203,12 +164,11 @@ final class Config
      *
      * @param callable(): void $heartbeat
      */
-    public function withHttpHeartbeat(ElapsedPeriod $timeout, callable $heartbeat): self
+    public function withHttpHeartbeat(Period $timeout, callable $heartbeat): self
     {
         return new self(
             $this->clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $this->halt,
             $this->path,
@@ -226,7 +186,6 @@ final class Config
         return new self(
             $this->clock,
             $this->caseSensitivity,
-            $this->streamCapabilities,
             $this->io,
             $this->halt,
             $this->path,
@@ -250,14 +209,6 @@ final class Config
     public function filesystemCaseSensitivity(): CaseSensitivity
     {
         return $this->caseSensitivity;
-    }
-
-    /**
-     * @internal
-     */
-    public function streamCapabilities(): Capabilities
-    {
-        return $this->streamCapabilities;
     }
 
     /**
@@ -297,7 +248,7 @@ final class Config
     /**
      * @internal
      *
-     * @return Maybe<array{ElapsedPeriod, callable(): void}>
+     * @return Maybe<array{Period, callable(): void}>
      */
     public function httpHeartbeat(): Maybe
     {

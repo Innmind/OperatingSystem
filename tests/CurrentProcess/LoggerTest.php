@@ -69,7 +69,7 @@ class LoggerTest extends TestCase
 
     public function testHalt()
     {
-        $period = $this->createMock(Period::class);
+        $period = Period::millisecond(1);
         $inner = $this->createMock(CurrentProcess::class);
         $inner
             ->expects($this->once())
@@ -94,7 +94,7 @@ class LoggerTest extends TestCase
                 $inner
                     ->expects($this->once())
                     ->method('memory')
-                    ->willReturn($expected = new Bytes($memory));
+                    ->willReturn($expected = Bytes::of($memory));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())

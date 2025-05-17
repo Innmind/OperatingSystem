@@ -77,11 +77,8 @@ final class Logger implements Filesystem
     #[\Override]
     public function watch(Path $path): Ping
     {
-        return Ping\Logger::psr(
-            $this->filesystem->watch($path),
-            $path,
-            $this->logger,
-        );
+        // todo bring back the ping logger
+        return $this->filesystem->watch($path);
     }
 
     #[\Override]

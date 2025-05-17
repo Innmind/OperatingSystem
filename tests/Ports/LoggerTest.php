@@ -8,9 +8,9 @@ use Innmind\OperatingSystem\{
     Ports,
 };
 use Innmind\Url\Authority\Port;
-use Innmind\Socket\{
+use Innmind\IO\Sockets\{
     Internet\Transport,
-    Server,
+    Servers\Server,
 };
 use Innmind\IP\{
     IPv4,
@@ -63,7 +63,7 @@ class LoggerTest extends TestCase
                     ->expects($this->once())
                     ->method('open')
                     ->with($transport, $ip, Port::of($port))
-                    ->willReturn($expected = Maybe::just($this->createMock(Server::class)));
+                    ->willReturn($expected = Maybe::just(null /* hack to avoid creating real server */));
                 $logger = $this->createMock(LoggerInterface::class);
                 $logger
                     ->expects($this->once())

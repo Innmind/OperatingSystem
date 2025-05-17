@@ -5,7 +5,7 @@ namespace Innmind\OperatingSystem\Ports;
 
 use Innmind\OperatingSystem\Ports;
 use Innmind\Url\Authority\Port;
-use Innmind\Socket\Internet\Transport;
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IP;
 use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;

@@ -11,10 +11,7 @@ use Innmind\Server\Control\{
     Server,
     Servers,
 };
-use Innmind\Socket\{
-    Internet\Transport,
-    Client,
-};
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\Url\{
     Url,
     Authority,
@@ -56,7 +53,7 @@ final class Generic implements Remote
             $port = $server->authority()->port();
         }
 
-        return new Servers\Remote(
+        return Servers\Remote::of(
             $this->server,
             $server->authority()->userInformation()->user(),
             $server->authority()->host(),
@@ -67,9 +64,13 @@ final class Generic implements Remote
     #[\Override]
     public function socket(Transport $transport, Authority $authority): Maybe
     {
-        return Client\Internet::of($transport, $authority)->map(
-            $this->config->io()->sockets()->clients()->wrap(...),
-        );
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->clients()
+            ->internet($transport, $authority)
+            ->maybe();
     }
 
     #[\Override]
@@ -81,7 +82,6 @@ final class Generic implements Remote
 
         $http = Curl::of(
             $this->config->clock(),
-            $this->config->streamCapabilities(),
             $this->config->io(),
         );
         $http = $this->config->maxHttpConcurrency()->match(
