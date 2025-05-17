@@ -38,11 +38,13 @@ final class Logger implements Filesystem
     }
 
     #[\Override]
-    public function mount(Path $path): Adapter
+    public function mount(Path $path): Attempt
     {
-        return Adapter\Logger::psr(
-            $this->filesystem->mount($path),
-            $this->logger,
+        return $this->filesystem->mount($path)->map(
+            fn($adapter) => Adapter\Logger::psr(
+                $adapter,
+                $this->logger,
+            ),
         );
     }
 

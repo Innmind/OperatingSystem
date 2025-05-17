@@ -16,6 +16,7 @@
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` period is now expressed with a `Innmind\TimeContinuum\Period`
 - `Innmind\OperatingSystem\CurrentProcess::id()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\CurrentProcess::halt()` now returns `Innmind\Immutable\Attempt<Innmind\Immutable\SideEffect>`
+- `Innmind\OperatingSystem\Filesystem::mount()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Filesystem::temporary()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Ports::open()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Remote::socket()` now returns an `Innmind\Immutable\Attempt`

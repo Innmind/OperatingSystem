@@ -49,7 +49,8 @@ class FactoryTest extends TestCase
         $os = Factory::build(Config::of()->caseInsensitiveFilesystem());
         $adapter = $os
             ->filesystem()
-            ->mount(Path::of($path));
+            ->mount(Path::of($path))
+            ->unwrap();
         $adapter->add(
             $directory = Directory::named('0')
                 ->add($file = File::named('L', Content::none()))

@@ -18,7 +18,10 @@ use Innmind\Immutable\{
 
 interface Filesystem
 {
-    public function mount(Path $path): Adapter;
+    /**
+     * @return Attempt<Adapter>
+     */
+    public function mount(Path $path): Attempt;
     public function contains(Path $path): bool;
 
     /**
