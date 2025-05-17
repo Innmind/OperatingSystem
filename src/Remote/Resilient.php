@@ -22,7 +22,6 @@ use Innmind\HttpTransport\{
 use Innmind\Immutable\{
     Maybe,
     Attempt,
-    SideEffect,
 };
 use Formal\AccessLayer\Connection;
 
@@ -68,9 +67,7 @@ final class Resilient implements Remote
                 #[\Override]
                 public function __invoke(Period $period): Attempt
                 {
-                    $this->process->halt($period);
-
-                    return Attempt::result(SideEffect::identity());
+                    return $this->process->halt($period);
                 }
             },
         );

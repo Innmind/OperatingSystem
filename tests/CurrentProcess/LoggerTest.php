@@ -11,6 +11,10 @@ use Innmind\OperatingSystem\{
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\{
+    Attempt,
+    SideEffect,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
@@ -74,7 +78,8 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('halt')
-            ->with($period);
+            ->with($period)
+            ->willReturn(Attempt::result(SideEffect::identity()));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -82,7 +87,12 @@ class LoggerTest extends TestCase
             ->with('Halting current process...');
         $process = Logger::psr($inner, $logger);
 
-        $this->assertNull($process->halt($period));
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $process
+                ->halt($period)
+                ->unwrap(),
+        );
     }
 
     public function testMemory()

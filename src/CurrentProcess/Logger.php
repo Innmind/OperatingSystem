@@ -7,6 +7,7 @@ use Innmind\OperatingSystem\CurrentProcess;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements CurrentProcess
@@ -49,7 +50,7 @@ final class Logger implements CurrentProcess
     }
 
     #[\Override]
-    public function halt(Period $period): void
+    public function halt(Period $period): Attempt
     {
         $this->logger->debug('Halting current process...', ['period' => [
             'years' => $period->years(),
@@ -61,7 +62,7 @@ final class Logger implements CurrentProcess
             'milliseconds' => $period->milliseconds(),
         ]]);
 
-        $this->process->halt($period);
+        return $this->process->halt($period);
     }
 
     #[\Override]

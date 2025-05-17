@@ -9,6 +9,7 @@ use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Signals\Handler;
+use Innmind\Immutable\Attempt;
 
 final class Generic implements CurrentProcess
 {
@@ -45,9 +46,9 @@ final class Generic implements CurrentProcess
     }
 
     #[\Override]
-    public function halt(Period $period): void
+    public function halt(Period $period): Attempt
     {
-        ($this->halt)($period);
+        return ($this->halt)($period);
     }
 
     #[\Override]
