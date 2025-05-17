@@ -56,7 +56,7 @@ final class Logger implements Sockets
         return $this->sockets->connectTo($address);
     }
 
-    public function watch(ElapsedPeriod $timeout = null): Watch
+    public function watch(?ElapsedPeriod $timeout = null): Watch
     {
         return Watch\Logger::psr(
             $this->sockets->watch($timeout),

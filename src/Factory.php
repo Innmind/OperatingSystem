@@ -5,7 +5,7 @@ namespace Innmind\OperatingSystem;
 
 final class Factory
 {
-    public static function build(Config $config = null): OperatingSystem
+    public static function build(?Config $config = null): OperatingSystem
     {
         switch (\PHP_OS) {
             case 'Darwin':

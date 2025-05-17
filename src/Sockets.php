@@ -32,5 +32,5 @@ interface Sockets
      * @return Maybe<Client>
      */
     public function connectTo(Unix $address): Maybe;
-    public function watch(ElapsedPeriod $timeout = null): Watch;
+    public function watch(?ElapsedPeriod $timeout = null): Watch;
 }
