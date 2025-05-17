@@ -31,6 +31,7 @@ final class Logger implements Remote
         return new self($remote, $logger);
     }
 
+    #[\Override]
     public function ssh(Url $server): Control\Server
     {
         return Control\Servers\Logger::psr(
@@ -39,6 +40,7 @@ final class Logger implements Remote
         );
     }
 
+    #[\Override]
     public function socket(Transport $transport, Authority $authority): Maybe
     {
         $this->logger->debug(
@@ -55,6 +57,7 @@ final class Logger implements Remote
         return $this->remote->socket($transport, $authority);
     }
 
+    #[\Override]
     public function http(): HttpTransport\Transport
     {
         return HttpTransport\Logger::psr(
@@ -63,6 +66,7 @@ final class Logger implements Remote
         );
     }
 
+    #[\Override]
     public function sql(Url $server): Connection
     {
         return Connection\Logger::psr(

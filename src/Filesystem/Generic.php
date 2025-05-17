@@ -49,6 +49,7 @@ final class Generic implements Filesystem
         return new self($processes, $config);
     }
 
+    #[\Override]
     public function mount(Path $path): Adapter
     {
         /**
@@ -74,6 +75,7 @@ final class Generic implements Filesystem
         return $adapter;
     }
 
+    #[\Override]
     public function contains(Path $path): bool
     {
         if (!\file_exists($path->toString())) {
@@ -87,6 +89,7 @@ final class Generic implements Filesystem
         return true;
     }
 
+    #[\Override]
     public function require(Path $path): Maybe
     {
         $path = $path->toString();
@@ -104,11 +107,13 @@ final class Generic implements Filesystem
         return Maybe::just(require $path);
     }
 
+    #[\Override]
     public function watch(Path $path): Ping
     {
         return ($this->watch)($path);
     }
 
+    #[\Override]
     public function temporary(Sequence $chunks): Maybe
     {
         $temporary = $this

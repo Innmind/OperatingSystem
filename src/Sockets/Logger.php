@@ -26,6 +26,7 @@ final class Logger implements Sockets
         return new self($sockets, $logger);
     }
 
+    #[\Override]
     public function open(Address $address): Maybe
     {
         $this->logger->debug(
@@ -36,6 +37,7 @@ final class Logger implements Sockets
         return $this->sockets->open($address);
     }
 
+    #[\Override]
     public function takeOver(Address $address): Maybe
     {
         $this->logger->debug(
@@ -46,6 +48,7 @@ final class Logger implements Sockets
         return $this->sockets->takeOver($address);
     }
 
+    #[\Override]
     public function connectTo(Address $address): Maybe
     {
         $this->logger->debug(
@@ -56,6 +59,7 @@ final class Logger implements Sockets
         return $this->sockets->connectTo($address);
     }
 
+    #[\Override]
     public function watch(?ElapsedPeriod $timeout = null): Watch
     {
         return Watch\Logger::psr(

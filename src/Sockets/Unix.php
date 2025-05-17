@@ -33,6 +33,7 @@ final class Unix implements Sockets
         return new self($config);
     }
 
+    #[\Override]
     public function open(Address $address): Maybe
     {
         return Server\Unix::of($address)->map(
@@ -40,6 +41,7 @@ final class Unix implements Sockets
         );
     }
 
+    #[\Override]
     public function takeOver(Address $address): Maybe
     {
         return Server\Unix::recoverable($address)->map(
@@ -47,6 +49,7 @@ final class Unix implements Sockets
         );
     }
 
+    #[\Override]
     public function connectTo(Address $address): Maybe
     {
         return Client\Unix::of($address)->map(
@@ -54,6 +57,7 @@ final class Unix implements Sockets
         );
     }
 
+    #[\Override]
     public function watch(?ElapsedPeriod $timeout = null): Watch
     {
         if (\is_null($timeout)) {

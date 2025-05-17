@@ -32,6 +32,7 @@ final class Logger implements OperatingSystem
         return new self($os, $logger);
     }
 
+    #[\Override]
     public function map(callable $map): OperatingSystem
     {
         return new self(
@@ -40,6 +41,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function clock(): TimeContinuum\Clock
     {
         return new TimeContinuum\Logger\Clock(
@@ -48,6 +50,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function filesystem(): Filesystem
     {
         return Filesystem\Logger::psr(
@@ -56,6 +59,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function status(): Status\Server
     {
         return new Status\Servers\Logger(
@@ -64,6 +68,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function control(): Control\Server
     {
         return Control\Servers\Logger::psr(
@@ -72,6 +77,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function ports(): Ports
     {
         return Ports\Logger::psr(
@@ -80,6 +86,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function sockets(): Sockets
     {
         return Sockets\Logger::psr(
@@ -88,6 +95,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function remote(): Remote
     {
         return Remote\Logger::psr(
@@ -96,6 +104,7 @@ final class Logger implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function process(): CurrentProcess
     {
         return CurrentProcess\Logger::psr(

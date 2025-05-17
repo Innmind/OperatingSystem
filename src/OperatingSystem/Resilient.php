@@ -32,41 +32,49 @@ final class Resilient implements OperatingSystem
         return new self($os);
     }
 
+    #[\Override]
     public function map(callable $map): OperatingSystem
     {
         return new self($this->os->map($map));
     }
 
+    #[\Override]
     public function clock(): Clock
     {
         return $this->os->clock();
     }
 
+    #[\Override]
     public function filesystem(): Filesystem
     {
         return $this->os->filesystem();
     }
 
+    #[\Override]
     public function status(): ServerStatus
     {
         return $this->os->status();
     }
 
+    #[\Override]
     public function control(): ServerControl
     {
         return $this->os->control();
     }
 
+    #[\Override]
     public function ports(): Ports
     {
         return $this->os->ports();
     }
 
+    #[\Override]
     public function sockets(): Sockets
     {
         return $this->os->sockets();
     }
 
+    #[\Override]
     public function remote(): Remote
     {
         return Remote\Resilient::of(
@@ -75,6 +83,7 @@ final class Resilient implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function process(): CurrentProcess
     {
         return $this->os->process();

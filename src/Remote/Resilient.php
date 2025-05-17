@@ -36,16 +36,19 @@ final class Resilient implements Remote
         return new self($remote, $process);
     }
 
+    #[\Override]
     public function ssh(Url $server): Server
     {
         return $this->remote->ssh($server);
     }
 
+    #[\Override]
     public function socket(Transport $transport, Authority $authority): Maybe
     {
         return $this->remote->socket($transport, $authority);
     }
 
+    #[\Override]
     public function http(): HttpTransport
     {
         return ExponentialBackoff::of(
@@ -54,6 +57,7 @@ final class Resilient implements Remote
         );
     }
 
+    #[\Override]
     public function sql(Url $server): Connection
     {
         return $this->remote->sql($server);

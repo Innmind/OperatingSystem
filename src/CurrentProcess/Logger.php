@@ -26,6 +26,7 @@ final class Logger implements CurrentProcess
         return new self($process, $logger);
     }
 
+    #[\Override]
     public function id(): Pid
     {
         $pid = $this->process->id();
@@ -38,6 +39,7 @@ final class Logger implements CurrentProcess
         return $pid;
     }
 
+    #[\Override]
     public function signals(): Signals
     {
         return $this->signals ??= Signals\Logger::psr(
@@ -46,6 +48,7 @@ final class Logger implements CurrentProcess
         );
     }
 
+    #[\Override]
     public function halt(Period $period): void
     {
         $this->logger->debug('Halting current process...', ['period' => [
@@ -61,6 +64,7 @@ final class Logger implements CurrentProcess
         $this->process->halt($period);
     }
 
+    #[\Override]
     public function memory(): Bytes
     {
         $memory = $this->process->memory();

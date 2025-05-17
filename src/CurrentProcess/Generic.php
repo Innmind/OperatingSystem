@@ -28,22 +28,29 @@ final class Generic implements CurrentProcess
         return new self($halt);
     }
 
+    #[\Override]
     public function id(): Pid
     {
-        /** @psalm-suppress ArgumentTypeCoercion */
+        /**
+         * @psalm-suppress ArgumentTypeCoercion
+         * @psalm-suppress PossiblyFalseArgument
+         */
         return new Pid(\getmypid());
     }
 
+    #[\Override]
     public function signals(): Signals
     {
         return $this->signals ??= Signals\Wrapper::of(new Handler);
     }
 
+    #[\Override]
     public function halt(Period $period): void
     {
         ($this->halt)($period);
     }
 
+    #[\Override]
     public function memory(): Bytes
     {
         return new Bytes(\memory_get_usage());

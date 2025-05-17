@@ -23,11 +23,13 @@ final class Wrapper implements Signals
         return new self($handler);
     }
 
+    #[\Override]
     public function listen(Signal $signal, callable $listener): void
     {
         $this->handler->listen($signal, $listener);
     }
 
+    #[\Override]
     public function remove(callable $listener): void
     {
         $this->handler->remove($listener);

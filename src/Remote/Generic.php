@@ -47,6 +47,7 @@ final class Generic implements Remote
         return new self($server, $config);
     }
 
+    #[\Override]
     public function ssh(Url $server): Server
     {
         $port = null;
@@ -63,6 +64,7 @@ final class Generic implements Remote
         );
     }
 
+    #[\Override]
     public function socket(Transport $transport, Authority $authority): Maybe
     {
         return Client\Internet::of($transport, $authority)->map(
@@ -70,6 +72,7 @@ final class Generic implements Remote
         );
     }
 
+    #[\Override]
     public function http(): HttpTransport
     {
         if ($this->http) {
@@ -97,6 +100,7 @@ final class Generic implements Remote
         return $this->http = $http;
     }
 
+    #[\Override]
     public function sql(Url $server): Connection
     {
         return Connection\Lazy::of(static fn() => Connection\PDO::of($server));

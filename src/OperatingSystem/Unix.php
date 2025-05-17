@@ -43,16 +43,19 @@ final class Unix implements OperatingSystem
         return new self($config ?? Config::of());
     }
 
+    #[\Override]
     public function map(callable $map): OperatingSystem
     {
         return $map($this, $this->config);
     }
 
+    #[\Override]
     public function clock(): Clock
     {
         return $this->config->clock();
     }
 
+    #[\Override]
     public function filesystem(): Filesystem
     {
         return $this->filesystem ??= Filesystem\Generic::of(
@@ -61,6 +64,7 @@ final class Unix implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function status(): ServerStatus
     {
         return $this->status ??= ServerFactory::build(
@@ -70,6 +74,7 @@ final class Unix implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function control(): ServerControl
     {
         return $this->control ??= Servers\Unix::of(
@@ -79,16 +84,19 @@ final class Unix implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function ports(): Ports
     {
         return $this->ports ??= Ports\Unix::of($this->config);
     }
 
+    #[\Override]
     public function sockets(): Sockets
     {
         return $this->sockets ??= Sockets\Unix::of($this->config);
     }
 
+    #[\Override]
     public function remote(): Remote
     {
         return $this->remote ??= Remote\Generic::of(
@@ -97,6 +105,7 @@ final class Unix implements OperatingSystem
         );
     }
 
+    #[\Override]
     public function process(): CurrentProcess
     {
         return $this->process ??= CurrentProcess\Generic::of($this->config->halt());

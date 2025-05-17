@@ -31,6 +31,7 @@ final class Logger implements Signals
         return new self($signals, $logger);
     }
 
+    #[\Override]
     public function listen(Signal $signal, callable $listener): void
     {
         $this->logger->debug(
@@ -51,6 +52,7 @@ final class Logger implements Signals
         $this->signals->listen($signal, $decorated);
     }
 
+    #[\Override]
     public function remove(callable $listener): void
     {
         $this->logger->debug('Removing a signal listener');

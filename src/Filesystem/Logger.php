@@ -36,6 +36,7 @@ final class Logger implements Filesystem
         return new self($filesystem, $logger);
     }
 
+    #[\Override]
     public function mount(Path $path): Adapter
     {
         return Adapter\Logger::psr(
@@ -44,6 +45,7 @@ final class Logger implements Filesystem
         );
     }
 
+    #[\Override]
     public function contains(Path $path): bool
     {
         $contains = $this->filesystem->contains($path);
@@ -56,6 +58,7 @@ final class Logger implements Filesystem
         return $contains;
     }
 
+    #[\Override]
     public function require(Path $path): Maybe
     {
         return $this
@@ -71,6 +74,7 @@ final class Logger implements Filesystem
             });
     }
 
+    #[\Override]
     public function watch(Path $path): Ping
     {
         return Ping\Logger::psr(
@@ -80,6 +84,7 @@ final class Logger implements Filesystem
         );
     }
 
+    #[\Override]
     public function temporary(Sequence $chunks): Maybe
     {
         return $this

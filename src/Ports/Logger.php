@@ -26,6 +26,7 @@ final class Logger implements Ports
         return new self($ports, $logger);
     }
 
+    #[\Override]
     public function open(Transport $transport, IP $ip, Port $port): Maybe
     {
         $this->logger->debug(
