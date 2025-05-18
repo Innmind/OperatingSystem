@@ -74,6 +74,17 @@ final class Config
 
     /**
      * @psalm-mutation-free
+     *
+     * @param callable(self): self $map
+     */
+    public function map(callable $map): self
+    {
+        /** @psalm-suppress ImpureFunctionCall */
+        return $map($this);
+    }
+
+    /**
+     * @psalm-mutation-free
      */
     public function withClock(Clock $clock): self
     {
@@ -116,6 +127,26 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $halt,
+            $this->path,
+            $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
+            $this->disableSSLVerification,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param callable(Halt): Halt $map
+     */
+    public function maphalt(callable $map): self
+    {
+        /** @psalm-suppress ImpureFunctionCall */
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $map($this->halt),
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,

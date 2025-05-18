@@ -10,6 +10,8 @@ use Innmind\OperatingSystem\{
     Sockets,
     Remote,
     CurrentProcess,
+    Config,
+    Factory,
 };
 use Innmind\Server\Status;
 use Innmind\Server\Control;
@@ -29,7 +31,12 @@ final class Logger implements OperatingSystem
 
     public static function psr(OperatingSystem $os, LoggerInterface $logger): self
     {
-        return new self($os, $logger);
+        return new self(
+            $os->map(static fn($_, $config) => Factory::build(
+                $config->map(Config\Logger::psr($logger)),
+            )),
+            $logger,
+        );
     }
 
     #[\Override]

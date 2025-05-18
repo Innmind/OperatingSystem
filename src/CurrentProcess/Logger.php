@@ -51,16 +51,6 @@ final class Logger implements CurrentProcess
     #[\Override]
     public function halt(Period $period): Attempt
     {
-        $this->logger->debug('Halting current process...', ['period' => [
-            'years' => $period->years(),
-            'months' => $period->months(),
-            'days' => $period->days(),
-            'hours' => $period->hours(),
-            'minutes' => $period->minutes(),
-            'seconds' => $period->seconds(),
-            'milliseconds' => $period->milliseconds(),
-        ]]);
-
         return $this->process->halt($period);
     }
 

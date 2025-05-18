@@ -7,16 +7,25 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
     CurrentProcess\Signals,
     CurrentProcess,
+    Factory,
+    Config,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Immutable\SideEffect;
-use Innmind\BlackBox\PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
+    Set,
+};
 
 class GenericTest extends TestCase
 {
+    use BlackBox;
+
     public function testInterface()
     {
         $this->assertInstanceOf(
@@ -36,18 +45,25 @@ class GenericTest extends TestCase
         );
     }
 
-    public function testHalt()
+    public function testHalt(): BlackBox\Proof
     {
-        $process = Generic::of(
-            Halt\Usleep::new(),
-        );
+        return $this
+            ->forAll(Set::of(
+                static fn($config) => $config,
+                Config\Logger::psr(new NullLogger),
+            ))
+            ->prove(function($extension) {
+                $process = Factory::build(
+                    Config::of()->map($extension),
+                )->process();
 
-        $this->assertInstanceOf(
-            SideEffect::class,
-            $process
-                ->halt(Period::millisecond(1))
-                ->unwrap(),
-        );
+                $this->assertInstanceOf(
+                    SideEffect::class,
+                    $process
+                        ->halt(Period::millisecond(1))
+                        ->unwrap(),
+                );
+            });
     }
 
     public function testSignals()

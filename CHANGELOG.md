@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Innmind\OperatingSystem\Config::map()`
+- `Innmind\OperatingSystem\Config\Logger`
+
 ### Changed
 
 - Requires `innmind/time-continuum:^4.1.1`

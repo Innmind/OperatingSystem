@@ -1,0 +1,30 @@
+<?php
+declare(strict_types = 1);
+
+namespace Innmind\OperatingSystem\Config;
+
+use Innmind\OperatingSystem\Config;
+use Innmind\TimeWarp\Halt;
+use Psr\Log\LoggerInterface;
+
+final class Logger
+{
+    private function __construct(
+        private LoggerInterface $logger,
+    ) {
+    }
+
+    public function __invoke(Config $config): Config
+    {
+        return $config
+            ->mapHalt(fn($halt) => Halt\Logger::psr(
+                $halt,
+                $this->logger,
+            ));
+    }
+
+    public static function psr(LoggerInterface $logger): self
+    {
+        return new self($logger);
+    }
+}
