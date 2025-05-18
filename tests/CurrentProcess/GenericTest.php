@@ -7,8 +7,8 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
     CurrentProcess\Signals,
     CurrentProcess,
+    OperatingSystem\Logger,
     Factory,
-    Config,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
@@ -47,15 +47,15 @@ class GenericTest extends TestCase
 
     public function testHalt(): BlackBox\Proof
     {
+        $os = Factory::build();
+
         return $this
             ->forAll(Set::of(
-                static fn($config) => $config,
-                Config\Logger::psr(new NullLogger),
+                $os,
+                Logger::psr($os, new NullLogger),
             ))
-            ->prove(function($extension) {
-                $process = Factory::build(
-                    Config::of()->map($extension),
-                )->process();
+            ->prove(function($os) {
+                $process = $os->process();
 
                 $this->assertInstanceOf(
                     SideEffect::class,
