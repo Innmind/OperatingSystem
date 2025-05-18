@@ -21,13 +21,13 @@ class GenericTest extends TestCase
     {
         $this->assertInstanceOf(
             CurrentProcess::class,
-            Generic::of($this->createMock(Halt::class)),
+            Generic::of(Halt\Usleep::new()),
         );
     }
 
     public function testId()
     {
-        $process = Generic::of($this->createMock(Halt::class));
+        $process = Generic::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Pid::class, $process->id()->unwrap());
         $this->assertSame(
@@ -52,7 +52,7 @@ class GenericTest extends TestCase
 
     public function testSignals()
     {
-        $process = Generic::of($this->createMock(Halt::class));
+        $process = Generic::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
@@ -60,7 +60,7 @@ class GenericTest extends TestCase
 
     public function testMemory()
     {
-        $process = Generic::of($this->createMock(Halt::class));
+        $process = Generic::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Bytes::class, $process->memory());
         $this->assertTrue($process->memory()->toInt() > 6000000); // ~5MB

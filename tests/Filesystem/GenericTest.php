@@ -7,13 +7,13 @@ use Innmind\OperatingSystem\{
     Filesystem\Generic,
     Filesystem,
     Config,
+    Factory,
 };
 use Innmind\Filesystem\{
     Adapter\Filesystem as FilesystemAdapter,
     File\Content,
 };
 use Innmind\Url\Path;
-use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\Ping;
 use Fixtures\Innmind\Url\Path as FPath;
 use Innmind\Immutable\{
@@ -36,7 +36,7 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(
             Filesystem::class,
             Generic::of(
-                $this->createMock(Processes::class),
+                Factory::build()->control()->processes(),
                 Config::of(),
             ),
         );
@@ -45,7 +45,7 @@ class GenericTest extends TestCase
     public function testMount()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -57,7 +57,7 @@ class GenericTest extends TestCase
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -69,7 +69,7 @@ class GenericTest extends TestCase
     public function testContainsFile()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -82,7 +82,7 @@ class GenericTest extends TestCase
     public function testContainsDirectory()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -95,7 +95,7 @@ class GenericTest extends TestCase
     public function testWatch()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -108,7 +108,7 @@ class GenericTest extends TestCase
             ->forAll(FPath::any())
             ->then(function($path) {
                 $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
+                    Factory::build()->control()->processes(),
                     Config::of(),
                 );
 
@@ -122,7 +122,7 @@ class GenericTest extends TestCase
     public function testRequireFile()
     {
         $filesystem = Generic::of(
-            $this->createMock(Processes::class),
+            Factory::build()->control()->processes(),
             Config::of(),
         );
 
@@ -138,7 +138,7 @@ class GenericTest extends TestCase
             ->forAll(Set\Sequence::of(Set\Unicode::strings()))
             ->then(function($chunks) {
                 $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
+                    Factory::build()->control()->processes(),
                     Config::of(),
                 );
 
@@ -170,7 +170,7 @@ class GenericTest extends TestCase
             )
             ->then(function($leading, $trailing) {
                 $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
+                    Factory::build()->control()->processes(),
                     Config::of(),
                 );
 
