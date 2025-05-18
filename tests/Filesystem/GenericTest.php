@@ -21,9 +21,9 @@ use Innmind\Immutable\{
     Str,
     Maybe,
 };
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
 
@@ -102,11 +102,11 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
     }
 
-    public function testRequireUnknownFile()
+    public function testRequireUnknownFile(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(FPath::any())
-            ->then(function($path) {
+            ->prove(function($path) {
                 $filesystem = Generic::of(
                     Factory::build()->control()->processes(),
                     Config::of(),

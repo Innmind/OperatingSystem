@@ -17,7 +17,7 @@ use Innmind\OperatingSystem\{
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
 use Innmind\TimeContinuum\Clock;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ResilientTest extends TestCase
 {

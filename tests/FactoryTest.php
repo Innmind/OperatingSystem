@@ -16,7 +16,7 @@ use Innmind\Filesystem\{
 };
 use Innmind\Url\Path;
 use Symfony\Component\Filesystem\Filesystem as FS;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class FactoryTest extends TestCase
 {
@@ -40,7 +40,9 @@ class FactoryTest extends TestCase
     public function testPersistingFileOnCaseInsensitiveFilesystem()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $path = \sys_get_temp_dir().'/innmind/filesystem/';

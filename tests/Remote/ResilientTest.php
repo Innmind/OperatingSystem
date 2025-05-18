@@ -13,9 +13,9 @@ use Innmind\Server\Control\Server;
 use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
 use Fixtures\Innmind\Url\{
@@ -45,11 +45,11 @@ class ResilientTest extends TestCase
         );
     }
 
-    public function testSsh()
+    public function testSsh(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(Url::any())
-            ->then(function($url) {
+            ->prove(function($url) {
                 $remote = Resilient::of(
                     $this->os->remote(),
                     $this->os->process(),
@@ -62,9 +62,9 @@ class ResilientTest extends TestCase
             });
     }
 
-    public function testSocket()
+    public function testSocket(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(
                 Set\Elements::of(
                     Transport::tcp(),
@@ -75,7 +75,7 @@ class ResilientTest extends TestCase
                 ),
                 Authority::any(),
             )
-            ->then(function($transport, $authority) {
+            ->prove(function($transport, $authority) {
                 $remote = Resilient::of(
                     $this->os->remote(),
                     $this->os->process(),
@@ -98,11 +98,11 @@ class ResilientTest extends TestCase
         $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
     }
 
-    public function testSql()
+    public function testSql(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(Url::any())
-            ->then(function($server) {
+            ->prove(function($server) {
                 $remote = Resilient::of(
                     $this->os->remote(),
                     $this->os->process(),

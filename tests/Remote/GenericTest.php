@@ -30,8 +30,10 @@ use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
-use PHPUnit\Framework\TestCase;
-use Innmind\BlackBox\PHPUnit\BlackBox;
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
+};
 use Fixtures\Innmind\Url\Url as FUrl;
 
 class GenericTest extends TestCase
@@ -115,11 +117,11 @@ class GenericTest extends TestCase
         $this->assertSame($http, $remote->http());
     }
 
-    public function testSql()
+    public function testSql(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(FUrl::any())
-            ->then(function($server) {
+            ->prove(function($server) {
                 $remote = Generic::of(
                     $this->server(),
                     Config::of(),

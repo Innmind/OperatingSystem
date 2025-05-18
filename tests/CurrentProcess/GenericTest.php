@@ -13,7 +13,7 @@ use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
 use Innmind\Immutable\SideEffect;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class GenericTest extends TestCase
 {

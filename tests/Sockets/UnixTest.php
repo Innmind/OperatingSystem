@@ -14,7 +14,7 @@ use Innmind\IO\Sockets\{
     Clients\Client,
 };
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
 {
