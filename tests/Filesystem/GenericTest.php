@@ -135,7 +135,7 @@ class GenericTest extends TestCase
     public function testCreateTemporaryFile()
     {
         $this
-            ->forAll(Set\Sequence::of(Set\Unicode::strings()))
+            ->forAll(Set::sequence(Set::strings()->unicode()))
             ->then(function($chunks) {
                 $filesystem = Generic::of(
                     Factory::build()->control()->processes(),
@@ -165,8 +165,8 @@ class GenericTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
-                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
+                Set::sequence(Set::strings()->unicode())->between(0, 20), // upper bound to fit in memory
+                Set::sequence(Set::strings()->unicode())->between(0, 20), // upper bound to fit in memory
             )
             ->then(function($leading, $trailing) {
                 $filesystem = Generic::of(

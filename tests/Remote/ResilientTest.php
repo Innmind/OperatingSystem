@@ -66,7 +66,7 @@ class ResilientTest extends TestCase
     {
         return $this
             ->forAll(
-                Set\Elements::of(
+                Set::of(
                     Transport::tcp(),
                     Transport::ssl(),
                     Transport::tls(),
