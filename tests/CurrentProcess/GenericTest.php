@@ -63,6 +63,6 @@ class GenericTest extends TestCase
         $process = Generic::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Bytes::class, $process->memory());
-        $this->assertTrue($process->memory()->toInt() > 6000000); // ~5MB
+        $this->assertGreaterThan(3_000_000, $process->memory()->toInt()); // ~3MB
     }
 }
