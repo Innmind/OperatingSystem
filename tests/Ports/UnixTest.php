@@ -14,7 +14,7 @@ use Innmind\IO\Sockets\{
 };
 use Innmind\IP\IPv4;
 use Innmind\Url\Authority\Port;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixTest extends TestCase
 {

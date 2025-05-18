@@ -12,7 +12,11 @@ use Innmind\OperatingSystem\{
 use Innmind\Server\Control\{
     Server,
     Servers,
+    Server\Processes,
+    Server\Volumes,
     Server\Command,
+    Server\Process\Pid,
+    Server\Signal,
 };
 use Innmind\Url\{
     Url,
@@ -26,8 +30,10 @@ use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
-use PHPUnit\Framework\TestCase;
-use Innmind\BlackBox\PHPUnit\BlackBox;
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
+};
 use Fixtures\Innmind\Url\Url as FUrl;
 
 class GenericTest extends TestCase
@@ -39,7 +45,7 @@ class GenericTest extends TestCase
         $this->assertInstanceOf(
             Remote::class,
             Generic::of(
-                $this->createMock(Server::class),
+                $this->server(),
                 Config::of(),
             ),
         );
@@ -48,44 +54,25 @@ class GenericTest extends TestCase
     public function testSsh()
     {
         $remote = Generic::of(
-            $server = $this->createMock(Server::class),
+            $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
             Config::of(),
         );
-        $server
-            ->expects($this->once())
-            ->method('processes')
-            ->willReturn($processes = $this->createMock(Server\Processes::class));
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "ssh '-p' '42' 'user@my-vps' 'ls'";
-            }))
-            ->willReturn(Attempt::result(null /* hack to avoid creating real process */));
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
         $this->assertInstanceOf(Servers\Remote::class, $remoteServer);
-        $remoteServer->processes()->execute(Command::foreground('ls'));
+        $remoteServer
+            ->processes()
+            ->execute(Command::foreground('ls'))
+            ->unwrap();
     }
 
     public function testSshWithoutPort()
     {
         $remote = Generic::of(
-            $server = $this->createMock(Server::class),
+            $this->server("ssh 'user@my-vps' 'ls'"),
             Config::of(),
         );
-        $server
-            ->expects($this->once())
-            ->method('processes')
-            ->willReturn($processes = $this->createMock(Server\Processes::class));
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "ssh 'user@my-vps' 'ls'";
-            }))
-            ->willReturn(Attempt::result(null /* hack to avoid creating real process */));
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
 
@@ -96,7 +83,7 @@ class GenericTest extends TestCase
     public function testSocket()
     {
         $remote = Generic::of(
-            $this->createMock(Server::class),
+            $this->server(),
             Config::of(),
         );
         $server = Factory::build()
@@ -120,7 +107,7 @@ class GenericTest extends TestCase
     public function testHttp()
     {
         $remote = Generic::of(
-            $this->createMock(Server::class),
+            $this->server(),
             Config::of(),
         );
 
@@ -130,13 +117,13 @@ class GenericTest extends TestCase
         $this->assertSame($http, $remote->http());
     }
 
-    public function testSql()
+    public function testSql(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(FUrl::any())
-            ->then(function($server) {
+            ->prove(function($server) {
                 $remote = Generic::of(
-                    $this->createMock(Server::class),
+                    $this->server(),
                     Config::of(),
                 );
 
@@ -144,5 +131,64 @@ class GenericTest extends TestCase
 
                 $this->assertInstanceOf(Connection::class, $sql);
             });
+    }
+
+    private function server(string ...$commands): Server
+    {
+        return new class($this->processes(), $this, $commands) implements Server {
+            private $inner;
+
+            public function __construct(
+                private $processes,
+                private $test,
+                private $commands,
+            ) {
+            }
+
+            public function processes(): Processes
+            {
+                return $this->inner ??= new class($this->processes, $this->test, $this->commands) implements Processes {
+                    public function __construct(
+                        private $processes,
+                        private $test,
+                        private $commands,
+                    ) {
+                    }
+
+                    public function execute(Command $command): Attempt
+                    {
+                        $expected = \array_shift($this->commands);
+                        $this->test->assertNotNull($expected);
+                        $this->test->assertSame(
+                            $expected,
+                            $command->toString(),
+                        );
+
+                        return $this->processes->execute(Command::foreground('echo'));
+                    }
+
+                    public function kill(Pid $pid, Signal $signal): Attempt
+                    {
+                    }
+                };
+            }
+
+            public function volumes(): Volumes
+            {
+            }
+
+            public function reboot(): Attempt
+            {
+            }
+
+            public function shutdown(): Attempt
+            {
+            }
+        };
+    }
+
+    private function processes(): Processes
+    {
+        return Factory::build()->control()->processes();
     }
 }
