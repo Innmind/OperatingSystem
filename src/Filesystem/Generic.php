@@ -115,22 +115,22 @@ final class Generic implements Filesystem
     #[\Override]
     public function temporary(Sequence $chunks): Attempt
     {
-        return Attempt::of(
-            fn() => $this
-                ->config
-                ->io()
-                ->files()
-                ->temporary(
-                    $chunks->map(
-                        static fn($chunk) => $chunk
+        return $this
+            ->config
+            ->io()
+            ->files()
+            ->temporary(Sequence::of())
+            ->flatMap(
+                static fn($tmp) => $chunks
+                    ->sink($tmp->push()->chunk(...))
+                    ->attempt(
+                        static fn($push, $chunk) => $chunk
                             ->attempt(static fn() => new \RuntimeException('Failed to load chunk'))
-                            ->unwrap(),
-                    ),
-                )
-                ->memoize() // to make sure writing the chunks has been done
-                ->map(static fn($tmp) => $tmp->read())
-                ->map(Content::io(...))
-                ->unwrap(),
-        );
+                            ->flatMap($push)
+                            ->map(static fn() => $push),
+                    )
+                    ->map(static fn() => $tmp->read()),
+            )
+            ->map(Content::io(...));
     }
 }
