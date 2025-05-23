@@ -12,12 +12,15 @@ use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
+use Innmind\Url\Url;
+use Formal\AccessLayer;
 
 final class Config
 {
     /**
      * @param \Closure(Halt): Halt $mapHalt
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
+     * @param \Closure(Url): AccessLayer\Connection $sql
      */
     private function __construct(
         private Clock $clock,
@@ -28,6 +31,7 @@ final class Config
         private EnvironmentPath $path,
         private ?HttpTransport $httpTransport,
         private \Closure $mapHttpTransport,
+        private \Closure $sql,
     ) {
     }
 
@@ -45,6 +49,9 @@ final class Config
             }),
             null,
             static fn(HttpTransport $transport) => $transport,
+            static fn(Url $server) => AccessLayer\Connection\Lazy::of(
+                static fn() => AccessLayer\Connection\PDO::of($server),
+            ),
         );
     }
 
@@ -73,6 +80,7 @@ final class Config
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -90,6 +98,7 @@ final class Config
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -107,6 +116,7 @@ final class Config
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -129,6 +139,7 @@ final class Config
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -146,6 +157,7 @@ final class Config
             $path,
             $this->httpTransport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -163,6 +175,7 @@ final class Config
             $this->path,
             $transport,
             $this->mapHttpTransport,
+            $this->sql,
         );
     }
 
@@ -184,6 +197,27 @@ final class Config
             $this->path,
             $this->httpTransport,
             static fn(HttpTransport $transport) => $map($previous($transport)),
+            $this->sql,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Url): AccessLayer\Connection $sql
+     */
+    public function openSQLConnectionVia(\Closure $sql): self
+    {
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $sql,
         );
     }
 
@@ -238,5 +272,13 @@ final class Config
         );
 
         return ($this->mapHttpTransport)($transport);
+    }
+
+    /**
+     * @internal
+     */
+    public function sql(Url $url): AccessLayer\Connection
+    {
+        return ($this->sql)($url);
     }
 }

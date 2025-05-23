@@ -9,6 +9,7 @@
 - `Innmind\OperatingSystem\Config\Resilient`
 - `Innmind\OperatingSystem\Config::useHttpTransport()`
 - `Innmind\OperatingSystem\Config::mapHttpTransport()`
+- `Innmind\OperatingSystem\Config::openSQLConnectionVia()`
 
 ### Changed
 

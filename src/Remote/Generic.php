@@ -78,6 +78,6 @@ final class Generic implements Remote
     #[\Override]
     public function sql(Url $server): Connection
     {
-        return Connection\Lazy::of(static fn() => Connection\PDO::of($server));
+        return $this->config->sql($server);
     }
 }
