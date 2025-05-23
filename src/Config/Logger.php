@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Config;
 
 use Innmind\OperatingSystem\Config;
+use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
 use Psr\Log\LoggerInterface;
 
@@ -19,6 +20,10 @@ final class Logger
         return $config
             ->mapHalt(fn($halt) => Halt\Logger::psr(
                 $halt,
+                $this->logger,
+            ))
+            ->mapHttpTransport(fn($transport) => HttpTransport\Logger::psr(
+                $transport,
                 $this->logger,
             ));
     }

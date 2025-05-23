@@ -5,6 +5,8 @@ namespace Tests\Innmind\OperatingSystem\Remote;
 
 use Innmind\OperatingSystem\{
     Remote\Generic,
+    OperatingSystem\Logger,
+    OperatingSystem\Unix,
     Remote,
     Config,
     Factory,
@@ -33,8 +35,10 @@ use Formal\AccessLayer\Connection;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     PHPUnit\Framework\TestCase,
+    Set,
 };
 use Fixtures\Innmind\Url\Url as FUrl;
+use Psr\Log\NullLogger;
 
 class GenericTest extends TestCase
 {
@@ -104,17 +108,22 @@ class GenericTest extends TestCase
         $socket->close();
     }
 
-    public function testHttp()
+    public function testHttp(): BlackBox\Proof
     {
-        $remote = Generic::of(
-            $this->server(),
-            Config::of(),
-        );
+        $os = Unix::of();
 
-        $http = $remote->http();
+        return $this
+            ->forAll(Set::of(
+                $os,
+                Logger::psr($os, new NullLogger),
+            ))
+            ->prove(function($os) {
+                $remote = $os->remote();
+                $http = $remote->http();
 
-        $this->assertInstanceOf(HttpTransport::class, $http);
-        $this->assertSame($http, $remote->http());
+                $this->assertInstanceOf(HttpTransport::class, $http);
+                $this->assertSame($http, $remote->http());
+            });
     }
 
     public function testSql(): BlackBox\Proof

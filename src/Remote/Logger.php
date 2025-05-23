@@ -60,10 +60,7 @@ final class Logger implements Remote
     #[\Override]
     public function http(): HttpTransport\Transport
     {
-        return HttpTransport\Logger::psr(
-            $this->remote->http(),
-            $this->logger,
-        );
+        return $this->remote->http();
     }
 
     #[\Override]
