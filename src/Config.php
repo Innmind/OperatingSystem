@@ -16,6 +16,7 @@ use Innmind\IO\IO;
 final class Config
 {
     /**
+     * @param \Closure(Halt): Halt $mapHalt
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      */
     private function __construct(
@@ -23,6 +24,7 @@ final class Config
         private CaseSensitivity $caseSensitivity,
         private IO $io,
         private Halt $halt,
+        private \Closure $mapHalt,
         private EnvironmentPath $path,
         private ?HttpTransport $httpTransport,
         private \Closure $mapHttpTransport,
@@ -36,6 +38,7 @@ final class Config
             CaseSensitivity::sensitive,
             IO::fromAmbientAuthority(),
             Halt\Usleep::new(),
+            static fn(Halt $halt) => $halt,
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
                 false => '',
                 default => $path,
@@ -66,6 +69,7 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $this->halt,
+            $this->mapHalt,
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -82,6 +86,7 @@ final class Config
             CaseSensitivity::insensitive,
             $this->io,
             $this->halt,
+            $this->mapHalt,
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -98,6 +103,7 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $halt,
+            $this->mapHalt,
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -107,16 +113,17 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param callable(Halt): Halt $map
+     * @param \Closure(Halt): Halt $map
      */
-    public function mapHalt(callable $map): self
+    public function mapHalt(\Closure $map): self
     {
         /** @psalm-suppress ImpureFunctionCall */
         return new self(
             $this->clock,
             $this->caseSensitivity,
             $this->io,
-            $map($this->halt),
+            $this->halt,
+            $map,
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -133,6 +140,7 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $this->halt,
+            $this->mapHalt,
             $path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -149,6 +157,7 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $this->halt,
+            $this->mapHalt,
             $this->path,
             $transport,
             $this->mapHttpTransport,
@@ -167,6 +176,7 @@ final class Config
             $this->caseSensitivity,
             $this->io,
             $this->halt,
+            $this->mapHalt,
             $this->path,
             $this->httpTransport,
             $map,
@@ -202,7 +212,7 @@ final class Config
      */
     public function halt(): Halt
     {
-        return $this->halt;
+        return ($this->mapHalt)($this->halt);
     }
 
     /**
