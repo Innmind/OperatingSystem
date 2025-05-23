@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Config;
 
 use Innmind\OperatingSystem\Config;
+use Innmind\Server\Control;
 use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
@@ -29,6 +30,10 @@ final class Logger
             ))
             ->mapSQLConnection(fn($connection) => Connection\Logger::psr(
                 $connection,
+                $this->logger,
+            ))
+            ->mapServerControl(fn($server) => Control\Servers\Logger::psr(
+                $server,
                 $this->logger,
             ));
     }

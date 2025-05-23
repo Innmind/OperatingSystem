@@ -71,6 +71,22 @@ class GenericTest extends TestCase
             ->unwrap();
     }
 
+    public function testSshLogger()
+    {
+        $remote = Generic::of(
+            $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
+            Config::of()->map(Config\Logger::psr(new NullLogger)),
+        );
+
+        $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
+
+        $this->assertInstanceOf(Servers\Logger::class, $remoteServer);
+        $remoteServer
+            ->processes()
+            ->execute(Command::foreground('ls'))
+            ->unwrap();
+    }
+
     public function testSshWithoutPort()
     {
         $remote = Generic::of(

@@ -76,10 +76,7 @@ final class Logger implements Implementation
     #[\Override]
     public function control(): Control\Server
     {
-        return Control\Servers\Logger::psr(
-            $this->os->control(),
-            $this->logger,
-        );
+        return $this->os->control();
     }
 
     #[\Override]
@@ -97,10 +94,7 @@ final class Logger implements Implementation
     #[\Override]
     public function remote(): Remote
     {
-        return Remote\Logger::psr(
-            $this->os->remote(),
-            $this->logger,
-        );
+        return $this->os->remote();
     }
 
     #[\Override]
