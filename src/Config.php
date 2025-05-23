@@ -139,7 +139,7 @@ final class Config
      *
      * @param callable(Halt): Halt $map
      */
-    public function maphalt(callable $map): self
+    public function mapHalt(callable $map): self
     {
         /** @psalm-suppress ImpureFunctionCall */
         return new self(
