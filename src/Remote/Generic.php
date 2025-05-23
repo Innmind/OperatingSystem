@@ -95,8 +95,9 @@ final class Generic implements Remote
             true => $http->disableSSLVerification(),
             false => $http,
         };
+        $map = $this->config->httpTransportMapper();
 
-        return $this->http = $http;
+        return $this->http = $map($http);
     }
 
     #[\Override]

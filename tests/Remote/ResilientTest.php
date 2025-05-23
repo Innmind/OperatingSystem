@@ -4,8 +4,10 @@ declare(strict_types = 1);
 namespace Tests\Innmind\OperatingSystem\Remote;
 
 use Innmind\OperatingSystem\{
+    OperatingSystem,
     Remote\Resilient,
     Remote,
+    Config,
     Factory,
 };
 use Innmind\HttpTransport\ExponentialBackoff;
@@ -90,12 +92,13 @@ class ResilientTest extends TestCase
 
     public function testHttp()
     {
-        $remote = Resilient::of(
-            $this->os->remote(),
-            $this->os->process(),
+        $os = $this->os->map(
+            static fn($_, $config) => OperatingSystem::new(
+                $config->map(Config\Resilient::new()),
+            ),
         );
 
-        $this->assertInstanceOf(ExponentialBackoff::class, $remote->http());
+        $this->assertInstanceOf(ExponentialBackoff::class, $os->remote()->http());
     }
 
     public function testSql(): BlackBox\Proof

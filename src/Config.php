@@ -7,6 +7,7 @@ use Innmind\TimeContinuum\{
     Clock,
     Period,
 };
+use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
@@ -18,6 +19,7 @@ final class Config
     /**
      * @param Maybe<positive-int> $maxHttpConcurrency
      * @param Maybe<array{Period, callable(): void}> $httpHeartbeat
+     * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      */
     private function __construct(
         private Clock $clock,
@@ -27,6 +29,7 @@ final class Config
         private EnvironmentPath $path,
         private Maybe $maxHttpConcurrency,
         private Maybe $httpHeartbeat,
+        private \Closure $mapHttpTransport,
         private bool $disableSSLVerification,
     ) {
     }
@@ -49,6 +52,7 @@ final class Config
             }),
             $maxHttpConcurrency,
             $httpHeartbeat,
+            static fn(HttpTransport $transport) => $transport,
             false,
         );
     }
@@ -77,6 +81,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -94,6 +99,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -111,6 +117,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -131,6 +138,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -148,6 +156,7 @@ final class Config
             $path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -167,6 +176,7 @@ final class Config
             $this->path,
             Maybe::just($max),
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             $this->disableSSLVerification,
         );
     }
@@ -186,6 +196,27 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             Maybe::just([$timeout, $heartbeat]),
+            $this->mapHttpTransport,
+            $this->disableSSLVerification,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(HttpTransport): HttpTransport $map
+     */
+    public function mapHttpTransport(\Closure $map): self
+    {
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->path,
+            $this->maxHttpConcurrency,
+            $this->httpHeartbeat,
+            $map,
             $this->disableSSLVerification,
         );
     }
@@ -203,6 +234,7 @@ final class Config
             $this->path,
             $this->maxHttpConcurrency,
             $this->httpHeartbeat,
+            $this->mapHttpTransport,
             true,
         );
     }
@@ -265,6 +297,16 @@ final class Config
     public function httpHeartbeat(): Maybe
     {
         return $this->httpHeartbeat;
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Closure(HttpTransport): HttpTransport
+     */
+    public function httpTransportMapper(): \Closure
+    {
+        return $this->mapHttpTransport;
     }
 
     /**

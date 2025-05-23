@@ -6,6 +6,7 @@
 
 - `Innmind\OperatingSystem\Config::map()`
 - `Innmind\OperatingSystem\Config\Logger`
+- `Innmind\OperatingSystem\Config\Resilient`
 
 ### Changed
 
