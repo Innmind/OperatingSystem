@@ -21,6 +21,7 @@ final class Config
      * @param \Closure(Halt): Halt $mapHalt
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      * @param \Closure(Url): AccessLayer\Connection $sql
+     * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $mapSql
      */
     private function __construct(
         private Clock $clock,
@@ -32,6 +33,7 @@ final class Config
         private ?HttpTransport $httpTransport,
         private \Closure $mapHttpTransport,
         private \Closure $sql,
+        private \Closure $mapSql,
     ) {
     }
 
@@ -52,6 +54,7 @@ final class Config
             static fn(Url $server) => AccessLayer\Connection\Lazy::of(
                 static fn() => AccessLayer\Connection\PDO::of($server),
             ),
+            static fn(AccessLayer\Connection $connection) => $connection,
         );
     }
 
@@ -81,6 +84,7 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -99,6 +103,7 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -117,6 +122,7 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -140,6 +146,7 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -158,6 +165,7 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -176,6 +184,7 @@ final class Config
             $transport,
             $this->mapHttpTransport,
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -198,6 +207,7 @@ final class Config
             $this->httpTransport,
             static fn(HttpTransport $transport) => $map($previous($transport)),
             $this->sql,
+            $this->mapSql,
         );
     }
 
@@ -218,6 +228,30 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $sql,
+            $this->mapSql,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $map
+     */
+    public function mapSQLConnection(\Closure $map): self
+    {
+        $previous = $this->mapSql;
+
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            static fn(AccessLayer\Connection $connection) => $map($previous($connection)),
         );
     }
 
@@ -279,6 +313,8 @@ final class Config
      */
     public function sql(Url $url): AccessLayer\Connection
     {
-        return ($this->sql)($url);
+        return ($this->mapSql)(
+            ($this->sql)($url),
+        );
     }
 }
