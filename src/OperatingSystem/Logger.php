@@ -85,19 +85,13 @@ final class Logger implements Implementation
     #[\Override]
     public function ports(): Ports
     {
-        return Ports\Logger::psr(
-            $this->os->ports(),
-            $this->logger,
-        );
+        return $this->os->ports();
     }
 
     #[\Override]
     public function sockets(): Sockets
     {
-        return Sockets\Logger::psr(
-            $this->os->sockets(),
-            $this->logger,
-        );
+        return $this->os->sockets();
     }
 
     #[\Override]
@@ -112,9 +106,6 @@ final class Logger implements Implementation
     #[\Override]
     public function process(): CurrentProcess
     {
-        return CurrentProcess\Logger::psr(
-            $this->os->process(),
-            $this->logger,
-        );
+        return $this->os->process();
     }
 }

@@ -45,6 +45,15 @@
 - `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::disableSSLVerification()` use `::useHttpTransport()` instead
+- The following informations are no longer logged:
+    - the current process id
+    - the current process memory
+    - the signals listener being added/removed
+    - the signals received by the current process
+    - temporary files being created
+    - opened ports
+    - opened remote sockets
+    - opened sockets
 
 ## 5.2.0 - 2024-07-14
 

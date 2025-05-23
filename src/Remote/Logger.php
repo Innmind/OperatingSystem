@@ -43,17 +43,6 @@ final class Logger implements Remote
     #[\Override]
     public function socket(Transport $transport, Authority $authority): Attempt
     {
-        $this->logger->debug(
-            'Opening remote socket at {address}',
-            [
-                'address' => \sprintf(
-                    '%s://%s',
-                    $transport->toString(),
-                    $authority->toString(),
-                ),
-            ],
-        );
-
         return $this->remote->socket($transport, $authority);
     }
 

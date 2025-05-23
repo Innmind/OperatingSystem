@@ -4,10 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Filesystem;
 
 use Innmind\OperatingSystem\Filesystem;
-use Innmind\Filesystem\{
-    Adapter,
-    File\Content,
-};
+use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
 use Innmind\Immutable\{
@@ -87,13 +84,6 @@ final class Logger implements Filesystem
     #[\Override]
     public function temporary(Sequence $chunks): Attempt
     {
-        return $this
-            ->filesystem
-            ->temporary($chunks)
-            ->map(function(Content $content) {
-                $this->logger->debug('Temporary file created');
-
-                return $content;
-            });
+        return $this->filesystem->temporary($chunks);
     }
 }
