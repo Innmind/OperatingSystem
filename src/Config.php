@@ -117,13 +117,15 @@ final class Config
      */
     public function mapHalt(\Closure $map): self
     {
+        $previous = $this->mapHalt;
+
         /** @psalm-suppress ImpureFunctionCall */
         return new self(
             $this->clock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
-            $map,
+            static fn(Halt $halt) => $map($previous($halt)),
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -171,6 +173,8 @@ final class Config
      */
     public function mapHttpTransport(\Closure $map): self
     {
+        $previous = $this->mapHttpTransport;
+
         return new self(
             $this->clock,
             $this->caseSensitivity,
@@ -179,7 +183,7 @@ final class Config
             $this->mapHalt,
             $this->path,
             $this->httpTransport,
-            $map,
+            static fn(HttpTransport $transport) => $map($previous($transport)),
         );
     }
 
