@@ -39,6 +39,7 @@
 
 - `Innmind\OperatingSystem\Config::useStreamCapabilities()`
 - `Innmind\OperatingSystem\Sockets::watch()`
+- `Innmind\OperatingSystem\OperatingSystem\Resilient`
 
 ## 5.2.0 - 2024-07-14
 
