@@ -50,12 +50,12 @@ final class Generic implements Remote
             $port = $server->authority()->port();
         }
 
-        return Servers\Remote::of(
+        return $this->config->serverControlMapper()(Servers\Remote::of(
             $this->server,
             $server->authority()->userInformation()->user(),
             $server->authority()->host(),
             $port,
-        );
+        ));
     }
 
     #[\Override]

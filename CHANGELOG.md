@@ -11,6 +11,7 @@
 - `Innmind\OperatingSystem\Config::mapHttpTransport()`
 - `Innmind\OperatingSystem\Config::openSQLConnectionVia()`
 - `Innmind\OperatingSystem\Config::mapSQLConnection()`
+- `Innmind\OperatingSystem\Config::mapServerControl()`
 
 ### Changed
 

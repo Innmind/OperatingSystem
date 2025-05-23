@@ -76,11 +76,11 @@ final class Unix implements Implementation
     #[\Override]
     public function control(): ServerControl
     {
-        return $this->control ??= Servers\Unix::of(
+        return $this->control ??= $this->config->serverControlMapper()(Servers\Unix::of(
             $this->clock(),
             $this->config->io(),
             $this->config->halt(),
-        );
+        ));
     }
 
     #[\Override]

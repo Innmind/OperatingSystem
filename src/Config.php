@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
+use Innmind\Server\Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\HttpTransport\{
     Transport as HttpTransport,
@@ -22,6 +23,7 @@ final class Config
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      * @param \Closure(Url): AccessLayer\Connection $sql
      * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $mapSql
+     * @param \Closure(Control\Server): Control\Server $mapServerControl
      */
     private function __construct(
         private Clock $clock,
@@ -34,6 +36,7 @@ final class Config
         private \Closure $mapHttpTransport,
         private \Closure $sql,
         private \Closure $mapSql,
+        private \Closure $mapServerControl,
     ) {
     }
 
@@ -55,6 +58,7 @@ final class Config
                 static fn() => AccessLayer\Connection\PDO::of($server),
             ),
             static fn(AccessLayer\Connection $connection) => $connection,
+            static fn(Control\Server $server) => $server,
         );
     }
 
@@ -85,6 +89,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -104,6 +109,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -123,6 +129,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -147,6 +154,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -166,6 +174,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -185,6 +194,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -208,6 +218,7 @@ final class Config
             static fn(HttpTransport $transport) => $map($previous($transport)),
             $this->sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -229,6 +240,7 @@ final class Config
             $this->mapHttpTransport,
             $sql,
             $this->mapSql,
+            $this->mapServerControl,
         );
     }
 
@@ -252,6 +264,31 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             static fn(AccessLayer\Connection $connection) => $map($previous($connection)),
+            $this->mapServerControl,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Control\Server): Control\Server $map
+     */
+    public function mapServerControl(\Closure $map): self
+    {
+        $previous = $this->mapServerControl;
+
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            static fn(Control\Server $server) => $map($previous($server)),
         );
     }
 
@@ -316,5 +353,15 @@ final class Config
         return ($this->mapSql)(
             ($this->sql)($url),
         );
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Closure(Control\Server): Control\Server
+     */
+    public function serverControlMapper(): \Closure
+    {
+        return $this->mapServerControl;
     }
 }
