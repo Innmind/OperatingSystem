@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
@@ -18,22 +17,22 @@ use Innmind\TimeContinuum\Clock;
 /**
  * This decorator helps retry certain _safe_ operations on remote systems
  */
-final class Resilient implements OperatingSystem
+final class Resilient implements Implementation
 {
-    private OperatingSystem $os;
+    private Implementation $os;
 
-    private function __construct(OperatingSystem $os)
+    private function __construct(Implementation $os)
     {
         $this->os = $os;
     }
 
-    public static function of(OperatingSystem $os): self
+    public static function of(Implementation $os): self
     {
         return new self($os);
     }
 
     #[\Override]
-    public function map(callable $map): OperatingSystem
+    public function map(callable $map): Implementation
     {
         return new self($this->os->map($map));
     }

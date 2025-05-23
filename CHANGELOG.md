@@ -28,6 +28,7 @@
 - `Innmind\OperatingSystem\Sockets::open()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Sockets::takeOver()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Sockets::connectTo()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\OperatingSystem` is now a final class
 
 ### Fixed
 

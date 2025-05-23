@@ -4,35 +4,33 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
     Remote,
     CurrentProcess,
     Config,
-    Factory,
 };
 use Innmind\Server\Status;
 use Innmind\Server\Control;
 use Innmind\TimeContinuum;
 use Psr\Log\LoggerInterface;
 
-final class Logger implements OperatingSystem
+final class Logger implements Implementation
 {
-    private OperatingSystem $os;
+    private Implementation $os;
     private LoggerInterface $logger;
 
-    private function __construct(OperatingSystem $os, LoggerInterface $logger)
+    private function __construct(Implementation $os, LoggerInterface $logger)
     {
         $this->os = $os;
         $this->logger = $logger;
     }
 
-    public static function psr(OperatingSystem $os, LoggerInterface $logger): self
+    public static function psr(Implementation $os, LoggerInterface $logger): self
     {
         return new self(
-            $os->map(static fn($_, $config) => Factory::build(
+            $os->map(static fn($_, $config) => Unix::of(
                 $config->map(Config\Logger::psr($logger)),
             )),
             $logger,
@@ -40,7 +38,7 @@ final class Logger implements OperatingSystem
     }
 
     #[\Override]
-    public function map(callable $map): OperatingSystem
+    public function map(callable $map): Implementation
     {
         return new self(
             $this->os->map($map),

@@ -6,13 +6,11 @@ namespace Tests\Innmind\OperatingSystem\OperatingSystem;
 use Innmind\OperatingSystem\{
     OperatingSystem\Resilient,
     OperatingSystem\Unix,
-    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
     Remote,
     CurrentProcess,
-    Factory,
 };
 use Innmind\Server\Status\Server as ServerStatus;
 use Innmind\Server\Control\Server as ServerControl;
@@ -23,9 +21,8 @@ class ResilientTest extends TestCase
 {
     public function testInterface()
     {
-        $os = Resilient::of(Factory::build());
+        $os = Resilient::of(Unix::of());
 
-        $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertInstanceOf(Clock::class, $os->clock());
         $this->assertInstanceOf(Filesystem::class, $os->filesystem());
         $this->assertInstanceOf(ServerStatus::class, $os->status());

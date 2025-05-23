@@ -5,7 +5,6 @@ namespace Tests\Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
     OperatingSystem\Unix,
-    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
@@ -26,7 +25,6 @@ class UnixTest extends TestCase
 
         $os = Unix::of(Config::of()->withClock($clock));
 
-        $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());
         $this->assertInstanceOf(Filesystem\Generic::class, $os->filesystem());
         $this->assertInstanceOf(ServerStatus::class, $os->status());

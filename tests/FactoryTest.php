@@ -5,7 +5,7 @@ namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
     Factory,
-    OperatingSystem\Unix,
+    OperatingSystem,
     Config,
 };
 use Innmind\TimeContinuum\Clock;
@@ -26,7 +26,7 @@ class FactoryTest extends TestCase
 
         $os = Factory::build(Config::of()->withClock($clock));
 
-        $this->assertInstanceOf(Unix::class, $os);
+        $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());
     }
 

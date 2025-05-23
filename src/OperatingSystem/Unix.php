@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
@@ -22,7 +21,7 @@ use Innmind\Server\Control\{
 };
 use Innmind\TimeContinuum\Clock;
 
-final class Unix implements OperatingSystem
+final class Unix implements Implementation
 {
     private Config $config;
     private ?Filesystem $filesystem = null;
@@ -44,7 +43,7 @@ final class Unix implements OperatingSystem
     }
 
     #[\Override]
-    public function map(callable $map): OperatingSystem
+    public function map(callable $map): Implementation
     {
         return $map($this, $this->config);
     }

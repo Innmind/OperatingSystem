@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Signals,
     CurrentProcess,
     OperatingSystem\Logger,
-    Factory,
+    OperatingSystem\Unix,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
@@ -47,7 +47,7 @@ class GenericTest extends TestCase
 
     public function testHalt(): BlackBox\Proof
     {
-        $os = Factory::build();
+        $os = Unix::of();
 
         return $this
             ->forAll(Set::of(
