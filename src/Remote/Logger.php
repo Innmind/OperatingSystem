@@ -55,9 +55,6 @@ final class Logger implements Remote
     #[\Override]
     public function sql(Url $server): Connection
     {
-        return Connection\Logger::psr(
-            $this->remote->sql($server),
-            $this->logger,
-        );
+        return $this->remote->sql($server);
     }
 }

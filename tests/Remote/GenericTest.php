@@ -128,15 +128,18 @@ class GenericTest extends TestCase
 
     public function testSql(): BlackBox\Proof
     {
-        return $this
-            ->forAll(FUrl::any())
-            ->prove(function($server) {
-                $remote = Generic::of(
-                    $this->server(),
-                    Config::of(),
-                );
+        $os = Unix::of();
 
-                $sql = $remote->sql($server);
+        return $this
+            ->forAll(
+                FUrl::any(),
+                Set::of(
+                    $os,
+                    Logger::psr($os, new NullLogger),
+                ),
+            )
+            ->prove(function($server, $os) {
+                $sql = $os->remote()->sql($server);
 
                 $this->assertInstanceOf(Connection::class, $sql);
             });

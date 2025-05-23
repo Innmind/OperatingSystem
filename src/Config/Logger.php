@@ -6,6 +6,7 @@ namespace Innmind\OperatingSystem\Config;
 use Innmind\OperatingSystem\Config;
 use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
+use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 
 final class Logger
@@ -24,6 +25,10 @@ final class Logger
             ))
             ->mapHttpTransport(fn($transport) => HttpTransport\Logger::psr(
                 $transport,
+                $this->logger,
+            ))
+            ->mapSQLConnection(fn($connection) => Connection\Logger::psr(
+                $connection,
                 $this->logger,
             ));
     }
