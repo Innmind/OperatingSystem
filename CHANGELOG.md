@@ -7,6 +7,8 @@
 - `Innmind\OperatingSystem\Config::map()`
 - `Innmind\OperatingSystem\Config\Logger`
 - `Innmind\OperatingSystem\Config\Resilient`
+- `Innmind\OperatingSystem\Config::useHttpTransport()`
+- `Innmind\OperatingSystem\Config::mapHttpTransport()`
 
 ### Changed
 
@@ -40,6 +42,9 @@
 - `Innmind\OperatingSystem\Config::useStreamCapabilities()`
 - `Innmind\OperatingSystem\Sockets::watch()`
 - `Innmind\OperatingSystem\OperatingSystem\Resilient`
+- `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::withHttpHeartbeat()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::disableSSLVerification()` use `::useHttpTransport()` instead
 
 ## 5.2.0 - 2024-07-14
 

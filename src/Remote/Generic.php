@@ -17,10 +17,7 @@ use Innmind\Url\{
     Authority,
     Authority\Port,
 };
-use Innmind\HttpTransport\{
-    Transport as HttpTransport,
-    Curl,
-};
+use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 
@@ -75,29 +72,7 @@ final class Generic implements Remote
     #[\Override]
     public function http(): HttpTransport
     {
-        if ($this->http) {
-            return $this->http;
-        }
-
-        $http = Curl::of(
-            $this->config->clock(),
-            $this->config->io(),
-        );
-        $http = $this->config->maxHttpConcurrency()->match(
-            static fn($max) => $http->maxConcurrency($max),
-            static fn() => $http,
-        );
-        $http = $this->config->httpHeartbeat()->match(
-            static fn($config) => $http->heartbeat($config[0], $config[1]),
-            static fn() => $http,
-        );
-        $http = match ($this->config->mustDisableSSLVerification()) {
-            true => $http->disableSSLVerification(),
-            false => $http,
-        };
-        $map = $this->config->httpTransportMapper();
-
-        return $this->http = $map($http);
+        return $this->http ??= $this->config->httpTransport();
     }
 
     #[\Override]

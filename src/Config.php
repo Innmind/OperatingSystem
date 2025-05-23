@@ -3,22 +3,19 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\TimeContinuum\{
-    Clock,
-    Period,
+use Innmind\TimeContinuum\Clock;
+use Innmind\HttpTransport\{
+    Transport as HttpTransport,
+    Curl,
 };
-use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\CaseSensitivity;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
-use Innmind\Immutable\Maybe;
 
 final class Config
 {
     /**
-     * @param Maybe<positive-int> $maxHttpConcurrency
-     * @param Maybe<array{Period, callable(): void}> $httpHeartbeat
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      */
     private function __construct(
@@ -27,20 +24,13 @@ final class Config
         private IO $io,
         private Halt $halt,
         private EnvironmentPath $path,
-        private Maybe $maxHttpConcurrency,
-        private Maybe $httpHeartbeat,
+        private ?HttpTransport $httpTransport,
         private \Closure $mapHttpTransport,
-        private bool $disableSSLVerification,
     ) {
     }
 
     public static function of(): self
     {
-        /** @var Maybe<positive-int> */
-        $maxHttpConcurrency = Maybe::nothing();
-        /** @var Maybe<array{Period, callable(): void}> */
-        $httpHeartbeat = Maybe::nothing();
-
         return new self(
             Clock::live(),
             CaseSensitivity::sensitive,
@@ -50,10 +40,8 @@ final class Config
                 false => '',
                 default => $path,
             }),
-            $maxHttpConcurrency,
-            $httpHeartbeat,
+            null,
             static fn(HttpTransport $transport) => $transport,
-            false,
         );
     }
 
@@ -79,10 +67,8 @@ final class Config
             $this->io,
             $this->halt,
             $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
@@ -97,10 +83,8 @@ final class Config
             $this->io,
             $this->halt,
             $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
@@ -115,10 +99,8 @@ final class Config
             $this->io,
             $halt,
             $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
@@ -136,10 +118,8 @@ final class Config
             $this->io,
             $map($this->halt),
             $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
@@ -154,19 +134,15 @@ final class Config
             $this->io,
             $this->halt,
             $path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
     /**
      * @psalm-mutation-free
-     *
-     * @param positive-int $max
      */
-    public function limitHttpConcurrencyTo(int $max): self
+    public function useHttpTransport(HttpTransport $transport): self
     {
         return new self(
             $this->clock,
@@ -174,30 +150,8 @@ final class Config
             $this->io,
             $this->halt,
             $this->path,
-            Maybe::just($max),
-            $this->httpHeartbeat,
+            $transport,
             $this->mapHttpTransport,
-            $this->disableSSLVerification,
-        );
-    }
-
-    /**
-     * @psalm-mutation-free
-     *
-     * @param callable(): void $heartbeat
-     */
-    public function withHttpHeartbeat(Period $timeout, callable $heartbeat): self
-    {
-        return new self(
-            $this->clock,
-            $this->caseSensitivity,
-            $this->io,
-            $this->halt,
-            $this->path,
-            $this->maxHttpConcurrency,
-            Maybe::just([$timeout, $heartbeat]),
-            $this->mapHttpTransport,
-            $this->disableSSLVerification,
         );
     }
 
@@ -214,28 +168,8 @@ final class Config
             $this->io,
             $this->halt,
             $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
+            $this->httpTransport,
             $map,
-            $this->disableSSLVerification,
-        );
-    }
-
-    /**
-     * @psalm-mutation-free
-     */
-    public function disableSSLVerification(): self
-    {
-        return new self(
-            $this->clock,
-            $this->caseSensitivity,
-            $this->io,
-            $this->halt,
-            $this->path,
-            $this->maxHttpConcurrency,
-            $this->httpHeartbeat,
-            $this->mapHttpTransport,
-            true,
         );
     }
 
@@ -281,39 +215,14 @@ final class Config
 
     /**
      * @internal
-     *
-     * @return Maybe<positive-int>
      */
-    public function maxHttpConcurrency(): Maybe
+    public function httpTransport(): HttpTransport
     {
-        return $this->maxHttpConcurrency;
-    }
+        $transport = $this->httpTransport ?? Curl::of(
+            $this->clock,
+            $this->io,
+        );
 
-    /**
-     * @internal
-     *
-     * @return Maybe<array{Period, callable(): void}>
-     */
-    public function httpHeartbeat(): Maybe
-    {
-        return $this->httpHeartbeat;
-    }
-
-    /**
-     * @internal
-     *
-     * @return \Closure(HttpTransport): HttpTransport
-     */
-    public function httpTransportMapper(): \Closure
-    {
-        return $this->mapHttpTransport;
-    }
-
-    /**
-     * @internal
-     */
-    public function mustDisableSSLVerification(): bool
-    {
-        return $this->disableSSLVerification;
+        return ($this->mapHttpTransport)($transport);
     }
 }
