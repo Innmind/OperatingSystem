@@ -15,39 +15,20 @@ use Innmind\Immutable\Maybe;
 
 final class Config
 {
-    private Clock $clock;
-    private CaseSensitivity $caseSensitivity;
-    private IO $io;
-    private Halt $halt;
-    private EnvironmentPath $path;
-    /** @var Maybe<positive-int> */
-    private Maybe $maxHttpConcurrency;
-    /** @var Maybe<array{Period, callable(): void}> */
-    private Maybe $httpHeartbeat;
-    private bool $disableSSLVerification;
-
     /**
      * @param Maybe<positive-int> $maxHttpConcurrency
      * @param Maybe<array{Period, callable(): void}> $httpHeartbeat
      */
     private function __construct(
-        Clock $clock,
-        CaseSensitivity $caseSensitivity,
-        IO $io,
-        Halt $halt,
-        EnvironmentPath $path,
-        Maybe $maxHttpConcurrency,
-        Maybe $httpHeartbeat,
-        bool $disableSSLVerification,
+        private Clock $clock,
+        private CaseSensitivity $caseSensitivity,
+        private IO $io,
+        private Halt $halt,
+        private EnvironmentPath $path,
+        private Maybe $maxHttpConcurrency,
+        private Maybe $httpHeartbeat,
+        private bool $disableSSLVerification,
     ) {
-        $this->clock = $clock;
-        $this->caseSensitivity = $caseSensitivity;
-        $this->io = $io;
-        $this->halt = $halt;
-        $this->path = $path;
-        $this->maxHttpConcurrency = $maxHttpConcurrency;
-        $this->httpHeartbeat = $httpHeartbeat;
-        $this->disableSSLVerification = $disableSSLVerification;
     }
 
     public static function of(): self
