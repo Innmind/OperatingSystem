@@ -1,12 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\CurrentProcess;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    CurrentProcess\Generic,
-    CurrentProcess\Signals,
     CurrentProcess,
+    CurrentProcess\Signals,
     OperatingSystem\Unix,
     Config,
 };
@@ -22,21 +21,13 @@ use Innmind\BlackBox\{
     Set,
 };
 
-class GenericTest extends TestCase
+class CurrentProcessTest extends TestCase
 {
     use BlackBox;
 
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            CurrentProcess::class,
-            Generic::of(Halt\Usleep::new()),
-        );
-    }
-
     public function testId()
     {
-        $process = Generic::of(Halt\Usleep::new());
+        $process = CurrentProcess::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Pid::class, $process->id()->unwrap());
         $this->assertSame(
@@ -66,7 +57,7 @@ class GenericTest extends TestCase
 
     public function testSignals()
     {
-        $process = Generic::of(Halt\Usleep::new());
+        $process = CurrentProcess::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Signals::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
@@ -74,7 +65,7 @@ class GenericTest extends TestCase
 
     public function testMemory()
     {
-        $process = Generic::of(Halt\Usleep::new());
+        $process = CurrentProcess::of(Halt\Usleep::new());
 
         $this->assertInstanceOf(Bytes::class, $process->memory());
         $this->assertGreaterThan(3_000_000, $process->memory()->toInt()); // ~3MB

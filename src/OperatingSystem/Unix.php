@@ -107,6 +107,6 @@ final class Unix implements Implementation
     #[\Override]
     public function process(): CurrentProcess
     {
-        return $this->process ??= CurrentProcess\Generic::of($this->config->halt());
+        return $this->process ??= CurrentProcess::of($this->config->halt());
     }
 }

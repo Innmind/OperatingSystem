@@ -32,7 +32,7 @@ class UnixTest extends TestCase
         $this->assertInstanceOf(Ports::class, $os->ports());
         $this->assertInstanceOf(Sockets::class, $os->sockets());
         $this->assertInstanceOf(Remote::class, $os->remote());
-        $this->assertInstanceOf(CurrentProcess\Generic::class, $os->process());
+        $this->assertInstanceOf(CurrentProcess::class, $os->process());
         $this->assertSame($os->filesystem(), $os->filesystem());
         $this->assertSame($os->status(), $os->status());
         $this->assertSame($os->control(), $os->control());
