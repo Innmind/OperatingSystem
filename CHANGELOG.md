@@ -50,6 +50,7 @@
 - `Innmind\OperatingSystem\Config::useStreamCapabilities()`
 - `Innmind\OperatingSystem\Sockets::watch()`
 - `Innmind\OperatingSystem\OperatingSystem\Resilient`
+- `Innmind\OperatingSystem\OperatingSystem\Logger`
 - `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::disableSSLVerification()` use `::useHttpTransport()` instead

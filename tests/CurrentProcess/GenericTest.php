@@ -7,8 +7,8 @@ use Innmind\OperatingSystem\{
     CurrentProcess\Generic,
     CurrentProcess\Signals,
     CurrentProcess,
-    OperatingSystem\Logger,
     OperatingSystem\Unix,
+    Config,
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
@@ -47,12 +47,10 @@ class GenericTest extends TestCase
 
     public function testHalt(): BlackBox\Proof
     {
-        $os = Unix::of();
-
         return $this
             ->forAll(Set::of(
-                $os,
-                Logger::psr($os, new NullLogger),
+                Unix::of(),
+                Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $process = $os->process();

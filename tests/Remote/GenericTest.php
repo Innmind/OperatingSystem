@@ -5,7 +5,6 @@ namespace Tests\Innmind\OperatingSystem\Remote;
 
 use Innmind\OperatingSystem\{
     Remote\Generic,
-    OperatingSystem\Logger,
     OperatingSystem\Unix,
     Remote,
     Config,
@@ -126,12 +125,10 @@ class GenericTest extends TestCase
 
     public function testHttp(): BlackBox\Proof
     {
-        $os = Unix::of();
-
         return $this
             ->forAll(Set::of(
-                $os,
-                Logger::psr($os, new NullLogger),
+                Unix::of(),
+                Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $remote = $os->remote();
@@ -144,14 +141,12 @@ class GenericTest extends TestCase
 
     public function testSql(): BlackBox\Proof
     {
-        $os = Unix::of();
-
         return $this
             ->forAll(
                 FUrl::any(),
                 Set::of(
-                    $os,
-                    Logger::psr($os, new NullLogger),
+                    Unix::of(),
+                    Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
                 ),
             )
             ->prove(function($server, $os) {
