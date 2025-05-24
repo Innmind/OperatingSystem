@@ -92,7 +92,7 @@ final class Unix implements Implementation
     #[\Override]
     public function sockets(): Sockets
     {
-        return $this->sockets ??= Sockets\Unix::of($this->config);
+        return $this->sockets ??= Sockets::of($this->config);
     }
 
     #[\Override]
