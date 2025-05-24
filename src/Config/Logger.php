@@ -6,6 +6,7 @@ namespace Innmind\OperatingSystem\Config;
 use Innmind\OperatingSystem\Config;
 use Innmind\Server\Control;
 use Innmind\Server\Status;
+use Innmind\TimeContinuum\Clock;
 use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
@@ -40,7 +41,8 @@ final class Logger
             ->mapServerStatus(fn($server) => Status\Servers\Logger::of(
                 $server,
                 $this->logger,
-            ));
+            ))
+            ->mapClock(fn($clock) => Clock::logger($clock, $this->logger));
     }
 
     public static function psr(LoggerInterface $logger): self

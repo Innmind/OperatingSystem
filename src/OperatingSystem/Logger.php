@@ -49,10 +49,7 @@ final class Logger implements Implementation
     #[\Override]
     public function clock(): TimeContinuum\Clock
     {
-        return TimeContinuum\Clock::logger(
-            $this->os->clock(),
-            $this->logger,
-        );
+        return $this->os->clock();
     }
 
     #[\Override]
