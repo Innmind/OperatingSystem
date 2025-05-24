@@ -20,6 +20,7 @@ use Formal\AccessLayer;
 final class Config
 {
     /**
+     * @param \Closure(Clock): Clock $mapClock
      * @param \Closure(Halt): Halt $mapHalt
      * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
      * @param \Closure(Url): AccessLayer\Connection $sql
@@ -29,6 +30,7 @@ final class Config
      */
     private function __construct(
         private Clock $clock,
+        private \Closure $mapClock,
         private CaseSensitivity $caseSensitivity,
         private IO $io,
         private Halt $halt,
@@ -47,6 +49,7 @@ final class Config
     {
         return new self(
             Clock::live(),
+            static fn(Clock $clock) => $clock,
             CaseSensitivity::sensitive,
             IO::fromAmbientAuthority(),
             Halt\Usleep::new(),
@@ -84,6 +87,33 @@ final class Config
     {
         return new self(
             $clock,
+            $this->mapClock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Clock): Clock $map
+     */
+    public function mapClock(\Closure $map): self
+    {
+        $previous = $this->mapClock;
+
+        return new self(
+            $this->clock,
+            static fn(Clock $clock) => $map($previous($clock)),
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -105,6 +135,7 @@ final class Config
     {
         return new self(
             $this->clock,
+            $this->mapClock,
             CaseSensitivity::insensitive,
             $this->io,
             $this->halt,
@@ -126,6 +157,7 @@ final class Config
     {
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $halt,
@@ -152,6 +184,7 @@ final class Config
         /** @psalm-suppress ImpureFunctionCall */
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -173,6 +206,7 @@ final class Config
     {
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -194,6 +228,7 @@ final class Config
     {
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -219,6 +254,7 @@ final class Config
 
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -242,6 +278,7 @@ final class Config
     {
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -267,6 +304,7 @@ final class Config
 
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -292,6 +330,7 @@ final class Config
 
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -317,6 +356,7 @@ final class Config
 
         return new self(
             $this->clock,
+            $this->mapClock,
             $this->caseSensitivity,
             $this->io,
             $this->halt,
@@ -336,7 +376,7 @@ final class Config
      */
     public function clock(): Clock
     {
-        return $this->clock;
+        return ($this->mapClock)($this->clock);
     }
 
     /**
