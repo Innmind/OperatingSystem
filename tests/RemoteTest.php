@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Remote;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Remote\Generic,
     Remote,
+    OperatingSystem,
     Config,
     Factory,
 };
@@ -33,29 +33,20 @@ use Formal\AccessLayer\Connection;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     PHPUnit\Framework\TestCase,
+    Set,
 };
 use Fixtures\Innmind\Url\Url as FUrl;
+use Psr\Log\NullLogger;
 
-class GenericTest extends TestCase
+class RemoteTest extends TestCase
 {
     use BlackBox;
 
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            Remote::class,
-            Generic::of(
-                $this->server(),
-                Config::of(),
-            ),
-        );
-    }
-
     public function testSsh()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
-            Config::of(),
+            Config::new(),
         );
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
@@ -67,11 +58,27 @@ class GenericTest extends TestCase
             ->unwrap();
     }
 
+    public function testSshLogger()
+    {
+        $remote = Remote::of(
+            $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
+            Config::new()->map(Config\Logger::psr(new NullLogger)),
+        );
+
+        $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
+
+        $this->assertInstanceOf(Servers\Logger::class, $remoteServer);
+        $remoteServer
+            ->processes()
+            ->execute(Command::foreground('ls'))
+            ->unwrap();
+    }
+
     public function testSshWithoutPort()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server("ssh 'user@my-vps' 'ls'"),
-            Config::of(),
+            Config::new(),
         );
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
@@ -82,9 +89,9 @@ class GenericTest extends TestCase
 
     public function testSocket()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server(),
-            Config::of(),
+            Config::new(),
         );
         $server = Factory::build()
             ->ports()
@@ -104,30 +111,34 @@ class GenericTest extends TestCase
         $socket->close();
     }
 
-    public function testHttp()
+    public function testHttp(): BlackBox\Proof
     {
-        $remote = Generic::of(
-            $this->server(),
-            Config::of(),
-        );
+        return $this
+            ->forAll(Set::of(
+                OperatingSystem::new(),
+                OperatingSystem::new(Config::new()->map(Config\Logger::psr(new NullLogger))),
+            ))
+            ->prove(function($os) {
+                $remote = $os->remote();
+                $http = $remote->http();
 
-        $http = $remote->http();
-
-        $this->assertInstanceOf(HttpTransport::class, $http);
-        $this->assertSame($http, $remote->http());
+                $this->assertInstanceOf(HttpTransport::class, $http);
+                $this->assertSame($http, $remote->http());
+            });
     }
 
     public function testSql(): BlackBox\Proof
     {
         return $this
-            ->forAll(FUrl::any())
-            ->prove(function($server) {
-                $remote = Generic::of(
-                    $this->server(),
-                    Config::of(),
-                );
-
-                $sql = $remote->sql($server);
+            ->forAll(
+                FUrl::any(),
+                Set::of(
+                    OperatingSystem::new(),
+                    OperatingSystem::new(Config::new()->map(Config\Logger::psr(new NullLogger))),
+                ),
+            )
+            ->prove(function($server, $os) {
+                $sql = $os->remote()->sql($server);
 
                 $this->assertInstanceOf(Connection::class, $sql);
             });

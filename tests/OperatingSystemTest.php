@@ -1,10 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\OperatingSystem;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem\Unix,
     OperatingSystem,
     Filesystem,
     Ports,
@@ -18,23 +17,22 @@ use Innmind\Server\Control\Server as ServerControl;
 use Innmind\TimeContinuum\Clock;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
-class UnixTest extends TestCase
+class OperatingSystemTest extends TestCase
 {
     public function testInterface()
     {
         $clock = Clock::live();
 
-        $os = Unix::of(Config::of()->withClock($clock));
+        $os = OperatingSystem::new(Config::new()->withClock($clock));
 
-        $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());
-        $this->assertInstanceOf(Filesystem\Generic::class, $os->filesystem());
+        $this->assertInstanceOf(Filesystem::class, $os->filesystem());
         $this->assertInstanceOf(ServerStatus::class, $os->status());
         $this->assertInstanceOf(ServerControl::class, $os->control());
-        $this->assertInstanceOf(Ports\Unix::class, $os->ports());
-        $this->assertInstanceOf(Sockets\Unix::class, $os->sockets());
-        $this->assertInstanceOf(Remote\Generic::class, $os->remote());
-        $this->assertInstanceOf(CurrentProcess\Generic::class, $os->process());
+        $this->assertInstanceOf(Ports::class, $os->ports());
+        $this->assertInstanceOf(Sockets::class, $os->sockets());
+        $this->assertInstanceOf(Remote::class, $os->remote());
+        $this->assertInstanceOf(CurrentProcess::class, $os->process());
         $this->assertSame($os->filesystem(), $os->filesystem());
         $this->assertSame($os->status(), $os->status());
         $this->assertSame($os->control(), $os->control());
@@ -46,16 +44,14 @@ class UnixTest extends TestCase
 
     public function testMap()
     {
-        $os = Unix::of($config = Config::of());
-        $expected = Unix::of();
+        $os = OperatingSystem::new($config = Config::new());
 
-        $result = $os->map(function($os_, $config_) use ($os, $config, $expected) {
-            $this->assertSame($os, $os_);
+        $result = $os->map(function($config_) use ($config) {
             $this->assertSame($config, $config_);
 
-            return $expected;
+            return Config::new();
         });
 
-        $this->assertSame($expected, $result);
+        $this->assertNotSame($os, $result);
     }
 }

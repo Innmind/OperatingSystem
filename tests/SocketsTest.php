@@ -1,10 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Sockets;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Sockets\Unix,
     Sockets,
     Config,
 };
@@ -16,16 +15,11 @@ use Innmind\IO\Sockets\{
 use Innmind\Url\Path;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
-class UnixTest extends TestCase
+class SocketsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(Sockets::class, Unix::of(Config::of()));
-    }
-
     public function testOpen()
     {
-        $sockets = Unix::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
@@ -44,7 +38,7 @@ class UnixTest extends TestCase
 
     public function testTakeOver()
     {
-        $sockets = Unix::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
@@ -62,7 +56,7 @@ class UnixTest extends TestCase
 
     public function testConnectTo()
     {
-        $sockets = Unix::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $server = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
