@@ -5,12 +5,12 @@ namespace Innmind\OperatingSystem;
 
 final class Factory
 {
-    public static function build(Config $config = null): OperatingSystem
+    public static function build(?Config $config = null): OperatingSystem
     {
         switch (\PHP_OS) {
             case 'Darwin':
             case 'Linux':
-                return OperatingSystem\Unix::of($config);
+                return OperatingSystem::new($config);
         }
 
         throw new \LogicException('Unuspported operating system');

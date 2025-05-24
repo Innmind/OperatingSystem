@@ -1,6 +1,6 @@
 # OperatingSystem
 
-[![Build Status](https://github.com/innmind/operatingsystem/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/operatingsystem/actions?query=workflow%3ACI)
+[![CI](https://github.com/Innmind/OperatingSystem/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Innmind/OperatingSystem/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/innmind/operatingsystem/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/operatingsystem)
 [![Type Coverage](https://shepherd.dev/github/innmind/operatingsystem/coverage.svg)](https://shepherd.dev/github/innmind/operatingsystem)
 
@@ -38,7 +38,10 @@ $os = Factory::build();
 ```php
 use Innmind\Url\Path;
 
-$adapter = $os->filesystem()->mount(Path::of('/var/data/'));
+$adapter = $os
+    ->filesystem()
+    ->mount(Path::of('/var/data/'))
+    ->unwrap();
 ```
 
 `$adater` is an instance of [`Innmind\Filesystem\Adapter`](http://innmind.github.io/Filesystem/).
@@ -55,7 +58,8 @@ use Innmind\Server\Control\Server\Command;
 $process = $os
     ->control()
     ->processes()
-    ->execute(Command::foreground('echo foo'));
+    ->execute(Command::foreground('echo foo'))
+    ->unwrap();
 ```
 
 `$process` is an instance of [`Innmind\Server\Control\Server\Process`](https://github.com/innmind/servercontrol#usage).
@@ -74,13 +78,10 @@ $server = $os
         IPv4::localhost(),
         Port::of(1337),
     )
-    ->match(
-        static fn($server) => $server->unwrap(),
-        static fn() => throw new \RuntimeException('Cannot open the socket'),
-    );
+    ->unwrap();
 ```
 
-`$server` is an instance of [`Innmind\Socket\Server`](https://github.com/innmind/socket#internet-socket).
+`$server` is an instance of [`Innmind\IO\Sockets\Servers\Server`](https://innmind.org/io/sockets/).
 
 ### Want to open a local socket ?
 
@@ -88,25 +89,25 @@ $server = $os
 # process A
 use Innmind\Socket\Address\Unix;
 
-$server = $os->sockets()->open(Unix::of('/tmp/foo.sock'))->match(
-    static fn($server) => $server->unwrap(),
-    static fn() => throw new \RuntimeException('Cannot open the socket'),
-);
+$server = $os
+    ->sockets()
+    ->open(Unix::of('/tmp/foo.sock'))
+    ->unwrap();
 ```
 
-`$server` is an instance of [`Innmind\Socket\Server`](https://github.com/innmind/socket#unix-socket).
+`$server` is an instance of [`Innmind\IO\Sockets\Servers\Server`](https://innmind.org/io/sockets/).
 
 ```php
 # process B
 use Innmind\Socket\Address\Unix;
 
-$client = $os->sockets()->connectTo(Unix::of('/tmp/foo.sock'))->match(
-    static fn($client) => $client->unwrap(),
-    static fn() => throw new \RuntimeException('Cannot connect to the socket'),
-);
+$client = $os
+    ->sockets()
+    ->connectTo(Unix::of('/tmp/foo.sock'))
+    ->unwrap();
 ```
 
-`$client` is an instance of `Innmind\Socket\Client`.
+`$client` is an instance of [`Innmind\IO\Sockets\Clients\Client`](https://innmind.org/io/sockets/#clients).
 
 ### Want to execute commands on a remote server ?
 
@@ -118,7 +119,8 @@ $process = $os
     ->remote()
     ->ssh(Url::of('ssh://user@server-address:1337'))
     ->processes()
-    ->execute(Command::foreground('ls'));
+    ->execute(Command::foreground('ls'))
+    ->unwrap();
 ```
 
 `$process` is an instance of [`Innmind\Server\Control\Server\Process`](https://github.com/innmind/servercontrol#usage).
@@ -127,15 +129,15 @@ $process = $os
 
 ```php
 use Innmind\Http\{
-    Message\Request\Request,
-    Message\Method,
+    Request,
+    Method,
     ProtocolVersion,
 };
 use Innmind\Url\Url;
 
 $response = $os
     ->remote()
-    ->http()(new Request(
+    ->http()(Request::of(
         Url::of('http://example.com'),
         Method::get,
         ProtocolVersion::v20,
@@ -145,15 +147,15 @@ $response = $os
 ### Want to access current process id ?
 
 ```php
-$os->process()->id();
+$os->process()->id()->unwrap();
 ```
 
 ### Want to pause the current process ?
 
 ```php
-use Innmind\TimeContinuum\Earth\Period\Minute;
+use Innmind\TimeContinuum\Period;
 
-$os->process()->halt(new Minute(1));
+$os->process()->halt(Period::minute(1));
 ```
 
 ### Want to listen for a signal ?

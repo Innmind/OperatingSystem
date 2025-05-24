@@ -1,5 +1,80 @@
 # Changelog
 
+## 6.0.0 - 2025-05-24
+
+### Added
+
+- `Innmind\OperatingSystem\Config::map()`
+- `Innmind\OperatingSystem\Config\Logger`
+- `Innmind\OperatingSystem\Config\Resilient`
+- `Innmind\OperatingSystem\Config::useHttpTransport()`
+- `Innmind\OperatingSystem\Config::mapHttpTransport()`
+- `Innmind\OperatingSystem\Config::openSQLConnectionVia()`
+- `Innmind\OperatingSystem\Config::mapSQLConnection()`
+- `Innmind\OperatingSystem\Config::mapServerControl()`
+- `Innmind\OperatingSystem\Config::mapServerStatus()`
+- `Innmind\OperatingSystem\Config::mapClock()`
+- `Innmind\OperatingSystem\Config::mapFileWatch()`
+- `Innmind\OperatingSystem\Config::mountFilesystemVia()`
+- `Innmind\OperatingSystem\Config::mapFilesystem()`
+
+### Changed
+
+- Requires `innmind/time-continuum:^4.1.1`
+- Requires `innmind/server-status:~5.0`
+- Requires `innmind/server-control:~6.0`
+- Requires `innmind/filesystem:~8.1`
+- Requires `innmind/file-watch:~5.0`
+- Requires `innmind/http-transport:~8.0`
+- Requires `innmind/time-warp:~4.0`
+- Requires `innmind/io:~3.2`
+- Requires `innmind/immutable:~5.15`
+- `Innmind\OperatingSystem\CurrentProcess::id()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\CurrentProcess::halt()` now returns `Innmind\Immutable\Attempt<Innmind\Immutable\SideEffect>`
+- `Innmind\OperatingSystem\Filesystem::mount()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Filesystem::temporary()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Ports::open()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Remote::socket()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::open()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::takeOver()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Sockets::connectTo()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\OperatingSystem` is now a final class
+- `Innmind\OperatingSystem\Sockets` is now a final class
+- `Innmind\OperatingSystem\Remote` is now a final class
+- `Innmind\OperatingSystem\Ports` is now a final class
+- `Innmind\OperatingSystem\Filesystem` is now a final class
+- `Innmind\OperatingSystem\CurrentProcess\Signals` is now a final class
+- `Innmind\OperatingSystem\CurrentProcess` is now a final class
+- `Innmind\OperatingSystem\OperatingSystem::map()` callable must now return a `Config`
+- `Innmind\OperatingSystem\Config::of()` has been renamed `::new()`
+- `Innmind\OperatingSystem\Filesystem::temporary()` now expects a `Innmind\Immutable\Sequence<Innmind\Immutable\Attempt<Innmind\Immutable\Str>>`
+
+### Fixed
+
+- PHP `8.4` deprecations
+
+### Removed
+
+- `Innmind\OperatingSystem\Config::useStreamCapabilities()`
+- `Innmind\OperatingSystem\Sockets::watch()`
+- `Innmind\OperatingSystem\OperatingSystem\Resilient`
+- `Innmind\OperatingSystem\OperatingSystem\Logger`
+- `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::withHttpHeartbeat()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::disableSSLVerification()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::caseInsensitiveFilesystem()` use `::mountFilesystemVia()` instead
+- The following informations are no longer logged:
+    - the current process id
+    - the current process memory
+    - the signals listener being added/removed
+    - the signals received by the current process
+    - temporary files being created
+    - opened ports
+    - opened remote sockets
+    - opened sockets
+    - if a file/directory exists or not
+    - when a PHP file is loaded in memory
+
 ## 5.2.0 - 2024-07-14
 
 ### Changed

@@ -3,34 +3,70 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\IO\Sockets\{
-    Client,
-    Server,
+use Innmind\IO\{
+    Sockets\Clients\Client,
+    Sockets\Servers\Server,
+    Sockets\Unix\Address,
 };
-use Innmind\Socket\Address\Unix;
-use Innmind\TimeContinuum\ElapsedPeriod;
-use Innmind\Stream\Watch;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
-interface Sockets
+final class Sockets
 {
+    private Config $config;
+
+    private function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @internal
+     */
+    public static function of(Config $config): self
+    {
+        return new self($config);
+    }
+
     /**
      * This method will fail if the socket already exist
      *
-     * @return Maybe<Server>
+     * @return Attempt<Server>
      */
-    public function open(Unix $address): Maybe;
+    public function open(Address $address): Attempt
+    {
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->unix($address);
+    }
 
     /**
      * This will take control of the socket if it already exist (use carefully)
      *
-     * @return Maybe<Server>
+     * @return Attempt<Server>
      */
-    public function takeOver(Unix $address): Maybe;
+    public function takeOver(Address $address): Attempt
+    {
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->takeOver($address);
+    }
 
     /**
-     * @return Maybe<Client>
+     * @return Attempt<Client>
      */
-    public function connectTo(Unix $address): Maybe;
-    public function watch(ElapsedPeriod $timeout = null): Watch;
+    public function connectTo(Address $address): Attempt
+    {
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->clients()
+            ->unix($address);
+    }
 }

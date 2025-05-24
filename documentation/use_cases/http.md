@@ -36,10 +36,10 @@ All elements of a request/response call is built using objects to enforce correc
 One of the first things taught when working with distributed systems is that they will intermittently fail. To prevent your app to crash for an occasional failure a common pattern is the _retry pattern_ with a backoff strategy allowing the client to retry safe requests a certain amount of time before giving up. You can use this pattern like so:
 
 ```php
-use Innmind\OperatingSystem\OperatingSystem\Resilient;
+use Innmind\OperatingSystem\Config\Resilient;
 use Innmind\HttpTransport\ExponentialBackoff;
 
-$os = Resilient::of($os);
+$os = $os->map(Resilient::new());
 $http = $os->remote()->http();
 $http instanceof ExponentialBackoff; // true
 ```
@@ -48,12 +48,12 @@ Another strategy you can add on top of that is the [circuit breaker pattern](htt
 
 ```php
 use Innmind\HttpTransport\CircuitBreaker;
-use Innmind\TimeContinuum\Earth\Period\Minute;
+use Innmind\TimeContinuum\Period;
 
 $http = CircuitBreaker::of(
     $http,
     $os->clock(),
-    new Minute(1),
+    Period::minute(1),
 );
 $request = Request::of(/* ...args */)
 $response = $http($request);

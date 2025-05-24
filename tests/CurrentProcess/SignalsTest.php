@@ -1,31 +1,20 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\CurrentProcess\Signals;
+namespace Tests\Innmind\OperatingSystem\CurrentProcess;
 
-use Innmind\OperatingSystem\CurrentProcess\{
-    Signals\Wrapper,
-    Signals,
-};
+use Innmind\OperatingSystem\CurrentProcess\Signals;
 use Innmind\Signals\{
     Handler,
     Signal
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
-class WrapperTest extends TestCase
+class SignalsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            Signals::class,
-            Wrapper::of(new Handler),
-        );
-    }
-
     public function testListen()
     {
-        $signals = Wrapper::of(new Handler);
+        $signals = Signals::of(new Handler);
         $order = [];
         $count = 0;
 
@@ -50,7 +39,7 @@ class WrapperTest extends TestCase
 
     public function testRemoveSignal()
     {
-        $signals = Wrapper::of(new Handler);
+        $signals = Signals::of(new Handler);
         $order = [];
         $count = 0;
 

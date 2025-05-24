@@ -4,15 +4,40 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem;
 
 use Innmind\Url\Authority\Port;
-use Innmind\IO\Sockets\Server;
-use Innmind\Socket\Internet\Transport;
+use Innmind\IO\{
+    Sockets\Servers\Server,
+    Sockets\Internet\Transport,
+};
 use Innmind\IP\IP;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
-interface Ports
+final class Ports
 {
+    private Config $config;
+
+    private function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
     /**
-     * @return Maybe<Server>
+     * @internal
      */
-    public function open(Transport $transport, IP $ip, Port $port): Maybe;
+    public static function of(Config $config): self
+    {
+        return new self($config);
+    }
+
+    /**
+     * @return Attempt<Server>
+     */
+    public function open(Transport $transport, IP $ip, Port $port): Attempt
+    {
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->internet($transport, $ip, $port);
+    }
 }

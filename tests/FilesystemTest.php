@@ -1,76 +1,65 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Filesystem;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Filesystem\Generic,
     Filesystem,
     Config,
+    Factory,
 };
 use Innmind\Filesystem\{
     Adapter\Filesystem as FilesystemAdapter,
     File\Content,
 };
 use Innmind\Url\Path;
-use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\Ping;
 use Fixtures\Innmind\Url\Path as FPath;
 use Innmind\Immutable\{
     Sequence,
     Str,
     Maybe,
+    Attempt,
 };
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
 
-class GenericTest extends TestCase
+class FilesystemTest extends TestCase
 {
     use BlackBox;
 
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            Filesystem::class,
-            Generic::of(
-                $this->createMock(Processes::class),
-                Config::of(),
-            ),
-        );
-    }
-
     public function testMount()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
-        $adapter = $filesystem->mount(Path::of('/tmp/'));
+        $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
         $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
     }
 
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
-        $adapter = $filesystem->mount(Path::of('/tmp/'));
+        $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
-        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/')));
+        $this->assertSame($adapter, $filesystem->mount(Path::of('/tmp/'))->unwrap());
     }
 
     public function testContainsFile()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/foo')));
@@ -81,9 +70,9 @@ class GenericTest extends TestCase
 
     public function testContainsDirectory()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/some-dir/')));
@@ -94,22 +83,22 @@ class GenericTest extends TestCase
 
     public function testWatch()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
     }
 
-    public function testRequireUnknownFile()
+    public function testRequireUnknownFile(): BlackBox\Proof
     {
-        $this
+        return $this
             ->forAll(FPath::any())
-            ->then(function($path) {
-                $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
-                    Config::of(),
+            ->prove(function($path) {
+                $filesystem = Filesystem::of(
+                    Factory::build()->control()->processes(),
+                    Config::new(),
                 );
 
                 $this->assertFalse($filesystem->require($path)->match(
@@ -121,9 +110,9 @@ class GenericTest extends TestCase
 
     public function testRequireFile()
     {
-        $filesystem = Generic::of(
-            $this->createMock(Processes::class),
-            Config::of(),
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
         );
 
         $this->assertSame(42, $filesystem->require(Path::of(__DIR__.'/fixture.php'))->match(
@@ -135,18 +124,18 @@ class GenericTest extends TestCase
     public function testCreateTemporaryFile()
     {
         $this
-            ->forAll(Set\Sequence::of(Set\Unicode::strings()))
+            ->forAll(Set::sequence(Set::strings()->unicode()))
             ->then(function($chunks) {
-                $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
-                    Config::of(),
+                $filesystem = Filesystem::of(
+                    Factory::build()->control()->processes(),
+                    Config::new(),
                 );
 
                 $content = $filesystem
                     ->temporary(
                         Sequence::of(...$chunks)
                             ->map(Str::of(...))
-                            ->map(Maybe::just(...)),
+                            ->map(Attempt::result(...)),
                     )
                     ->match(
                         static fn($content) => $content,
@@ -165,19 +154,22 @@ class GenericTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
-                Set\Sequence::of(Set\Unicode::strings())->between(0, 20), // upper bound to fit in memory
+                Set::sequence(Set::strings()->unicode())->between(0, 20), // upper bound to fit in memory
+                Set::sequence(Set::strings()->unicode())->between(0, 20), // upper bound to fit in memory
             )
             ->then(function($leading, $trailing) {
-                $filesystem = Generic::of(
-                    $this->createMock(Processes::class),
-                    Config::of(),
+                $filesystem = Filesystem::of(
+                    Factory::build()->control()->processes(),
+                    Config::new(),
                 );
 
                 $content = $filesystem
                     ->temporary(
                         Sequence::of(...[...$leading, null, ...$trailing])
                             ->map(Maybe::of(...))
+                            ->map(static fn($chunk) => $chunk->attempt(
+                                static fn() => new \RuntimeException,
+                            ))
                             ->map(static fn($chunk) => $chunk->map(Str::of(...))),
                     )
                     ->match(

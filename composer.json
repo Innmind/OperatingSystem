@@ -16,18 +16,17 @@
     },
     "require": {
         "php": "~8.2",
-        "innmind/time-continuum": "~3.0",
-        "innmind/server-status": "~4.0",
-        "innmind/server-control": "~5.0",
-        "innmind/filesystem": "~7.1",
-        "innmind/socket": "~6.0",
-        "innmind/http-transport": "~7.2",
-        "innmind/time-warp": "~3.0",
+        "innmind/time-continuum": "^4.1.1",
+        "innmind/server-status": "~5.0",
+        "innmind/server-control": "~6.0",
+        "innmind/filesystem": "~8.1",
+        "innmind/http-transport": "~8.0",
+        "innmind/time-warp": "~4.0",
         "innmind/signals": "~3.0",
-        "innmind/file-watch": "~4.0",
-        "innmind/stream": "~4.0",
+        "innmind/file-watch": "~5.0",
         "formal/access-layer": "~4.0",
-        "innmind/io": "~2.7"
+        "innmind/io": "~3.2",
+        "innmind/immutable": "~5.15"
     },
     "autoload": {
         "psr-4": {
@@ -40,11 +39,10 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "~10.2",
         "innmind/url": "~4.0",
         "innmind/ip": "~3.0",
-        "vimeo/psalm": "~5.15",
-        "innmind/black-box": "~5.5",
+        "innmind/static-analysis": "^1.2.1",
+        "innmind/black-box": "~6.2",
         "innmind/coding-standard": "~2.0"
     }
 }
