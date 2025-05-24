@@ -117,7 +117,7 @@ final class Filesystem
      * can't be read twice. By using this temporary file content you can read it
      * multiple times.
      *
-     * @param Sequence<Maybe<Str>> $chunks
+     * @param Sequence<Attempt<Str>> $chunks
      *
      * @return Attempt<Content>
      */
@@ -133,7 +133,6 @@ final class Filesystem
                     ->sink($tmp->push()->chunk(...))
                     ->attempt(
                         static fn($push, $chunk) => $chunk
-                            ->attempt(static fn() => new \RuntimeException('Failed to load chunk'))
                             ->flatMap($push)
                             ->map(static fn() => $push),
                     )

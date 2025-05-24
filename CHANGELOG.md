@@ -48,6 +48,7 @@
 - `Innmind\OperatingSystem\CurrentProcess` is now a final class
 - `Innmind\OperatingSystem\OperatingSystem::map()` callable must now return a `Config`
 - `Innmind\OperatingSystem\Config::of()` has been renamed `::new()`
+- `Innmind\OperatingSystem\Filesystem::temporary()` now expects a `Innmind\Immutable\Sequence<Innmind\Immutable\Attempt<Innmind\Immutable\Str>>`
 
 ### Fixed
 
