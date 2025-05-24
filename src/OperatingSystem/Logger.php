@@ -67,10 +67,7 @@ final class Logger implements Implementation
     #[\Override]
     public function status(): Status\Server
     {
-        return Status\Servers\Logger::of(
-            $this->os->status(),
-            $this->logger,
-        );
+        return $this->os->status();
     }
 
     #[\Override]

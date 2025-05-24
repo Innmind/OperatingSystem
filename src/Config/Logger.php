@@ -5,6 +5,7 @@ namespace Innmind\OperatingSystem\Config;
 
 use Innmind\OperatingSystem\Config;
 use Innmind\Server\Control;
+use Innmind\Server\Status;
 use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
@@ -33,6 +34,10 @@ final class Logger
                 $this->logger,
             ))
             ->mapServerControl(fn($server) => Control\Servers\Logger::psr(
+                $server,
+                $this->logger,
+            ))
+            ->mapServerStatus(fn($server) => Status\Servers\Logger::of(
                 $server,
                 $this->logger,
             ));
