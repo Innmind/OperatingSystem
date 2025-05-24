@@ -19,6 +19,7 @@ use Innmind\Immutable\{
     Sequence,
     Str,
     Maybe,
+    Attempt,
 };
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -134,7 +135,7 @@ class FilesystemTest extends TestCase
                     ->temporary(
                         Sequence::of(...$chunks)
                             ->map(Str::of(...))
-                            ->map(Maybe::just(...)),
+                            ->map(Attempt::result(...)),
                     )
                     ->match(
                         static fn($content) => $content,
@@ -166,6 +167,9 @@ class FilesystemTest extends TestCase
                     ->temporary(
                         Sequence::of(...[...$leading, null, ...$trailing])
                             ->map(Maybe::of(...))
+                            ->map(static fn($chunk) => $chunk->attempt(
+                                static fn() => new \RuntimeException,
+                            ))
                             ->map(static fn($chunk) => $chunk->map(Str::of(...))),
                     )
                     ->match(
