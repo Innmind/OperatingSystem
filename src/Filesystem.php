@@ -32,6 +32,7 @@ final class Filesystem
     {
         $this->watch = $config->fileWatchMapper()(
             Factory::build($processes, $config->halt()),
+            $config,
         );
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */

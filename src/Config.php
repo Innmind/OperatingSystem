@@ -28,16 +28,16 @@ use Formal\AccessLayer;
 final class Config
 {
     /**
-     * @param \Closure(Clock): Clock $mapClock
-     * @param \Closure(Halt): Halt $mapHalt
-     * @param \Closure(HttpTransport): HttpTransport $mapHttpTransport
+     * @param \Closure(Clock, self): Clock $mapClock
+     * @param \Closure(Halt, self): Halt $mapHalt
+     * @param \Closure(HttpTransport, self): HttpTransport $mapHttpTransport
      * @param \Closure(Url): AccessLayer\Connection $sql
-     * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $mapSql
-     * @param \Closure(Control\Server): Control\Server $mapServerControl
-     * @param \Closure(Status\Server): Status\Server $mapServerStatus
-     * @param \Closure(Watch): Watch $mapFileWatch
+     * @param \Closure(AccessLayer\Connection, self): AccessLayer\Connection $mapSql
+     * @param \Closure(Control\Server, self): Control\Server $mapServerControl
+     * @param \Closure(Status\Server, self): Status\Server $mapServerStatus
+     * @param \Closure(Watch, self): Watch $mapFileWatch
      * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
-     * @param \Closure(Filesystem): Filesystem $mapFilesystem
+     * @param \Closure(Filesystem, self): Filesystem $mapFilesystem
      */
     private function __construct(
         private Clock $clock,
@@ -65,27 +65,27 @@ final class Config
             static fn(Clock $clock) => $clock,
             IO::fromAmbientAuthority(),
             Halt\Usleep::new(),
-            static fn(Halt $halt) => $halt,
+            static fn(Halt $halt, self $config) => $halt,
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
                 false => '',
                 default => $path,
             }),
             null,
-            static fn(HttpTransport $transport) => $transport,
+            static fn(HttpTransport $transport, self $config) => $transport,
             static fn(Url $server) => AccessLayer\Connection\Lazy::of(
                 static fn() => AccessLayer\Connection\PDO::of($server),
             ),
-            static fn(AccessLayer\Connection $connection) => $connection,
-            static fn(Control\Server $server) => $server,
-            static fn(Status\Server $server) => $server,
-            static fn(Watch $watch) => $watch,
+            static fn(AccessLayer\Connection $connection, self $config) => $connection,
+            static fn(Control\Server $server, self $config) => $server,
+            static fn(Status\Server $server, self $config) => $server,
+            static fn(Watch $watch, self $config) => $watch,
             static fn(Path $path, self $config) => Attempt::of(
                 static fn() => Filesystem\Filesystem::mount(
                     $path,
                     $config->io(),
                 )->withCaseSensitivity(CaseSensitivity::sensitive),
             ),
-            static fn(Filesystem $filesystem) => $filesystem,
+            static fn(Filesystem $filesystem, self $config) => $filesystem,
         );
     }
 
@@ -127,7 +127,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Clock): Clock $map
+     * @param \Closure(Clock, self): Clock $map
      */
     public function mapClock(\Closure $map): self
     {
@@ -135,7 +135,10 @@ final class Config
 
         return new self(
             $this->clock,
-            static fn(Clock $clock) => $map($previous($clock)),
+            static fn(Clock $clock, self $config) => $map(
+                $previous($clock, $config),
+                $config,
+            ),
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -179,7 +182,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Halt): Halt $map
+     * @param \Closure(Halt, self): Halt $map
      */
     public function mapHalt(\Closure $map): self
     {
@@ -191,7 +194,10 @@ final class Config
             $this->mapClock,
             $this->io,
             $this->halt,
-            static fn(Halt $halt) => $map($previous($halt)),
+            static fn(Halt $halt, self $config) => $map(
+                $previous($halt, $config),
+                $config,
+            ),
             $this->path,
             $this->httpTransport,
             $this->mapHttpTransport,
@@ -256,7 +262,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(HttpTransport): HttpTransport $map
+     * @param \Closure(HttpTransport, self): HttpTransport $map
      */
     public function mapHttpTransport(\Closure $map): self
     {
@@ -270,7 +276,10 @@ final class Config
             $this->mapHalt,
             $this->path,
             $this->httpTransport,
-            static fn(HttpTransport $transport) => $map($previous($transport)),
+            static fn(HttpTransport $transport, self $config) => $map(
+                $previous($transport, $config),
+                $config,
+            ),
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
@@ -310,7 +319,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $map
+     * @param \Closure(AccessLayer\Connection, self): AccessLayer\Connection $map
      */
     public function mapSQLConnection(\Closure $map): self
     {
@@ -326,7 +335,10 @@ final class Config
             $this->httpTransport,
             $this->mapHttpTransport,
             $this->sql,
-            static fn(AccessLayer\Connection $connection) => $map($previous($connection)),
+            static fn(AccessLayer\Connection $connection, self $config) => $map(
+                $previous($connection, $config),
+                $config,
+            ),
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -338,7 +350,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Control\Server): Control\Server $map
+     * @param \Closure(Control\Server, self): Control\Server $map
      */
     public function mapServerControl(\Closure $map): self
     {
@@ -355,7 +367,10 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
-            static fn(Control\Server $server) => $map($previous($server)),
+            static fn(Control\Server $server, self $config) => $map(
+                $previous($server, $config),
+                $config,
+            ),
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -366,7 +381,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Status\Server): Status\Server $map
+     * @param \Closure(Status\Server, self): Status\Server $map
      */
     public function mapServerStatus(\Closure $map): self
     {
@@ -384,7 +399,10 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
-            static fn(Status\Server $server) => $map($previous($server)),
+            static fn(Status\Server $server, self $config) => $map(
+                $previous($server, $config),
+                $config,
+            ),
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -394,7 +412,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Watch): Watch $map
+     * @param \Closure(Watch, self): Watch $map
      */
     public function mapFileWatch(\Closure $map): self
     {
@@ -413,7 +431,10 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
-            static fn(Watch $watch) => $map($previous($watch)),
+            static fn(Watch $watch, self $config) => $map(
+                $previous($watch, $config),
+                $config,
+            ),
             $this->filesystem,
             $this->mapFilesystem,
         );
@@ -448,7 +469,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Filesystem): Filesystem $map
+     * @param \Closure(Filesystem, self): Filesystem $map
      */
     public function mapFilesystem(\Closure $map): self
     {
@@ -469,7 +490,10 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
-            static fn(Filesystem $filesystem) => $map($previous($filesystem)),
+            static fn(Filesystem $filesystem, self $config) => $map(
+                $previous($filesystem, $config),
+                $config,
+            ),
         );
     }
 
@@ -478,7 +502,7 @@ final class Config
      */
     public function clock(): Clock
     {
-        return ($this->mapClock)($this->clock);
+        return ($this->mapClock)($this->clock, $this);
     }
 
     /**
@@ -489,7 +513,7 @@ final class Config
     public function filesystem(Path $path): Attempt
     {
         return ($this->filesystem)($path, $this)->map(
-            $this->mapFilesystem,
+            fn($adapter) => ($this->mapFilesystem)($adapter, $this),
         );
     }
 
@@ -506,7 +530,7 @@ final class Config
      */
     public function halt(): Halt
     {
-        return ($this->mapHalt)($this->halt);
+        return ($this->mapHalt)($this->halt, $this);
     }
 
     /**
@@ -527,7 +551,7 @@ final class Config
             $this->io,
         );
 
-        return ($this->mapHttpTransport)($transport);
+        return ($this->mapHttpTransport)($transport, $this);
     }
 
     /**
@@ -537,13 +561,14 @@ final class Config
     {
         return ($this->mapSql)(
             ($this->sql)($url),
+            $this,
         );
     }
 
     /**
      * @internal
      *
-     * @return \Closure(Control\Server): Control\Server
+     * @return \Closure(Control\Server, self): Control\Server
      */
     public function serverControlMapper(): \Closure
     {
@@ -553,7 +578,7 @@ final class Config
     /**
      * @internal
      *
-     * @return \Closure(Status\Server): Status\Server
+     * @return \Closure(Status\Server, self): Status\Server
      */
     public function serverStatusMapper(): \Closure
     {
@@ -563,7 +588,7 @@ final class Config
     /**
      * @internal
      *
-     * @return \Closure(Watch): Watch
+     * @return \Closure(Watch, self): Watch
      */
     public function fileWatchMapper(): \Closure
     {

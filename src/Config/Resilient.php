@@ -13,7 +13,7 @@ enum Resilient
     public function __invoke(Config $config): Config
     {
         return $config
-            ->mapHttpTransport(static fn($transport) => ExponentialBackoff::of(
+            ->mapHttpTransport(static fn($transport, $config) => ExponentialBackoff::of(
                 $transport,
                 $config->halt(),
             ));
