@@ -6,7 +6,7 @@ namespace Tests\Innmind\OperatingSystem;
 use Innmind\OperatingSystem\{
     CurrentProcess,
     CurrentProcess\Signals,
-    OperatingSystem\Unix,
+    OperatingSystem,
     Config,
 };
 use Innmind\Server\Control\Server\Process\Pid;
@@ -40,8 +40,8 @@ class CurrentProcessTest extends TestCase
     {
         return $this
             ->forAll(Set::of(
-                Unix::of(),
-                Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                OperatingSystem::new(),
+                OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $process = $os->process();

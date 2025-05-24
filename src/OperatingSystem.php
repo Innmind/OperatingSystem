@@ -3,24 +3,35 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\OperatingSystem\OperatingSystem\{
-    Implementation,
-    Unix,
+use Innmind\Server\Status\{
+    Server as ServerStatus,
+    ServerFactory,
 };
-use Innmind\Server\Status\Server as ServerStatus;
-use Innmind\Server\Control\Server as ServerControl;
+use Innmind\Server\Control\{
+    Server as ServerControl,
+    Servers,
+};
 use Innmind\TimeContinuum\Clock;
 
 final class OperatingSystem
 {
-    private function __construct(
-        private Implementation $implementation,
-    ) {
+    private Config $config;
+    private ?Filesystem $filesystem = null;
+    private ?ServerStatus $status = null;
+    private ?ServerControl $control = null;
+    private ?Ports $ports = null;
+    private ?Sockets $sockets = null;
+    private ?Remote $remote = null;
+    private ?CurrentProcess $process = null;
+
+    private function __construct(Config $config)
+    {
+        $this->config = $config;
     }
 
     public static function new(?Config $config = null): self
     {
-        return new self(Unix::of($config));
+        return new self($config ?? Config::of());
     }
 
     /**
@@ -31,51 +42,60 @@ final class OperatingSystem
      */
     public function map(callable $map): self
     {
-        return new self($this->implementation->map(
-            static fn($implementation, $config) => $map(
-                new self($implementation),
-                $config,
-            )->implementation,
-        ));
+        return $map($this, $this->config);
     }
 
     public function clock(): Clock
     {
-        return $this->implementation->clock();
+        return $this->config->clock();
     }
 
     public function filesystem(): Filesystem
     {
-        return $this->implementation->filesystem();
+        return $this->filesystem ??= Filesystem::of(
+            $this->control()->processes(),
+            $this->config,
+        );
     }
 
     public function status(): ServerStatus
     {
-        return $this->implementation->status();
+        return $this->status ??= $this->config->serverStatusMapper()(ServerFactory::build(
+            $this->clock(),
+            $this->control(),
+            $this->config->environmentPath(),
+        ));
     }
 
     public function control(): ServerControl
     {
-        return $this->implementation->control();
+        return $this->control ??= $this->config->serverControlMapper()(Servers\Unix::of(
+            $this->clock(),
+            $this->config->io(),
+            $this->config->halt(),
+        ));
     }
 
     public function ports(): Ports
     {
-        return $this->implementation->ports();
+        return $this->ports ??= Ports::of($this->config);
     }
 
     public function sockets(): Sockets
     {
-        return $this->implementation->sockets();
+        return $this->sockets ??= Sockets::of($this->config);
     }
 
     public function remote(): Remote
     {
-        return $this->implementation->remote();
+        return $this->remote ??= Remote::of(
+            $this->control(),
+            $this->config,
+        );
     }
 
     public function process(): CurrentProcess
     {
-        return $this->implementation->process();
+        return $this->process ??= CurrentProcess::of($this->config->halt());
     }
 }

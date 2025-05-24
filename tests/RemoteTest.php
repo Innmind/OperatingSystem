@@ -5,7 +5,7 @@ namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
     Remote,
-    OperatingSystem\Unix,
+    OperatingSystem,
     Config,
     Factory,
 };
@@ -115,8 +115,8 @@ class RemoteTest extends TestCase
     {
         return $this
             ->forAll(Set::of(
-                Unix::of(),
-                Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                OperatingSystem::new(),
+                OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $remote = $os->remote();
@@ -133,8 +133,8 @@ class RemoteTest extends TestCase
             ->forAll(
                 FUrl::any(),
                 Set::of(
-                    Unix::of(),
-                    Unix::of(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                    OperatingSystem::new(),
+                    OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
                 ),
             )
             ->prove(function($server, $os) {

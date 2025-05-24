@@ -1,10 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\OperatingSystem;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem\Unix,
+    OperatingSystem,
     Filesystem,
     Ports,
     Sockets,
@@ -17,13 +17,13 @@ use Innmind\Server\Control\Server as ServerControl;
 use Innmind\TimeContinuum\Clock;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
-class UnixTest extends TestCase
+class OperatingSystemTest extends TestCase
 {
     public function testInterface()
     {
         $clock = Clock::live();
 
-        $os = Unix::of(Config::of()->withClock($clock));
+        $os = OperatingSystem::new(Config::of()->withClock($clock));
 
         $this->assertSame($clock, $os->clock());
         $this->assertInstanceOf(Filesystem::class, $os->filesystem());
@@ -44,8 +44,8 @@ class UnixTest extends TestCase
 
     public function testMap()
     {
-        $os = Unix::of($config = Config::of());
-        $expected = Unix::of();
+        $os = OperatingSystem::new($config = Config::of());
+        $expected = OperatingSystem::new();
 
         $result = $os->map(function($os_, $config_) use ($os, $config, $expected) {
             $this->assertSame($os, $os_);
