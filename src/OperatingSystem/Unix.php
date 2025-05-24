@@ -98,7 +98,7 @@ final class Unix implements Implementation
     #[\Override]
     public function remote(): Remote
     {
-        return $this->remote ??= Remote\Generic::of(
+        return $this->remote ??= Remote::of(
             $this->control(),
             $this->config,
         );

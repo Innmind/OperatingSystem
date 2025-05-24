@@ -1,12 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Remote;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Remote\Generic,
-    OperatingSystem\Unix,
     Remote,
+    OperatingSystem\Unix,
     Config,
     Factory,
 };
@@ -39,24 +38,13 @@ use Innmind\BlackBox\{
 use Fixtures\Innmind\Url\Url as FUrl;
 use Psr\Log\NullLogger;
 
-class GenericTest extends TestCase
+class RemoteTest extends TestCase
 {
     use BlackBox;
 
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            Remote::class,
-            Generic::of(
-                $this->server(),
-                Config::of(),
-            ),
-        );
-    }
-
     public function testSsh()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
             Config::of(),
         );
@@ -72,7 +60,7 @@ class GenericTest extends TestCase
 
     public function testSshLogger()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
             Config::of()->map(Config\Logger::psr(new NullLogger)),
         );
@@ -88,7 +76,7 @@ class GenericTest extends TestCase
 
     public function testSshWithoutPort()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server("ssh 'user@my-vps' 'ls'"),
             Config::of(),
         );
@@ -101,7 +89,7 @@ class GenericTest extends TestCase
 
     public function testSocket()
     {
-        $remote = Generic::of(
+        $remote = Remote::of(
             $this->server(),
             Config::of(),
         );
