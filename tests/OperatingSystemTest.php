@@ -23,7 +23,7 @@ class OperatingSystemTest extends TestCase
     {
         $clock = Clock::live();
 
-        $os = OperatingSystem::new(Config::of()->withClock($clock));
+        $os = OperatingSystem::new(Config::new()->withClock($clock));
 
         $this->assertSame($clock, $os->clock());
         $this->assertInstanceOf(Filesystem::class, $os->filesystem());
@@ -44,12 +44,12 @@ class OperatingSystemTest extends TestCase
 
     public function testMap()
     {
-        $os = OperatingSystem::new($config = Config::of());
+        $os = OperatingSystem::new($config = Config::new());
 
         $result = $os->map(function($config_) use ($config) {
             $this->assertSame($config, $config_);
 
-            return Config::of();
+            return Config::new();
         });
 
         $this->assertNotSame($os, $result);

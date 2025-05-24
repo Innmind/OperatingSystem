@@ -31,7 +31,7 @@ final class OperatingSystem
 
     public static function new(?Config $config = null): self
     {
-        return new self($config ?? Config::of());
+        return new self($config ?? Config::new());
     }
 
     /**

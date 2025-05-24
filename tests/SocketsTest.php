@@ -19,7 +19,7 @@ class SocketsTest extends TestCase
 {
     public function testOpen()
     {
-        $sockets = Sockets::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
@@ -38,7 +38,7 @@ class SocketsTest extends TestCase
 
     public function testTakeOver()
     {
-        $sockets = Sockets::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $socket = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,
@@ -56,7 +56,7 @@ class SocketsTest extends TestCase
 
     public function testConnectTo()
     {
-        $sockets = Sockets::of(Config::of());
+        $sockets = Sockets::of(Config::new());
 
         $server = $sockets->open(Address::of(Path::of('/tmp/foo')))->match(
             static fn($server) => $server,

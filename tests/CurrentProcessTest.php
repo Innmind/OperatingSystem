@@ -41,7 +41,7 @@ class CurrentProcessTest extends TestCase
         return $this
             ->forAll(Set::of(
                 OperatingSystem::new(),
-                OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                OperatingSystem::new(Config::new()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $process = $os->process();

@@ -19,7 +19,7 @@ class PortsTest extends TestCase
 {
     public function testOpen()
     {
-        $ports = Ports::of(Config::of());
+        $ports = Ports::of(Config::new());
 
         $socket = $ports->open(
             Transport::tlsv12(),

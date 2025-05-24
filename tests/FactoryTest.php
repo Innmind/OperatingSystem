@@ -27,7 +27,7 @@ class FactoryTest extends TestCase
     {
         $clock = Clock::live();
 
-        $os = Factory::build(Config::of()->withClock($clock));
+        $os = Factory::build(Config::new()->withClock($clock));
 
         $this->assertInstanceOf(OperatingSystem::class, $os);
         $this->assertSame($clock, $os->clock());
@@ -52,7 +52,7 @@ class FactoryTest extends TestCase
         (new FS)->remove($path);
 
         $os = Factory::build(
-            Config::of()->mountFilesystemVia(
+            Config::new()->mountFilesystemVia(
                 static fn($path, $config) => Attempt::of(
                     static fn() => Filesystem::mount(
                         $path,

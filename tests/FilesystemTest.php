@@ -34,7 +34,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
@@ -46,7 +46,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
@@ -58,7 +58,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/foo')));
@@ -71,7 +71,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $this->assertFalse($filesystem->contains(Path::of('/tmp/some-dir/')));
@@ -84,7 +84,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $this->assertInstanceOf(Ping::class, $filesystem->watch(Path::of('/somewhere')));
@@ -97,7 +97,7 @@ class FilesystemTest extends TestCase
             ->prove(function($path) {
                 $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
-                    Config::of(),
+                    Config::new(),
                 );
 
                 $this->assertFalse($filesystem->require($path)->match(
@@ -111,7 +111,7 @@ class FilesystemTest extends TestCase
     {
         $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
-            Config::of(),
+            Config::new(),
         );
 
         $this->assertSame(42, $filesystem->require(Path::of(__DIR__.'/fixture.php'))->match(
@@ -127,7 +127,7 @@ class FilesystemTest extends TestCase
             ->then(function($chunks) {
                 $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
-                    Config::of(),
+                    Config::new(),
                 );
 
                 $content = $filesystem
@@ -159,7 +159,7 @@ class FilesystemTest extends TestCase
             ->then(function($leading, $trailing) {
                 $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
-                    Config::of(),
+                    Config::new(),
                 );
 
                 $content = $filesystem

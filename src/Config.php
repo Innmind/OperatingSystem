@@ -58,7 +58,7 @@ final class Config
     ) {
     }
 
-    public static function of(): self
+    public static function new(): self
     {
         return new self(
             Clock::live(),

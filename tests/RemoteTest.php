@@ -46,7 +46,7 @@ class RemoteTest extends TestCase
     {
         $remote = Remote::of(
             $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
-            Config::of(),
+            Config::new(),
         );
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
@@ -62,7 +62,7 @@ class RemoteTest extends TestCase
     {
         $remote = Remote::of(
             $this->server("ssh '-p' '42' 'user@my-vps' 'ls'"),
-            Config::of()->map(Config\Logger::psr(new NullLogger)),
+            Config::new()->map(Config\Logger::psr(new NullLogger)),
         );
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
@@ -78,7 +78,7 @@ class RemoteTest extends TestCase
     {
         $remote = Remote::of(
             $this->server("ssh 'user@my-vps' 'ls'"),
-            Config::of(),
+            Config::new(),
         );
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
@@ -91,7 +91,7 @@ class RemoteTest extends TestCase
     {
         $remote = Remote::of(
             $this->server(),
-            Config::of(),
+            Config::new(),
         );
         $server = Factory::build()
             ->ports()
@@ -116,7 +116,7 @@ class RemoteTest extends TestCase
         return $this
             ->forAll(Set::of(
                 OperatingSystem::new(),
-                OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                OperatingSystem::new(Config::new()->map(Config\Logger::psr(new NullLogger))),
             ))
             ->prove(function($os) {
                 $remote = $os->remote();
@@ -134,7 +134,7 @@ class RemoteTest extends TestCase
                 FUrl::any(),
                 Set::of(
                     OperatingSystem::new(),
-                    OperatingSystem::new(Config::of()->map(Config\Logger::psr(new NullLogger))),
+                    OperatingSystem::new(Config::new()->map(Config\Logger::psr(new NullLogger))),
                 ),
             )
             ->prove(function($server, $os) {
