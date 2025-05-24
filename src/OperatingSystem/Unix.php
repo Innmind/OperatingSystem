@@ -57,7 +57,7 @@ final class Unix implements Implementation
     #[\Override]
     public function filesystem(): Filesystem
     {
-        return $this->filesystem ??= Filesystem\Generic::of(
+        return $this->filesystem ??= Filesystem::of(
             $this->control()->processes(),
             $this->config,
         );

@@ -1,10 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Filesystem;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Filesystem\Generic,
     Filesystem,
     Config,
     Factory,
@@ -27,24 +26,13 @@ use Innmind\BlackBox\{
     Set,
 };
 
-class GenericTest extends TestCase
+class FilesystemTest extends TestCase
 {
     use BlackBox;
 
-    public function testInterface()
-    {
-        $this->assertInstanceOf(
-            Filesystem::class,
-            Generic::of(
-                Factory::build()->control()->processes(),
-                Config::of(),
-            ),
-        );
-    }
-
     public function testMount()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -56,7 +44,7 @@ class GenericTest extends TestCase
 
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -68,7 +56,7 @@ class GenericTest extends TestCase
 
     public function testContainsFile()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -81,7 +69,7 @@ class GenericTest extends TestCase
 
     public function testContainsDirectory()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -94,7 +82,7 @@ class GenericTest extends TestCase
 
     public function testWatch()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -107,7 +95,7 @@ class GenericTest extends TestCase
         return $this
             ->forAll(FPath::any())
             ->prove(function($path) {
-                $filesystem = Generic::of(
+                $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
                     Config::of(),
                 );
@@ -121,7 +109,7 @@ class GenericTest extends TestCase
 
     public function testRequireFile()
     {
-        $filesystem = Generic::of(
+        $filesystem = Filesystem::of(
             Factory::build()->control()->processes(),
             Config::of(),
         );
@@ -137,7 +125,7 @@ class GenericTest extends TestCase
         $this
             ->forAll(Set::sequence(Set::strings()->unicode()))
             ->then(function($chunks) {
-                $filesystem = Generic::of(
+                $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
                     Config::of(),
                 );
@@ -169,7 +157,7 @@ class GenericTest extends TestCase
                 Set::sequence(Set::strings()->unicode())->between(0, 20), // upper bound to fit in memory
             )
             ->then(function($leading, $trailing) {
-                $filesystem = Generic::of(
+                $filesystem = Filesystem::of(
                     Factory::build()->control()->processes(),
                     Config::of(),
                 );

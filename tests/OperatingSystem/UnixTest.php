@@ -26,7 +26,7 @@ class UnixTest extends TestCase
         $os = Unix::of(Config::of()->withClock($clock));
 
         $this->assertSame($clock, $os->clock());
-        $this->assertInstanceOf(Filesystem\Generic::class, $os->filesystem());
+        $this->assertInstanceOf(Filesystem::class, $os->filesystem());
         $this->assertInstanceOf(ServerStatus::class, $os->status());
         $this->assertInstanceOf(ServerControl::class, $os->control());
         $this->assertInstanceOf(Ports::class, $os->ports());
