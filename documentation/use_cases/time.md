@@ -11,7 +11,7 @@ Directly accessing time in a PHP code is straightforward (either via `DateTime` 
 use Innmind\TimeContinuum\PointInTime;
 
 $isItMonday = function(PointInTime $point): bool {
-    return $point->day()->weekNumber() === 1; // 0 for sunday
+    return $point->day()->ofWeek()->toInt() === 1; // 0 for sunday
 };
 
 $now = $os->clock()->now();
@@ -29,7 +29,7 @@ In some cases you may want your program to wait for a certain amount of time bef
 
 ```php
 use Innmind\OperatingSystem\CurrentProcess;
-use Innmind\TimeContinuum\Earth\Period\Second;
+use Innmind\TimeContinuum\Period;
 
 $crawl = function(CurrentProcess $process, string ...$urls): void {
     foreach ($urls as $url) {
@@ -38,7 +38,7 @@ $crawl = function(CurrentProcess $process, string ...$urls): void {
         // here for the sake of simplicity we specify 1 second but it can be
         // any instance of Innmind\TimeContinuum\Period and you could build
         // it from a robots.txt Crawler-Delay directive
-        $process->halt(new Second(1));
+        $process->halt(Period::second(1));
     }
 };
 $crawl($os->process(), 'http://google.com', 'http://github.com');

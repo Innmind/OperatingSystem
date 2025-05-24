@@ -10,9 +10,11 @@ This is a reuse of the [socket example](socket.md).
 
 ```php
 use Innmind\Url\Url;
-use Innmind\IO\Readable\Frame;
-use Innmind\Socket\Internet\Transport;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+use Innmind\IO\{
+    Sockets\Internet\Transport,
+    Frame,
+};
+use Innmind\TimeContinuum\Period;
 use Innmind\Signals\Signal;
 use Innmind\Immutable\{
     Sequence,
@@ -22,11 +24,7 @@ use Innmind\Immutable\{
 $client = $os
     ->remote()
     ->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())
-    ->match(
-        static fn($client) => $client,
-        static fn() => throw new \RuntimeException('Unable to connect to the server'),
-    );
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($client);
+    ->unwrap();
 $signaled = true;
 $os
     ->process()
@@ -36,13 +34,13 @@ $os
     });
 
 $receivedData = $client
-    ->timeoutAfter(ElapsedPeriod::of(1_000))
+    ->timeoutAfter(Period::second(1))
     // it sends this every second to keep the connection alive
     ->heartbeatWith(static fn() => Sequence::of(Str::of('foo')))
     ->abortWhen(function() use (&$signaled) {
         return $signaled;
     })
-    ->frames(Frame\Chunk::of(1))
+    ->frames(Frame::chunk(1)->strict())
     ->one()
     ->match(
         static fn() => true,
@@ -53,7 +51,7 @@ if ($receivedData) {
     echo 'Server has responded'.
 }
 
-$client->unwrap()->close();
+$client->close()->unwrap();
 ```
 
 When the process receive the `SIGTERM` signal it will be paused then the anonymous function will be called and the process will then be resumed.

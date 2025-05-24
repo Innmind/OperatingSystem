@@ -17,8 +17,14 @@ $backup = function(Adapter $source, Adapter $target): void {
     });
 };
 $backup(
-    $os->filesystem()->mount(Path::of('/path/to/source/')),
-    $os->filesystem()->mount(Path::of('/path/to/target/')),
+    $os
+        ->filesystem()
+        ->mount(Path::of('/path/to/source/'))
+        ->unwrap(),
+    $os
+        ->filesystem()
+        ->mount(Path::of('/path/to/target/'))
+        ->unwrap(),
 );
 ```
 
@@ -53,7 +59,10 @@ $addUserPicture = function(
         );
 };
 $addUserPicture(
-    $os->filesystem()->mount(Path::of('/path/to/users/data/')),
+    $os
+        ->filesystem()
+        ->mount(Path::of('/path/to/users/data/'))
+        ->unwrap(),
     'some-unique-id',
     File::named(
         'picture.png',
@@ -94,10 +103,18 @@ use Innmind\Url\Path;
 $path = Path::of('/path/to/some/required/folder/');
 
 if (!$os->filesystem()->contains($path)) {
-    $os->control()->processes()->execute($mkdirCommand);
+    $os
+        ->control()
+        ->processes()
+        ->execute($mkdirCommand)
+        ->unwrap();
 }
 
-$os->control()->processes()->execute($subProcessCommand);
+$os
+    ->control()
+    ->processes()
+    ->execute($subProcessCommand)
+    ->unwrap();
 ```
 
 See [processes](processes.md) section on how to execute commands on your operating system.
@@ -109,7 +126,10 @@ Sometimes you want to use the `tmp` folder to write down files such as cache tha
 ```php
 use Innmind\Filesystem\Adapter;
 
-$tmp = $os->filesystem()->mount($os->status()->tmp());
+$tmp = $os
+    ->filesystem()
+    ->mount($os->status()->tmp())
+    ->unwrap();
 $tmp instanceof Adapter; // true
 ```
 
@@ -131,10 +151,17 @@ $count = $runTests(
             return $continuation->stop($count);
         }
 
-        $os->control()->processes()->execute($phpunitCommand);
+        $os
+            ->control()
+            ->processes()
+            ->execute($phpunitCommand)
+            ->unwrap();
 
         return $continuation->continue(++$count);
     },
+)->match(
+    static fn(int $count) => $count, // always 42 as it's the stopping value
+    static fn(\Throwable $e) => throw $e,
 );
 ```
 
