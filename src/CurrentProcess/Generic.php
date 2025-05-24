@@ -14,7 +14,7 @@ use Innmind\Immutable\Attempt;
 final class Generic implements CurrentProcess
 {
     private Halt $halt;
-    private ?Signals\Wrapper $signals = null;
+    private ?Signals $signals = null;
 
     private function __construct(Halt $halt)
     {
@@ -44,7 +44,7 @@ final class Generic implements CurrentProcess
     #[\Override]
     public function signals(): Signals
     {
-        return $this->signals ??= Signals\Wrapper::of(new Handler);
+        return $this->signals ??= Signals::of(new Handler);
     }
 
     #[\Override]

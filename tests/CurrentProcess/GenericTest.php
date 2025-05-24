@@ -68,7 +68,7 @@ class GenericTest extends TestCase
     {
         $process = Generic::of(Halt\Usleep::new());
 
-        $this->assertInstanceOf(Signals\Wrapper::class, $process->signals());
+        $this->assertInstanceOf(Signals::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
     }
 

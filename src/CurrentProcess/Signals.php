@@ -4,19 +4,38 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\CurrentProcess;
 
 use Innmind\Signals\{
+    Handler,
     Signal,
     Info,
 };
 
-interface Signals
+final class Signals
 {
-    /**
-     * @param callable(Signal, Info): void $listener
-     */
-    public function listen(Signal $signal, callable $listener): void;
+    private Handler $handler;
+
+    private function __construct(Handler $handler)
+    {
+        $this->handler = $handler;
+    }
+
+    public static function of(Handler $handler): self
+    {
+        return new self($handler);
+    }
 
     /**
      * @param callable(Signal, Info): void $listener
      */
-    public function remove(callable $listener): void;
+    public function listen(Signal $signal, callable $listener): void
+    {
+        $this->handler->listen($signal, $listener);
+    }
+
+    /**
+     * @param callable(Signal, Info): void $listener
+     */
+    public function remove(callable $listener): void
+    {
+        $this->handler->remove($listener);
+    }
 }

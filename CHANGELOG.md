@@ -44,6 +44,7 @@
 - `Innmind\OperatingSystem\Remote` is now a final class
 - `Innmind\OperatingSystem\Ports` is now a final class
 - `Innmind\OperatingSystem\Filesystem` is now a final class
+- `Innmind\OperatingSystem\CurrentProcess\Signals` is now a final class
 
 ### Fixed
 
