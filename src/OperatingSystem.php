@@ -38,11 +38,11 @@ final class OperatingSystem
      * This method allows to change the underlying OS implementation while being
      * able to keep any decorators on top of it.
      *
-     * @param callable(self, Config): self $map
+     * @param callable(Config): Config $map
      */
     public function map(callable $map): self
     {
-        return $map($this, $this->config);
+        return new self($map($this->config));
     }
 
     public function clock(): Clock

@@ -45,15 +45,13 @@ class OperatingSystemTest extends TestCase
     public function testMap()
     {
         $os = OperatingSystem::new($config = Config::of());
-        $expected = OperatingSystem::new();
 
-        $result = $os->map(function($os_, $config_) use ($os, $config, $expected) {
-            $this->assertSame($os, $os_);
+        $result = $os->map(function($config_) use ($config) {
             $this->assertSame($config, $config_);
 
-            return $expected;
+            return Config::of();
         });
 
-        $this->assertSame($expected, $result);
+        $this->assertNotSame($os, $result);
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Tests\Innmind\OperatingSystem\Remote;
 
 use Innmind\OperatingSystem\{
-    OperatingSystem,
     Config,
     Factory,
 };
@@ -23,9 +22,7 @@ class ResilientTest extends TestCase
     public function testHttp()
     {
         $os = $this->os->map(
-            static fn($_, $config) => OperatingSystem::new(
-                $config->map(Config\Resilient::new()),
-            ),
+            Config\Resilient::new(),
         );
 
         $this->assertInstanceOf(ExponentialBackoff::class, $os->remote()->http());
