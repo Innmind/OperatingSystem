@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem;
 
 use Innmind\Server\Control;
+use Innmind\Server\Status;
 use Innmind\TimeContinuum\Clock;
 use Innmind\HttpTransport\{
     Transport as HttpTransport,
@@ -24,6 +25,7 @@ final class Config
      * @param \Closure(Url): AccessLayer\Connection $sql
      * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $mapSql
      * @param \Closure(Control\Server): Control\Server $mapServerControl
+     * @param \Closure(Status\Server): Status\Server $mapServerStatus
      */
     private function __construct(
         private Clock $clock,
@@ -37,6 +39,7 @@ final class Config
         private \Closure $sql,
         private \Closure $mapSql,
         private \Closure $mapServerControl,
+        private \Closure $mapServerStatus,
     ) {
     }
 
@@ -59,6 +62,7 @@ final class Config
             ),
             static fn(AccessLayer\Connection $connection) => $connection,
             static fn(Control\Server $server) => $server,
+            static fn(Status\Server $server) => $server,
         );
     }
 
@@ -90,6 +94,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -110,6 +115,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -130,6 +136,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -155,6 +162,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -175,6 +183,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -195,6 +204,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -219,6 +229,7 @@ final class Config
             $this->sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -241,6 +252,7 @@ final class Config
             $sql,
             $this->mapSql,
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -265,6 +277,7 @@ final class Config
             $this->sql,
             static fn(AccessLayer\Connection $connection) => $map($previous($connection)),
             $this->mapServerControl,
+            $this->mapServerStatus,
         );
     }
 
@@ -289,6 +302,32 @@ final class Config
             $this->sql,
             $this->mapSql,
             static fn(Control\Server $server) => $map($previous($server)),
+            $this->mapServerStatus,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Status\Server): Status\Server $map
+     */
+    public function mapServerStatus(\Closure $map): self
+    {
+        $previous = $this->mapServerStatus;
+
+        return new self(
+            $this->clock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            static fn(Status\Server $server) => $map($previous($server)),
         );
     }
 
@@ -363,5 +402,15 @@ final class Config
     public function serverControlMapper(): \Closure
     {
         return $this->mapServerControl;
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Closure(Status\Server): Status\Server
+     */
+    public function serverStatusMapper(): \Closure
+    {
+        return $this->mapServerStatus;
     }
 }

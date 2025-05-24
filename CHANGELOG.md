@@ -12,6 +12,7 @@
 - `Innmind\OperatingSystem\Config::openSQLConnectionVia()`
 - `Innmind\OperatingSystem\Config::mapSQLConnection()`
 - `Innmind\OperatingSystem\Config::mapServerControl()`
+- `Innmind\OperatingSystem\Config::mapServerStatus()`
 
 ### Changed
 

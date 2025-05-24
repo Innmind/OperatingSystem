@@ -66,11 +66,11 @@ final class Unix implements Implementation
     #[\Override]
     public function status(): ServerStatus
     {
-        return $this->status ??= ServerFactory::build(
+        return $this->status ??= $this->config->serverStatusMapper()(ServerFactory::build(
             $this->clock(),
             $this->control(),
             $this->config->environmentPath(),
-        );
+        ));
     }
 
     #[\Override]
