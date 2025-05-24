@@ -62,18 +62,14 @@ final class Generic implements Filesystem
             }
         }
 
-        return Attempt::of(function() use ($path) {
-            $adapter = Adapter\Filesystem::mount(
-                $path,
-                $this->config->io(),
-            )
-                ->withCaseSensitivity(
-                    $this->config->filesystemCaseSensitivity(),
-                );
-            $this->mounted[$adapter] = $path->toString();
+        return $this
+            ->config
+            ->filesystem($path)
+            ->map(function($adapter) use ($path) {
+                $this->mounted[$adapter] = $path->toString();
 
-            return $adapter;
-        });
+                return $adapter;
+            });
     }
 
     #[\Override]

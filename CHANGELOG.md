@@ -15,6 +15,7 @@
 - `Innmind\OperatingSystem\Config::mapServerStatus()`
 - `Innmind\OperatingSystem\Config::mapClock()`
 - `Innmind\OperatingSystem\Config::mapFileWatch()`
+- `Innmind\OperatingSystem\Config::mountFilesystemVia()`
 
 ### Changed
 
@@ -51,6 +52,7 @@
 - `Innmind\OperatingSystem\Config::limitHttpConcurrencyTo()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::withHttpHeartbeat()` use `::useHttpTransport()` instead
 - `Innmind\OperatingSystem\Config::disableSSLVerification()` use `::useHttpTransport()` instead
+- `Innmind\OperatingSystem\Config::caseInsensitiveFilesystem()` use `::mountFilesystemVia()` instead
 - The following informations are no longer logged:
     - the current process id
     - the current process memory

@@ -10,12 +10,19 @@ use Innmind\HttpTransport\{
     Transport as HttpTransport,
     Curl,
 };
-use Innmind\Filesystem\CaseSensitivity;
+use Innmind\Filesystem\{
+    Adapter as Filesystem,
+    CaseSensitivity
+};
 use Innmind\FileWatch\Watch;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
-use Innmind\Url\Url;
+use Innmind\Url\{
+    Url,
+    Path,
+};
+use Innmind\Immutable\Attempt;
 use Formal\AccessLayer;
 
 final class Config
@@ -29,11 +36,11 @@ final class Config
      * @param \Closure(Control\Server): Control\Server $mapServerControl
      * @param \Closure(Status\Server): Status\Server $mapServerStatus
      * @param \Closure(Watch): Watch $mapFileWatch
+     * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
      */
     private function __construct(
         private Clock $clock,
         private \Closure $mapClock,
-        private CaseSensitivity $caseSensitivity,
         private IO $io,
         private Halt $halt,
         private \Closure $mapHalt,
@@ -45,6 +52,7 @@ final class Config
         private \Closure $mapServerControl,
         private \Closure $mapServerStatus,
         private \Closure $mapFileWatch,
+        private \Closure $filesystem,
     ) {
     }
 
@@ -53,7 +61,6 @@ final class Config
         return new self(
             Clock::live(),
             static fn(Clock $clock) => $clock,
-            CaseSensitivity::sensitive,
             IO::fromAmbientAuthority(),
             Halt\Usleep::new(),
             static fn(Halt $halt) => $halt,
@@ -70,6 +77,12 @@ final class Config
             static fn(Control\Server $server) => $server,
             static fn(Status\Server $server) => $server,
             static fn(Watch $watch) => $watch,
+            static fn(Path $path, self $config) => Attempt::of(
+                static fn() => Filesystem\Filesystem::mount(
+                    $path,
+                    $config->io(),
+                )->withCaseSensitivity(CaseSensitivity::sensitive),
+            ),
         );
     }
 
@@ -92,7 +105,6 @@ final class Config
         return new self(
             $clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -104,6 +116,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -119,7 +132,6 @@ final class Config
         return new self(
             $this->clock,
             static fn(Clock $clock) => $map($previous($clock)),
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -131,29 +143,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
-        );
-    }
-
-    /**
-     * @psalm-mutation-free
-     */
-    public function caseInsensitiveFilesystem(): self
-    {
-        return new self(
-            $this->clock,
-            $this->mapClock,
-            CaseSensitivity::insensitive,
-            $this->io,
-            $this->halt,
-            $this->mapHalt,
-            $this->path,
-            $this->httpTransport,
-            $this->mapHttpTransport,
-            $this->sql,
-            $this->mapSql,
-            $this->mapServerControl,
-            $this->mapServerStatus,
-            $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -165,7 +155,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $halt,
             $this->mapHalt,
@@ -177,6 +166,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -193,7 +183,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             static fn(Halt $halt) => $map($previous($halt)),
@@ -205,6 +194,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -216,7 +206,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -228,6 +217,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -239,7 +229,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -251,6 +240,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -266,7 +256,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -278,6 +267,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -291,7 +281,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -303,6 +292,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -318,7 +308,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -330,6 +319,7 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -345,7 +335,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -357,6 +346,7 @@ final class Config
             static fn(Control\Server $server) => $map($previous($server)),
             $this->mapServerStatus,
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -372,7 +362,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -384,6 +373,7 @@ final class Config
             $this->mapServerControl,
             static fn(Status\Server $server) => $map($previous($server)),
             $this->mapFileWatch,
+            $this->filesystem,
         );
     }
 
@@ -399,7 +389,6 @@ final class Config
         return new self(
             $this->clock,
             $this->mapClock,
-            $this->caseSensitivity,
             $this->io,
             $this->halt,
             $this->mapHalt,
@@ -411,6 +400,32 @@ final class Config
             $this->mapServerControl,
             $this->mapServerStatus,
             static fn(Watch $watch) => $map($previous($watch)),
+            $this->filesystem,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
+     */
+    public function mountFilesystemVia(\Closure $filesystem): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $filesystem,
         );
     }
 
@@ -424,10 +439,12 @@ final class Config
 
     /**
      * @internal
+     *
+     * @return Attempt<Filesystem>
      */
-    public function filesystemCaseSensitivity(): CaseSensitivity
+    public function filesystem(Path $path): Attempt
     {
-        return $this->caseSensitivity;
+        return ($this->filesystem)($path, $this);
     }
 
     /**
