@@ -3,6 +3,7 @@
 This topic is similar to the [Inter Process Communication](ipc.md) but address talking to a socket through a specific network port (either locally or remotely).
 
 As you'll see below working with sockets ([`.sock`](ipc.md) or a port) is always the same workflow:
+
 - open a socket (client or server)
 - watch for them to be ready to read
 - perform an action on the socket when ready
@@ -13,21 +14,18 @@ The use case is not very common as you need to define a protocol and implement s
 
 ```php
 use Innmind\Url\Authority\Port;
-use Innmind\Socket\Internet\Transport;
+use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IPv4;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
+use Innmind\TimeContinuum\Period;
 
 $server = $os
     ->ports()
     ->open(Transport::tcp(), IPv4::localhost(), Port::of(8080))
-    ->match(
-        static fn($server) => $server,
-        static fn() => throw new \RuntimeException('Unable to start the server'),
-    );
+    ->unwrap()
+    ->timeoutAfter(Period::second(1));
 
 while (true) {
     $server
-        ->timeoutAfter(ElapsedPeriod::of(1_000))
         ->accept()
         ->match(
             static fn($client) => /* talk to the client */,
@@ -44,20 +42,17 @@ This example will open a connection to the server defined above but can be chang
 
 ```php
 use Innmind\Url\Url;
-use Innmind\IO\Readable\Frame;
-use Innmind\Socket\Internet\Transport;
+use Innmind\IO\{
+    Sockets\Internet\Transport,
+    Frame,
+};
 
-$client = $os
+$receivedData = $os
     ->remote()
     ->socket(Transport::tcp(), Url::of('tcp://127.0.0.1:8080')->authority())
-    ->match(
-        static fn($client) => $client,
-        static fn() => throw new \RuntimeException('Unable to connect to the client'),
-    );
-
-$receivedData = $client
+    ->unwrap()
     ->watch()
-    ->frames(Frame\Chunk::of(1))
+    ->frames(Frame::chunk(1)->strict())
     ->one()
     ->match(
         static fn() => true,

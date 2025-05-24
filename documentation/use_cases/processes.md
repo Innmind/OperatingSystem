@@ -12,12 +12,23 @@ use Innmind\Server\Control\Server\{
     Signal,
 };
 
-$webserver = $os->control()->processes()->execute(
-    Command::foreground('php')
-        ->withShortOption('S', 'localhost:8080'),
-);
+$webserver = $os
+    ->control()
+    ->processes()
+    ->execute(
+        Command::foreground('php')
+            ->withShortOption('S', 'localhost:8080'),
+    )
+    ->unwrap();
 // do some stuff
-$os->control()->processes()->kill($webserver->pid(), Signal::kill);
+$webserver->pid()->match(
+    static fn($pid) => $os
+        ->control()
+        ->processes()
+        ->kill($pid, Signal::kill)
+        ->unwrap(),
+    static fn() => null, // background processes don't have a pid
+);
 ```
 
 Here we start the PHP builtin webserver and perform some imaginary action before killing it, but you could also wait the process to finish (see below) instead of killing it (in the case of the webserver it never finishes unless with a crash).
@@ -25,10 +36,14 @@ Here we start the PHP builtin webserver and perform some imaginary action before
 ```php
 use Innmind\Server\Control\Server\Command;
 
-$webserver = $os->control()->processes()->execute(
-    Command::foreground('php')
-        ->withShortOption('S', 'localhost:8080'),
-);
+$webserver = $os
+    ->control()
+    ->processes()
+    ->execute(
+        Command::foreground('php')
+            ->withShortOption('S', 'localhost:8080'),
+    )
+    ->unwrap();
 $webserver->wait();
 ```
 
@@ -37,10 +52,14 @@ Or you could start the process as an independent one (meaning you can't control 
 ```php
 use Innmind\Server\Control\Server\Command;
 
-$os->control()->processes()->execute(
-    Command::background('php')
-        ->withShortOption('S', 'localhost:8080'),
-);
+$os
+    ->control()
+    ->processes()
+    ->execute(
+        Command::background('php')
+            ->withShortOption('S', 'localhost:8080'),
+    )
+    ->unwrap();
 ```
 
 ## Executing processes on a remote machine
@@ -63,7 +82,7 @@ $installMariadb($os->remote()->ssh(Url::of('ssh://user@replication2')));
 
 ```php
 use Innmind\Server\Status\Server\Process;
-use Innmind\TimeContinuum\Earth\Format\ISO8601;
+use Innmind\TimeContinuum\Format;
 
 $os->status()->processes()->all()->foreach(function(Process $process): void {
     \printf(
@@ -71,7 +90,7 @@ $os->status()->processes()->all()->foreach(function(Process $process): void {
         $process->command()->toString(),
         $process->user()->toString(),
         $process->start()->match(
-            static fn($date) => $date->format(new ISO8601),
+            static fn($date) => $date->format(Format::iso8601()),
             static fn() => 'unknown start date',
         ),
     );
@@ -97,9 +116,13 @@ $backupRunning = $os
     );
 
 if (!$backupRunning) {
-    $os->control()->processes()->execute(
-        Command::background('my-backup-tool'),
-    );
+    $os
+        ->control()
+        ->processes()
+        ->execute(
+            Command::background('my-backup-tool'),
+        )
+        ->unwrap();
 }
 ```
 
@@ -108,8 +131,8 @@ if (!$backupRunning) {
 ```php
 use Innmind\Url\Url;
 
-$os->control()->reboot();
-$os->control()->shutdown();
-$os->remote()->ssh(Url::of('ssh://user@remote-server'))->reboot();
-$os->remote()->ssh(Url::of('ssh://user@remote-server'))->shutdown();
+$os->control()->reboot()->unwrap();
+$os->control()->shutdown()->unwrap();
+$os->remote()->ssh(Url::of('ssh://user@remote-server'))->reboot()->unwrap();
+$os->remote()->ssh(Url::of('ssh://user@remote-server'))->shutdown()->unwrap();
 ```

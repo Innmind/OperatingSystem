@@ -16,6 +16,8 @@ nav:
   - Advanced usage:
     - Logging all operations: advanced/logging.md
     - Extensions: advanced/extensions.md
+  - Upgrade:
+    - upgrade/v5-to-v6.md
 
 theme:
   name: material

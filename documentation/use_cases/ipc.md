@@ -7,57 +7,60 @@ The later is the safest of the two (but not exempt of problems) and you will fin
 !!! tip ""
     The adage `share state through messages and not messages through state` is a pillar of the [actor model](https://en.wikipedia.org/wiki/Actor_model) and [initially of object oriented programming](https://www.youtube.com/watch?v=7erJ1DV_Tlo).
 
-```php
-# process acting as a server
-use Innmind\Socket\Address\Unix as Address;
-use Innmind\TimeContinuum\Earth\ElapsedPeriod;
-use Innmind\Immutable\{
-    Sequence,
-    Str,
-};
+=== "Server"
+    ```php
+    use Innmind\IO\Sockets\Unix\Address;
+    use Innmind\Url\Path;
+    use Innmind\TimeContinuum\Period;
+    use Innmind\Immutable\{
+        Sequence,
+        Str,
+    };
 
-$server = $os->sockets()->open(Address::of('/tmp/foo'))->match(
-    static fn($server) => $server,
-    static fn() => throw new \RuntimeException('Unable to start the server'),
-);
-$watch = $os->sockets()->watch(new ElapsedPeriod(1000))->forRead($server);
+    $server = $os
+        ->sockets()
+        ->open(Address::of(Path::of('/tmp/foo')))
+        ->unwrap();
+        ->timeoutAfter(Period::second(1));
 
-while (true) {
-    $_ = $server
-        ->timeoutAfter(ElapsedPeriod::of(1_000))
-        ->accept()
+    while (true) {
+        $_ = $server
+            ->accept()
+            ->match(
+                static fn($client) => $client
+                    ->sink(Sequence::of(Str::of('Hello')))
+                    ->flatMap(static fn() => $client->close())
+                    ->match(
+                        static fn() => null, // everyhting is ok
+                        static fn(\Throwable $e) => throw $e,
+                    ),
+                static fn() => null, // no new connection available
+            ),
+    }
+    ```
+
+=== "Client"
+    ```php
+    use Innmind\IO\{
+        Sockets\Unix\Address,
+        Frame,
+    };
+    use Innmind\Url\Path;
+
+    $client = $os
+        ->sockets()
+        ->connectTo(Address::of(Path::of('/tmp/foo')))
+        ->unwrap();
+
+    echo $client
+        ->watch()
+        ->frames(Frame::chunk(5)->strict())
+        ->one()
         ->match(
-            static fn($client) => $client
-                ->send(Sequence::of(Str::of('Hello')))
-                ->flatMap(static fn() => $client->close())
-                ->match(
-                    static fn() => null, // everyhting is ok
-                    static fn() => throw new \RuntimeException('Unable to send data or close the connection'),
-                ),
-            static fn() => null, // no new connection available
-        ),
-}
-```
-
-```php
-# process acting as client
-use Innmind\Socket\Address\Unix as Address;
-use Innmind\IO\Readable\Frame;
-
-$client = $os->sockets()->connectTo(Address::of('/tmp/foo'))->match(
-    static fn($client) => $client,
-    static fn() => throw new \RuntimeException('Unable to connect to the server'),
-);
-
-echo $client
-    ->watch()
-    ->frames(Frame\Chunk::of(5))
-    ->one()
-    ->match(
-        static fn($data) => $data->toString(),
-        static fn() => 'unable to read the stream',
-    );
-```
+            static fn($data) => $data->toString(),
+            static fn() => 'unable to read the stream',
+        );
+    ```
 
 In the case the server is started first then the client would print `Hello`.
 
