@@ -55,10 +55,7 @@ final class Logger implements Implementation
     #[\Override]
     public function filesystem(): Filesystem
     {
-        return Filesystem\Logger::psr(
-            $this->os->filesystem(),
-            $this->logger,
-        );
+        return $this->os->filesystem();
     }
 
     #[\Override]

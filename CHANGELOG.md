@@ -63,6 +63,8 @@
     - opened ports
     - opened remote sockets
     - opened sockets
+    - if a file/directory exists or not
+    - when a PHP file is loaded in memory
 
 ## 5.2.0 - 2024-07-14
 
