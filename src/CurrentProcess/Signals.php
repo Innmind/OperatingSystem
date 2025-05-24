@@ -18,6 +18,9 @@ final class Signals
         $this->handler = $handler;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Handler $handler): self
     {
         return new self($handler);
