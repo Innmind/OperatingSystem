@@ -60,25 +60,23 @@ final class OperatingSystem
 
     public function status(): ServerStatus
     {
-        return $this->status ??= $this->config->serverStatusMapper()(
+        return $this->status ??= $this->config->serverStatus(
             ServerFactory::build(
                 $this->clock(),
                 $this->control(),
                 $this->config->environmentPath(),
             ),
-            $this->config,
         );
     }
 
     public function control(): ServerControl
     {
-        return $this->control ??= $this->config->serverControlMapper()(
+        return $this->control ??= $this->config->serverControl(
             Servers\Unix::of(
                 $this->clock(),
                 $this->config->io(),
                 $this->config->halt(),
             ),
-            $this->config,
         );
     }
 

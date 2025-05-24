@@ -567,31 +567,25 @@ final class Config
 
     /**
      * @internal
-     *
-     * @return \Closure(Control\Server, self): Control\Server
      */
-    public function serverControlMapper(): \Closure
+    public function serverControl(Control\Server $server): Control\Server
     {
-        return $this->mapServerControl;
+        return ($this->mapServerControl)($server, $this);
     }
 
     /**
      * @internal
-     *
-     * @return \Closure(Status\Server, self): Status\Server
      */
-    public function serverStatusMapper(): \Closure
+    public function serverStatus(Status\Server $server): Status\Server
     {
-        return $this->mapServerStatus;
+        return ($this->mapServerStatus)($server, $this);
     }
 
     /**
      * @internal
-     *
-     * @return \Closure(Watch, self): Watch
      */
-    public function fileWatchMapper(): \Closure
+    public function fileWatch(Watch $watch): Watch
     {
-        return $this->mapFileWatch;
+        return ($this->mapFileWatch)($watch, $this);
     }
 }

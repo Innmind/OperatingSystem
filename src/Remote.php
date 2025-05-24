@@ -48,14 +48,13 @@ final class Remote
             $port = $server->authority()->port();
         }
 
-        return $this->config->serverControlMapper()(
+        return $this->config->serverControl(
             Servers\Remote::of(
                 $this->server,
                 $server->authority()->userInformation()->user(),
                 $server->authority()->host(),
                 $port,
             ),
-            $this->config,
         );
     }
 

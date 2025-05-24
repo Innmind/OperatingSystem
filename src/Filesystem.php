@@ -30,9 +30,8 @@ final class Filesystem
 
     private function __construct(Processes $processes, Config $config)
     {
-        $this->watch = $config->fileWatchMapper()(
+        $this->watch = $config->fileWatch(
             Factory::build($processes, $config->halt()),
-            $config,
         );
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
