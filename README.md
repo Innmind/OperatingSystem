@@ -1,6 +1,6 @@
 # OperatingSystem
 
-[![Build Status](https://github.com/innmind/operatingsystem/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/operatingsystem/actions?query=workflow%3ACI)
+[![CI](https://github.com/Innmind/OperatingSystem/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Innmind/OperatingSystem/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/innmind/operatingsystem/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/operatingsystem)
 [![Type Coverage](https://shepherd.dev/github/innmind/operatingsystem/coverage.svg)](https://shepherd.dev/github/innmind/operatingsystem)
 
