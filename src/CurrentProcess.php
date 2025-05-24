@@ -8,7 +8,6 @@ use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
-use Innmind\Signals\Handler;
 use Innmind\Immutable\{
     Attempt,
     SideEffect,
@@ -48,7 +47,7 @@ final class CurrentProcess
 
     public function signals(): Signals
     {
-        return $this->signals ??= Signals::of(new Handler);
+        return $this->signals ??= Signals::of();
     }
 
     /**

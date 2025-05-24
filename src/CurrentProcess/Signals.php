@@ -21,9 +21,9 @@ final class Signals
     /**
      * @internal
      */
-    public static function of(Handler $handler): self
+    public static function of(): self
     {
-        return new self($handler);
+        return new self(new Handler);
     }
 
     /**
