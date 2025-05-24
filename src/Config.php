@@ -37,6 +37,7 @@ final class Config
      * @param \Closure(Status\Server): Status\Server $mapServerStatus
      * @param \Closure(Watch): Watch $mapFileWatch
      * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
+     * @param \Closure(Filesystem): Filesystem $mapFilesystem
      */
     private function __construct(
         private Clock $clock,
@@ -53,6 +54,7 @@ final class Config
         private \Closure $mapServerStatus,
         private \Closure $mapFileWatch,
         private \Closure $filesystem,
+        private \Closure $mapFilesystem,
     ) {
     }
 
@@ -83,6 +85,7 @@ final class Config
                     $config->io(),
                 )->withCaseSensitivity(CaseSensitivity::sensitive),
             ),
+            static fn(Filesystem $filesystem) => $filesystem,
         );
     }
 
@@ -117,6 +120,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -144,6 +148,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -167,6 +172,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -195,6 +201,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -218,6 +225,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -241,6 +249,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -268,6 +277,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -293,6 +303,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -320,6 +331,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -347,6 +359,7 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -374,6 +387,7 @@ final class Config
             static fn(Status\Server $server) => $map($previous($server)),
             $this->mapFileWatch,
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -401,6 +415,7 @@ final class Config
             $this->mapServerStatus,
             static fn(Watch $watch) => $map($previous($watch)),
             $this->filesystem,
+            $this->mapFilesystem,
         );
     }
 
@@ -426,6 +441,35 @@ final class Config
             $this->mapServerStatus,
             $this->mapFileWatch,
             $filesystem,
+            $this->mapFilesystem,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Filesystem): Filesystem $map
+     */
+    public function mapFilesystem(\Closure $map): self
+    {
+        $previous = $this->mapFilesystem;
+
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $this->filesystem,
+            static fn(Filesystem $filesystem) => $map($previous($filesystem)),
         );
     }
 
@@ -444,7 +488,9 @@ final class Config
      */
     public function filesystem(Path $path): Attempt
     {
-        return ($this->filesystem)($path, $this);
+        return ($this->filesystem)($path, $this)->map(
+            $this->mapFilesystem,
+        );
     }
 
     /**

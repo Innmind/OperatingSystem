@@ -16,6 +16,7 @@
 - `Innmind\OperatingSystem\Config::mapClock()`
 - `Innmind\OperatingSystem\Config::mapFileWatch()`
 - `Innmind\OperatingSystem\Config::mountFilesystemVia()`
+- `Innmind\OperatingSystem\Config::mapFilesystem()`
 
 ### Changed
 
