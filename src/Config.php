@@ -11,6 +11,7 @@ use Innmind\HttpTransport\{
     Curl,
 };
 use Innmind\Filesystem\CaseSensitivity;
+use Innmind\FileWatch\Watch;
 use Innmind\Server\Status\EnvironmentPath;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
@@ -27,6 +28,7 @@ final class Config
      * @param \Closure(AccessLayer\Connection): AccessLayer\Connection $mapSql
      * @param \Closure(Control\Server): Control\Server $mapServerControl
      * @param \Closure(Status\Server): Status\Server $mapServerStatus
+     * @param \Closure(Watch): Watch $mapFileWatch
      */
     private function __construct(
         private Clock $clock,
@@ -42,6 +44,7 @@ final class Config
         private \Closure $mapSql,
         private \Closure $mapServerControl,
         private \Closure $mapServerStatus,
+        private \Closure $mapFileWatch,
     ) {
     }
 
@@ -66,6 +69,7 @@ final class Config
             static fn(AccessLayer\Connection $connection) => $connection,
             static fn(Control\Server $server) => $server,
             static fn(Status\Server $server) => $server,
+            static fn(Watch $watch) => $watch,
         );
     }
 
@@ -99,6 +103,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -125,6 +130,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -147,6 +153,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -169,6 +176,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -196,6 +204,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -218,6 +227,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -240,6 +250,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -266,6 +277,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -290,6 +302,7 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -316,6 +329,7 @@ final class Config
             static fn(AccessLayer\Connection $connection) => $map($previous($connection)),
             $this->mapServerControl,
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -342,6 +356,7 @@ final class Config
             $this->mapSql,
             static fn(Control\Server $server) => $map($previous($server)),
             $this->mapServerStatus,
+            $this->mapFileWatch,
         );
     }
 
@@ -368,6 +383,34 @@ final class Config
             $this->mapSql,
             $this->mapServerControl,
             static fn(Status\Server $server) => $map($previous($server)),
+            $this->mapFileWatch,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Watch): Watch $map
+     */
+    public function mapFileWatch(\Closure $map): self
+    {
+        $previous = $this->mapFileWatch;
+
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->caseSensitivity,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            static fn(Watch $watch) => $map($previous($watch)),
         );
     }
 
@@ -452,5 +495,15 @@ final class Config
     public function serverStatusMapper(): \Closure
     {
         return $this->mapServerStatus;
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Closure(Watch): Watch
+     */
+    public function fileWatchMapper(): \Closure
+    {
+        return $this->mapFileWatch;
     }
 }

@@ -33,7 +33,9 @@ final class Generic implements Filesystem
 
     private function __construct(Processes $processes, Config $config)
     {
-        $this->watch = Factory::build($processes, $config->halt());
+        $this->watch = $config->fileWatchMapper()(
+            Factory::build($processes, $config->halt()),
+        );
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;

@@ -14,6 +14,7 @@
 - `Innmind\OperatingSystem\Config::mapServerControl()`
 - `Innmind\OperatingSystem\Config::mapServerStatus()`
 - `Innmind\OperatingSystem\Config::mapClock()`
+- `Innmind\OperatingSystem\Config::mapFileWatch()`
 
 ### Changed
 
