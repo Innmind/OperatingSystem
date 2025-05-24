@@ -86,7 +86,7 @@ final class Unix implements Implementation
     #[\Override]
     public function ports(): Ports
     {
-        return $this->ports ??= Ports\Unix::of($this->config);
+        return $this->ports ??= Ports::of($this->config);
     }
 
     #[\Override]

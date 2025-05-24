@@ -29,7 +29,7 @@ class UnixTest extends TestCase
         $this->assertInstanceOf(Filesystem\Generic::class, $os->filesystem());
         $this->assertInstanceOf(ServerStatus::class, $os->status());
         $this->assertInstanceOf(ServerControl::class, $os->control());
-        $this->assertInstanceOf(Ports\Unix::class, $os->ports());
+        $this->assertInstanceOf(Ports::class, $os->ports());
         $this->assertInstanceOf(Sockets::class, $os->sockets());
         $this->assertInstanceOf(Remote::class, $os->remote());
         $this->assertInstanceOf(CurrentProcess\Generic::class, $os->process());

@@ -11,10 +11,33 @@ use Innmind\IO\{
 use Innmind\IP\IP;
 use Innmind\Immutable\Attempt;
 
-interface Ports
+final class Ports
 {
+    private Config $config;
+
+    private function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @internal
+     */
+    public static function of(Config $config): self
+    {
+        return new self($config);
+    }
+
     /**
      * @return Attempt<Server>
      */
-    public function open(Transport $transport, IP $ip, Port $port): Attempt;
+    public function open(Transport $transport, IP $ip, Port $port): Attempt
+    {
+        return $this
+            ->config
+            ->io()
+            ->sockets()
+            ->servers()
+            ->internet($transport, $ip, $port);
+    }
 }

@@ -1,10 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\OperatingSystem\Ports;
+namespace Tests\Innmind\OperatingSystem;
 
 use Innmind\OperatingSystem\{
-    Ports\Unix,
     Ports,
     Config,
 };
@@ -16,16 +15,11 @@ use Innmind\IP\IPv4;
 use Innmind\Url\Authority\Port;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
-class UnixTest extends TestCase
+class PortsTest extends TestCase
 {
-    public function testInterface()
-    {
-        $this->assertInstanceOf(Ports::class, Unix::of(Config::of()));
-    }
-
     public function testOpen()
     {
-        $ports = Unix::of(Config::of());
+        $ports = Ports::of(Config::of());
 
         $socket = $ports->open(
             Transport::tlsv12(),
