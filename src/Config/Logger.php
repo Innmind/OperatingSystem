@@ -8,6 +8,7 @@ use Innmind\Server\Control;
 use Innmind\Server\Status;
 use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\Watch;
+use Innmind\Filesystem\Adapter as Filesystem;
 use Innmind\HttpTransport;
 use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
@@ -46,6 +47,10 @@ final class Logger
             ->mapClock(fn($clock) => Clock::logger($clock, $this->logger))
             ->mapFileWatch(fn($watch) => Watch::logger(
                 $watch,
+                $this->logger,
+            ))
+            ->mapFilesystem(fn($filesystem) => Filesystem\Logger::psr(
+                $filesystem,
                 $this->logger,
             ));
     }

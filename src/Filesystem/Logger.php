@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Filesystem;
 
 use Innmind\OperatingSystem\Filesystem;
-use Innmind\Filesystem\Adapter;
 use Innmind\Url\Path;
 use Innmind\FileWatch\Ping;
 use Innmind\Immutable\{
@@ -37,12 +36,7 @@ final class Logger implements Filesystem
     #[\Override]
     public function mount(Path $path): Attempt
     {
-        return $this->filesystem->mount($path)->map(
-            fn($adapter) => Adapter\Logger::psr(
-                $adapter,
-                $this->logger,
-            ),
-        );
+        return $this->filesystem->mount($path);
     }
 
     #[\Override]
