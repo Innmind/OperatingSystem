@@ -77,7 +77,6 @@ final class Logger implements Filesystem
     #[\Override]
     public function watch(Path $path): Ping
     {
-        // todo bring back the ping logger
         return $this->filesystem->watch($path);
     }
 
