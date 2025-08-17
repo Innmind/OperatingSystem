@@ -214,6 +214,30 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    public function withIO(IO $io): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
     public function withEnvironmentPath(EnvironmentPath $path): self
     {
         return new self(
