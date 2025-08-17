@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `Innmind\OperatingSystem\Config::withIO()`
+
 ## 6.0.0 - 2025-05-24
 
 ### Added
