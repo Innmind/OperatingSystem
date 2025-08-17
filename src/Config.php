@@ -214,7 +214,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
-    public function withIO(IO $iod): self
+    public function withIO(IO $io): self
     {
         return new self(
             $this->clock,
