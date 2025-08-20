@@ -13,7 +13,11 @@ use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\TimeContinuum\Period;
 use Innmind\TimeWarp\Halt;
-use Innmind\Signals\Handler;
+use Innmind\Signals\{
+    Handler,
+    Signal,
+    Async\Interceptor,
+};
 use Innmind\Immutable\SideEffect;
 use Psr\Log\NullLogger;
 use Innmind\BlackBox\{
@@ -68,6 +72,30 @@ class CurrentProcessTest extends TestCase
 
         $this->assertInstanceOf(Signals::class, $process->signals());
         $this->assertSame($process->signals(), $process->signals());
+    }
+
+    public function testAsyncSignals(): BlackBox\Proof
+    {
+        return $this
+            ->forAll(Set::of(...Signal::cases()))
+            ->prove(function($signal) {
+                $config = Config::new();
+                $interceptor = Interceptor::new();
+                $config = $config->handleSignalsVia(
+                    $config->signalsHandler()->async($interceptor),
+                );
+                $async = OperatingSystem::new($config);
+                $called = 0;
+                $async
+                    ->process()
+                    ->signals()
+                    ->listen($signal, static function() use (&$called) {
+                        ++$called;
+                    });
+                $interceptor->dispatch($signal);
+
+                $this->assertSame(1, $called);
+            });
     }
 
     public function testMemory()
