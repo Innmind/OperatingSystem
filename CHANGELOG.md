@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Innmind\OperatingSystem\Config::handleSignalsVia()`
+
 ### Changed
 
 - Requires `innmind/signals:~4.0`

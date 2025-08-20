@@ -100,6 +100,9 @@ final class OperatingSystem
 
     public function process(): CurrentProcess
     {
-        return $this->process ??= CurrentProcess::of($this->config->halt());
+        return $this->process ??= CurrentProcess::of(
+            $this->config->halt(),
+            $this->config->signalsHandler(),
+        );
     }
 }
