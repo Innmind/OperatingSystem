@@ -29,6 +29,8 @@ use Formal\AccessLayer;
 final class Config
 {
     /**
+     * @psalm-mutation-free
+     *
      * @param \Closure(Clock, self): Clock $mapClock
      * @param \Closure(Halt, self): Halt $mapHalt
      * @param \Closure(HttpTransport, self): HttpTransport $mapHttpTransport
@@ -60,6 +62,7 @@ final class Config
     ) {
     }
 
+    #[\NoDiscard]
     public static function new(): self
     {
         return new self(
@@ -97,6 +100,7 @@ final class Config
      *
      * @param callable(self): self $map
      */
+    #[\NoDiscard]
     public function map(callable $map): self
     {
         /** @psalm-suppress ImpureFunctionCall */
@@ -106,6 +110,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function withClock(Clock $clock): self
     {
         return new self(
@@ -133,6 +138,7 @@ final class Config
      *
      * @param \Closure(Clock, self): Clock $map
      */
+    #[\NoDiscard]
     public function mapClock(\Closure $map): self
     {
         $previous = $this->mapClock;
@@ -163,6 +169,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function haltProcessVia(Halt $halt): self
     {
         return new self(
@@ -190,6 +197,7 @@ final class Config
      *
      * @param \Closure(Halt, self): Halt $map
      */
+    #[\NoDiscard]
     public function mapHalt(\Closure $map): self
     {
         $previous = $this->mapHalt;
@@ -221,6 +229,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function withIO(IO $io): self
     {
         return new self(
@@ -246,6 +255,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function withEnvironmentPath(EnvironmentPath $path): self
     {
         return new self(
@@ -271,6 +281,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function useHttpTransport(HttpTransport $transport): self
     {
         return new self(
@@ -298,6 +309,7 @@ final class Config
      *
      * @param \Closure(HttpTransport, self): HttpTransport $map
      */
+    #[\NoDiscard]
     public function mapHttpTransport(\Closure $map): self
     {
         $previous = $this->mapHttpTransport;
@@ -330,6 +342,7 @@ final class Config
      *
      * @param \Closure(Url): AccessLayer\Connection $sql
      */
+    #[\NoDiscard]
     public function openSQLConnectionVia(\Closure $sql): self
     {
         return new self(
@@ -357,6 +370,7 @@ final class Config
      *
      * @param \Closure(AccessLayer\Connection, self): AccessLayer\Connection $map
      */
+    #[\NoDiscard]
     public function mapSQLConnection(\Closure $map): self
     {
         $previous = $this->mapSql;
@@ -389,6 +403,7 @@ final class Config
      *
      * @param \Closure(Control\Server, self): Control\Server $map
      */
+    #[\NoDiscard]
     public function mapServerControl(\Closure $map): self
     {
         $previous = $this->mapServerControl;
@@ -421,6 +436,7 @@ final class Config
      *
      * @param \Closure(Status\Server, self): Status\Server $map
      */
+    #[\NoDiscard]
     public function mapServerStatus(\Closure $map): self
     {
         $previous = $this->mapServerStatus;
@@ -453,6 +469,7 @@ final class Config
      *
      * @param \Closure(Watch, self): Watch $map
      */
+    #[\NoDiscard]
     public function mapFileWatch(\Closure $map): self
     {
         $previous = $this->mapFileWatch;
@@ -485,6 +502,7 @@ final class Config
      *
      * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
      */
+    #[\NoDiscard]
     public function mountFilesystemVia(\Closure $filesystem): self
     {
         return new self(
@@ -512,6 +530,7 @@ final class Config
      *
      * @param \Closure(Filesystem, self): Filesystem $map
      */
+    #[\NoDiscard]
     public function mapFilesystem(\Closure $map): self
     {
         $previous = $this->mapFilesystem;
@@ -542,6 +561,7 @@ final class Config
     /**
      * @psalm-mutation-free
      */
+    #[\NoDiscard]
     public function handleSignalsVia(Handler $handler): self
     {
         return new self(
@@ -567,6 +587,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function clock(): Clock
     {
         return ($this->mapClock)($this->clock, $this);
@@ -577,6 +598,7 @@ final class Config
      *
      * @return Attempt<Filesystem>
      */
+    #[\NoDiscard]
     public function filesystem(Path $path): Attempt
     {
         return ($this->filesystem)($path, $this)->map(
@@ -587,6 +609,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function io(): IO
     {
         return $this->io;
@@ -595,6 +618,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function halt(): Halt
     {
         return ($this->mapHalt)($this->halt, $this);
@@ -603,6 +627,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function environmentPath(): EnvironmentPath
     {
         return $this->path;
@@ -611,6 +636,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function httpTransport(): HttpTransport
     {
         $transport = $this->httpTransport ?? Curl::of(
@@ -624,6 +650,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function sql(Url $url): AccessLayer\Connection
     {
         return ($this->mapSql)(
@@ -635,6 +662,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function serverControl(Control\Server $server): Control\Server
     {
         return ($this->mapServerControl)($server, $this);
@@ -643,6 +671,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function serverStatus(Status\Server $server): Status\Server
     {
         return ($this->mapServerStatus)($server, $this);
@@ -651,6 +680,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function fileWatch(Watch $watch): Watch
     {
         return ($this->mapFileWatch)($watch, $this);
@@ -659,6 +689,7 @@ final class Config
     /**
      * @internal
      */
+    #[\NoDiscard]
     public function signalsHandler(): Handler
     {
         return $this->signals;

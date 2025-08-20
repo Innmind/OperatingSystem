@@ -22,6 +22,7 @@ final class Sockets
     /**
      * @internal
      */
+    #[\NoDiscard]
     public static function of(Config $config): self
     {
         return new self($config);
@@ -32,6 +33,7 @@ final class Sockets
      *
      * @return Attempt<Server>
      */
+    #[\NoDiscard]
     public function open(Address $address): Attempt
     {
         return $this
@@ -47,6 +49,7 @@ final class Sockets
      *
      * @return Attempt<Server>
      */
+    #[\NoDiscard]
     public function takeOver(Address $address): Attempt
     {
         return $this
@@ -60,6 +63,7 @@ final class Sockets
     /**
      * @return Attempt<Client>
      */
+    #[\NoDiscard]
     public function connectTo(Address $address): Attempt
     {
         return $this

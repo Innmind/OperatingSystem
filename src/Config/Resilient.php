@@ -6,10 +6,14 @@ namespace Innmind\OperatingSystem\Config;
 use Innmind\OperatingSystem\Config;
 use Innmind\HttpTransport\ExponentialBackoff;
 
+/**
+ * @psalm-immutable
+ */
 enum Resilient
 {
     case instance;
 
+    #[\NoDiscard]
     public function __invoke(Config $config): Config
     {
         return $config
@@ -21,7 +25,10 @@ enum Resilient
 
     /**
      * This config helps retry certain _safe_ operations on remote systems
+     *
+     * @psalm-pure
      */
+    #[\NoDiscard]
     public static function new(): self
     {
         return self::instance;
