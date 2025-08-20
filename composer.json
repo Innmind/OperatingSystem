@@ -22,7 +22,7 @@
         "innmind/filesystem": "~8.1",
         "innmind/http-transport": "~8.0",
         "innmind/time-warp": "~4.0",
-        "innmind/signals": "~3.0",
+        "innmind/signals": "~4.0",
         "innmind/file-watch": "~5.0",
         "formal/access-layer": "~4.0",
         "innmind/io": "~3.2",

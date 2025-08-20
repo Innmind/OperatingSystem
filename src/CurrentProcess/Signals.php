@@ -23,7 +23,7 @@ final class Signals
      */
     public static function of(): self
     {
-        return new self(new Handler);
+        return new self(Handler::main());
     }
 
     /**

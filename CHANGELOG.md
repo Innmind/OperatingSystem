@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Requires `innmind/signals:~4.0`
+
 ## 6.1.0 - 2025-08-17
 
 ### Added
