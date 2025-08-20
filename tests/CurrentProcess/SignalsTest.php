@@ -14,7 +14,7 @@ class SignalsTest extends TestCase
 {
     public function testListen()
     {
-        $signals = Signals::of(new Handler);
+        $signals = Signals::of(Handler::main());
         $order = [];
         $count = 0;
 
@@ -39,7 +39,7 @@ class SignalsTest extends TestCase
 
     public function testRemoveSignal()
     {
-        $signals = Signals::of(new Handler);
+        $signals = Signals::of(Handler::main());
         $order = [];
         $count = 0;
 

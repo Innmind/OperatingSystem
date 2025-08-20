@@ -14,6 +14,9 @@ use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class Logger
 {
     private function __construct(
@@ -21,6 +24,7 @@ final class Logger
     ) {
     }
 
+    #[\NoDiscard]
     public function __invoke(Config $config): Config
     {
         return $config
@@ -55,6 +59,10 @@ final class Logger
             ));
     }
 
+    /**
+     * @psalm-pure
+     */
+    #[\NoDiscard]
     public static function psr(LoggerInterface $logger): self
     {
         return new self($logger);

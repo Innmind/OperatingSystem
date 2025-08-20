@@ -35,11 +35,13 @@ final class Remote
     /**
      * @internal
      */
+    #[\NoDiscard]
     public static function of(Server $server, Config $config): self
     {
         return new self($server, $config);
     }
 
+    #[\NoDiscard]
     public function ssh(Url $server): Server
     {
         $port = null;
@@ -61,6 +63,7 @@ final class Remote
     /**
      * @return Attempt<Client>
      */
+    #[\NoDiscard]
     public function socket(Transport $transport, Authority $authority): Attempt
     {
         return $this
@@ -71,11 +74,13 @@ final class Remote
             ->internet($transport, $authority);
     }
 
+    #[\NoDiscard]
     public function http(): HttpTransport
     {
         return $this->http ??= $this->config->httpTransport();
     }
 
+    #[\NoDiscard]
     public function sql(Url $server): Connection
     {
         return $this->config->sql($server);

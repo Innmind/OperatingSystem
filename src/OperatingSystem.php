@@ -29,6 +29,7 @@ final class OperatingSystem
         $this->config = $config;
     }
 
+    #[\NoDiscard]
     public static function new(?Config $config = null): self
     {
         return new self($config ?? Config::new());
@@ -40,16 +41,19 @@ final class OperatingSystem
      *
      * @param callable(Config): Config $map
      */
+    #[\NoDiscard]
     public function map(callable $map): self
     {
         return new self($map($this->config));
     }
 
+    #[\NoDiscard]
     public function clock(): Clock
     {
         return $this->config->clock();
     }
 
+    #[\NoDiscard]
     public function filesystem(): Filesystem
     {
         return $this->filesystem ??= Filesystem::of(
@@ -58,6 +62,7 @@ final class OperatingSystem
         );
     }
 
+    #[\NoDiscard]
     public function status(): ServerStatus
     {
         return $this->status ??= $this->config->serverStatus(
@@ -69,6 +74,7 @@ final class OperatingSystem
         );
     }
 
+    #[\NoDiscard]
     public function control(): ServerControl
     {
         return $this->control ??= $this->config->serverControl(
@@ -80,16 +86,19 @@ final class OperatingSystem
         );
     }
 
+    #[\NoDiscard]
     public function ports(): Ports
     {
         return $this->ports ??= Ports::of($this->config);
     }
 
+    #[\NoDiscard]
     public function sockets(): Sockets
     {
         return $this->sockets ??= Sockets::of($this->config);
     }
 
+    #[\NoDiscard]
     public function remote(): Remote
     {
         return $this->remote ??= Remote::of(
@@ -98,8 +107,12 @@ final class OperatingSystem
         );
     }
 
+    #[\NoDiscard]
     public function process(): CurrentProcess
     {
-        return $this->process ??= CurrentProcess::of($this->config->halt());
+        return $this->process ??= CurrentProcess::of(
+            $this->config->halt(),
+            $this->config->signalsHandler(),
+        );
     }
 }
