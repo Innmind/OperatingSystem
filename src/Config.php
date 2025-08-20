@@ -16,6 +16,7 @@ use Innmind\Filesystem\{
 };
 use Innmind\FileWatch\Watch;
 use Innmind\Server\Status\EnvironmentPath;
+use Innmind\Signals\Handler;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Url\{
@@ -55,6 +56,7 @@ final class Config
         private \Closure $mapFileWatch,
         private \Closure $filesystem,
         private \Closure $mapFilesystem,
+        private Handler $signals,
     ) {
     }
 
@@ -86,6 +88,7 @@ final class Config
                 )->withCaseSensitivity(CaseSensitivity::sensitive),
             ),
             static fn(Filesystem $filesystem, self $config) => $filesystem,
+            Handler::main(),
         );
     }
 
@@ -121,6 +124,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -152,6 +156,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -176,6 +181,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -208,6 +214,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -232,6 +239,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -256,6 +264,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -280,6 +289,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -311,6 +321,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -337,6 +348,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -368,6 +380,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -399,6 +412,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -430,6 +444,7 @@ final class Config
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -461,6 +476,7 @@ final class Config
             ),
             $this->filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -487,6 +503,7 @@ final class Config
             $this->mapFileWatch,
             $filesystem,
             $this->mapFilesystem,
+            $this->signals,
         );
     }
 
@@ -518,6 +535,32 @@ final class Config
                 $previous($filesystem, $config),
                 $config,
             ),
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    public function handleSignalsVia(Handler $handler): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $handler,
         );
     }
 
@@ -611,5 +654,13 @@ final class Config
     public function fileWatch(Watch $watch): Watch
     {
         return ($this->mapFileWatch)($watch, $this);
+    }
+
+    /**
+     * @internal
+     */
+    public function signalsHandler(): Handler
+    {
+        return $this->signals;
     }
 }
