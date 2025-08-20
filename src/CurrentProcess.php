@@ -29,6 +29,7 @@ final class CurrentProcess
     /**
      * @internal
      */
+    #[\NoDiscard]
     public static function of(Halt $halt, Handler $handler): self
     {
         return new self($halt, $handler);
@@ -37,6 +38,7 @@ final class CurrentProcess
     /**
      * @return Attempt<Pid>
      */
+    #[\NoDiscard]
     public function id(): Attempt
     {
         $pid = \getmypid();
@@ -48,6 +50,7 @@ final class CurrentProcess
         };
     }
 
+    #[\NoDiscard]
     public function signals(): Signals
     {
         return $this->signals ??= Signals::of($this->handler);
@@ -56,11 +59,13 @@ final class CurrentProcess
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function halt(Period $period): Attempt
     {
         return ($this->halt)($period);
     }
 
+    #[\NoDiscard]
     public function memory(): Bytes
     {
         /** @psalm-suppress ArgumentTypeCoercion */

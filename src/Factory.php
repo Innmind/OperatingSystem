@@ -5,6 +5,7 @@ namespace Innmind\OperatingSystem;
 
 final class Factory
 {
+    #[\NoDiscard]
     public static function build(?Config $config = null): OperatingSystem
     {
         switch (\PHP_OS) {

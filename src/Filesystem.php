@@ -41,6 +41,7 @@ final class Filesystem
     /**
      * @internal
      */
+    #[\NoDiscard]
     public static function of(Processes $processes, Config $config): self
     {
         return new self($processes, $config);
@@ -49,6 +50,7 @@ final class Filesystem
     /**
      * @return Attempt<Adapter>
      */
+    #[\NoDiscard]
     public function mount(Path $path): Attempt
     {
         /**
@@ -71,6 +73,7 @@ final class Filesystem
             });
     }
 
+    #[\NoDiscard]
     public function contains(Path $path): bool
     {
         if (!\file_exists($path->toString())) {
@@ -87,6 +90,7 @@ final class Filesystem
     /**
      * @return Maybe<mixed> Return the value returned by the file or nothing if the file doesn't exist
      */
+    #[\NoDiscard]
     public function require(Path $path): Maybe
     {
         $path = $path->toString();
@@ -104,6 +108,7 @@ final class Filesystem
         return Maybe::just(require $path);
     }
 
+    #[\NoDiscard]
     public function watch(Path $path): Ping
     {
         return ($this->watch)($path);
@@ -121,6 +126,7 @@ final class Filesystem
      *
      * @return Attempt<Content>
      */
+    #[\NoDiscard]
     public function temporary(Sequence $chunks): Attempt
     {
         return $this

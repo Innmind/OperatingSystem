@@ -23,6 +23,7 @@ final class Ports
     /**
      * @internal
      */
+    #[\NoDiscard]
     public static function of(Config $config): self
     {
         return new self($config);
@@ -31,6 +32,7 @@ final class Ports
     /**
      * @return Attempt<Server>
      */
+    #[\NoDiscard]
     public function open(Transport $transport, IP $ip, Port $port): Attempt
     {
         return $this
