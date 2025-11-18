@@ -76,6 +76,7 @@ final class Filesystem
     #[\NoDiscard]
     public function contains(Path $path): bool
     {
+        // todo find a way to not directly access the filesystem
         if (!\file_exists($path->toString())) {
             return false;
         }
