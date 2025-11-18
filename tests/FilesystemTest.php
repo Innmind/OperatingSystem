@@ -9,7 +9,7 @@ use Innmind\OperatingSystem\{
     Factory,
 };
 use Innmind\Filesystem\{
-    Adapter\Filesystem as FilesystemAdapter,
+    Adapter,
     File\Content,
 };
 use Innmind\Url\Path;
@@ -40,7 +40,7 @@ class FilesystemTest extends TestCase
 
         $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
-        $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
+        $this->assertInstanceOf(Adapter::class, $adapter);
     }
 
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()

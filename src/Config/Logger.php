@@ -9,7 +9,7 @@ use Innmind\Server\Status;
 use Innmind\TimeContinuum\Clock;
 use Innmind\FileWatch\Watch;
 use Innmind\Filesystem\Adapter as Filesystem;
-use Innmind\HttpTransport;
+use Innmind\HttpTransport\Transport;
 use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
@@ -28,23 +28,23 @@ final class Logger
     public function __invoke(Config $config): Config
     {
         return $config
-            ->mapHalt(fn($halt) => Halt\Logger::psr(
+            ->mapHalt(fn($halt) => Halt::logger(
                 $halt,
                 $this->logger,
             ))
-            ->mapHttpTransport(fn($transport) => HttpTransport\Logger::psr(
+            ->mapHttpTransport(fn($transport) => Transport::logger(
                 $transport,
                 $this->logger,
             ))
-            ->mapSQLConnection(fn($connection) => Connection\Logger::psr(
+            ->mapSQLConnection(fn($connection) => Connection::logger(
                 $connection,
                 $this->logger,
             ))
-            ->mapServerControl(fn($server) => Control\Servers\Logger::psr(
+            ->mapServerControl(fn($server) => Control\Server::logger(
                 $server,
                 $this->logger,
             ))
-            ->mapServerStatus(fn($server) => Status\Servers\Logger::of(
+            ->mapServerStatus(fn($server) => Status\Server::logger(
                 $server,
                 $this->logger,
             ))
@@ -53,7 +53,7 @@ final class Logger
                 $watch,
                 $this->logger,
             ))
-            ->mapFilesystem(fn($filesystem) => Filesystem\Logger::psr(
+            ->mapFilesystem(fn($filesystem) => Filesystem::logger(
                 $filesystem,
                 $this->logger,
             ));

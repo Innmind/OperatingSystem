@@ -6,13 +6,10 @@ namespace Innmind\OperatingSystem;
 use Innmind\Server\Control;
 use Innmind\Server\Status;
 use Innmind\TimeContinuum\Clock;
-use Innmind\HttpTransport\{
-    Transport as HttpTransport,
-    Curl,
-};
+use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\{
     Adapter as Filesystem,
-    CaseSensitivity
+    CaseSensitivity,
 };
 use Innmind\FileWatch\Watch;
 use Innmind\Server\Status\EnvironmentPath;
@@ -69,7 +66,7 @@ final class Config
             Clock::live(),
             static fn(Clock $clock) => $clock,
             IO::fromAmbientAuthority(),
-            Halt\Usleep::new(),
+            Halt::new(),
             static fn(Halt $halt, self $config) => $halt,
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
                 false => '',
@@ -77,18 +74,15 @@ final class Config
             }),
             null,
             static fn(HttpTransport $transport, self $config) => $transport,
-            static fn(Url $server) => AccessLayer\Connection\Lazy::of(
-                static fn() => AccessLayer\Connection\PDO::of($server),
-            ),
+            static fn(Url $server) => AccessLayer\Connection::new($server)->unwrap(),
             static fn(AccessLayer\Connection $connection, self $config) => $connection,
             static fn(Control\Server $server, self $config) => $server,
             static fn(Status\Server $server, self $config) => $server,
             static fn(Watch $watch, self $config) => $watch,
-            static fn(Path $path, self $config) => Attempt::of(
-                static fn() => Filesystem\Filesystem::mount(
-                    $path,
-                    $config->io(),
-                )->withCaseSensitivity(CaseSensitivity::sensitive),
+            static fn(Path $path, self $config) => Filesystem::mount(
+                $path,
+                CaseSensitivity::sensitive,
+                $config->io(),
             ),
             static fn(Filesystem $filesystem, self $config) => $filesystem,
             Handler::main(),
@@ -639,7 +633,7 @@ final class Config
     #[\NoDiscard]
     public function httpTransport(): HttpTransport
     {
-        $transport = $this->httpTransport ?? Curl::of(
+        $transport = $this->httpTransport ?? HttpTransport::curl(
             $this->clock,
             $this->io,
         );

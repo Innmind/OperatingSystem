@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Server\Control\{
-    Server,
-    Servers,
-};
+use Innmind\Server\Control\Server;
 use Innmind\IO\{
     Sockets\Clients\Client,
     Sockets\Internet\Transport,
@@ -51,7 +48,7 @@ final class Remote
         }
 
         return $this->config->serverControl(
-            Servers\Remote::of(
+            Server::remote(
                 $this->server,
                 $server->authority()->userInformation()->user(),
                 $server->authority()->host(),

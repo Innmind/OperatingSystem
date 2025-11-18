@@ -11,12 +11,7 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\{
     Server,
-    Servers,
-    Server\Processes,
-    Server\Volumes,
     Server\Command,
-    Server\Process\Pid,
-    Server\Signal,
 };
 use Innmind\Url\{
     Url,
@@ -28,7 +23,6 @@ use Innmind\IO\Sockets\{
 };
 use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
-use Innmind\Immutable\Attempt;
 use Formal\AccessLayer\Connection;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -51,7 +45,7 @@ class RemoteTest extends TestCase
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
-        $this->assertInstanceOf(Servers\Remote::class, $remoteServer);
+        $this->assertInstanceOf(Server::class, $remoteServer);
         $remoteServer
             ->processes()
             ->execute(Command::foreground('ls'))
@@ -67,7 +61,7 @@ class RemoteTest extends TestCase
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
-        $this->assertInstanceOf(Servers\Logger::class, $remoteServer);
+        $this->assertInstanceOf(Server::class, $remoteServer);
         $remoteServer
             ->processes()
             ->execute(Command::foreground('ls'))
@@ -83,7 +77,7 @@ class RemoteTest extends TestCase
 
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
 
-        $this->assertInstanceOf(Servers\Remote::class, $remoteServer);
+        $this->assertInstanceOf(Server::class, $remoteServer);
         $remoteServer->processes()->execute(Command::foreground('ls'));
     }
 
@@ -146,60 +140,17 @@ class RemoteTest extends TestCase
 
     private function server(string ...$commands): Server
     {
-        return new class($this->processes(), $this, $commands) implements Server {
-            private $inner;
+        $processes = Factory::build()->control()->processes();
 
-            public function __construct(
-                private $processes,
-                private $test,
-                private $commands,
-            ) {
-            }
+        return Server::via(function($command) use (&$commands, $processes) {
+            $expected = \array_shift($commands);
+            $this->assertNotNull($expected);
+            $this->assertSame(
+                $expected,
+                $command->toString(),
+            );
 
-            public function processes(): Processes
-            {
-                return $this->inner ??= new class($this->processes, $this->test, $this->commands) implements Processes {
-                    public function __construct(
-                        private $processes,
-                        private $test,
-                        private $commands,
-                    ) {
-                    }
-
-                    public function execute(Command $command): Attempt
-                    {
-                        $expected = \array_shift($this->commands);
-                        $this->test->assertNotNull($expected);
-                        $this->test->assertSame(
-                            $expected,
-                            $command->toString(),
-                        );
-
-                        return $this->processes->execute(Command::foreground('echo'));
-                    }
-
-                    public function kill(Pid $pid, Signal $signal): Attempt
-                    {
-                    }
-                };
-            }
-
-            public function volumes(): Volumes
-            {
-            }
-
-            public function reboot(): Attempt
-            {
-            }
-
-            public function shutdown(): Attempt
-            {
-            }
-        };
-    }
-
-    private function processes(): Processes
-    {
-        return Factory::build()->control()->processes();
+            return $processes->execute(Command::foreground('echo'));
+        });
     }
 }

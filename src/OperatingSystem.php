@@ -7,10 +7,7 @@ use Innmind\Server\Status\{
     Server as ServerStatus,
     ServerFactory,
 };
-use Innmind\Server\Control\{
-    Server as ServerControl,
-    Servers,
-};
+use Innmind\Server\Control\Server as ServerControl;
 use Innmind\TimeContinuum\Clock;
 
 final class OperatingSystem
@@ -78,7 +75,7 @@ final class OperatingSystem
     public function control(): ServerControl
     {
         return $this->control ??= $this->config->serverControl(
-            Servers\Unix::of(
+            ServerControl::new(
                 $this->clock(),
                 $this->config->io(),
                 $this->config->halt(),

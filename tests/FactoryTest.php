@@ -10,14 +10,13 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Filesystem\{
-    Adapter\Filesystem,
+    Adapter,
     File,
     File\Content,
     Directory,
     CaseSensitivity,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Attempt;
 use Symfony\Component\Filesystem\Filesystem as FS;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -53,11 +52,10 @@ class FactoryTest extends TestCase
 
         $os = Factory::build(
             Config::new()->mountFilesystemVia(
-                static fn($path, $config) => Attempt::of(
-                    static fn() => Filesystem::mount(
-                        $path,
-                        $config->io(),
-                    )->withCaseSensitivity(CaseSensitivity::insensitive),
+                static fn($path, $config) => Adapter::mount(
+                    $path,
+                    CaseSensitivity::insensitive,
+                    $config->io(),
                 ),
             ),
         );

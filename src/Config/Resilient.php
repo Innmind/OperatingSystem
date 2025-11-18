@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\OperatingSystem\Config;
 
 use Innmind\OperatingSystem\Config;
-use Innmind\HttpTransport\ExponentialBackoff;
+use Innmind\HttpTransport\Transport;
 
 /**
  * @psalm-immutable
@@ -17,7 +17,7 @@ enum Resilient
     public function __invoke(Config $config): Config
     {
         return $config
-            ->mapHttpTransport(static fn($transport, $config) => ExponentialBackoff::of(
+            ->mapHttpTransport(static fn($transport, $config) => Transport::exponentialBackoff(
                 $transport,
                 $config->halt(),
             ));

@@ -33,7 +33,7 @@ class CurrentProcessTest extends TestCase
     public function testId()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 
@@ -66,7 +66,7 @@ class CurrentProcessTest extends TestCase
     public function testSignals()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 
@@ -101,7 +101,7 @@ class CurrentProcessTest extends TestCase
     public function testMemory()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 
