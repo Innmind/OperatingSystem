@@ -5,6 +5,7 @@
 ### Changed
 
 - Requires PHP `8.4`
+- `Innmind\OperatingSystem\Remote::sql()` now returns an `Innmind\Immutable\Attempt`
 
 ## 6.2.0 - 2025-08-10
 

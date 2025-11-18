@@ -23,7 +23,7 @@ use Innmind\IO\Sockets\{
 };
 use Innmind\IP\IPv4;
 use Innmind\HttpTransport\Transport as HttpTransport;
-use Formal\AccessLayer\Connection;
+use Innmind\Immutable\Attempt;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     PHPUnit\Framework\TestCase,
@@ -134,7 +134,7 @@ class RemoteTest extends TestCase
             ->prove(function($server, $os) {
                 $sql = $os->remote()->sql($server);
 
-                $this->assertInstanceOf(Connection::class, $sql);
+                $this->assertInstanceOf(Attempt::class, $sql);
             });
     }
 

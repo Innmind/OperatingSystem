@@ -77,8 +77,11 @@ final class Remote
         return $this->http ??= $this->config->httpTransport();
     }
 
+    /**
+     * @return Attempt<Connection>
+     */
     #[\NoDiscard]
-    public function sql(Url $server): Connection
+    public function sql(Url $server): Attempt
     {
         return $this->config->sql($server);
     }

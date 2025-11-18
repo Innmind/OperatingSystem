@@ -31,7 +31,7 @@ final class Config
      * @param \Closure(Clock, self): Clock $mapClock
      * @param \Closure(Halt, self): Halt $mapHalt
      * @param \Closure(HttpTransport, self): HttpTransport $mapHttpTransport
-     * @param \Closure(Url): AccessLayer\Connection $sql
+     * @param \Closure(Url): Attempt<AccessLayer\Connection> $sql
      * @param \Closure(AccessLayer\Connection, self): AccessLayer\Connection $mapSql
      * @param \Closure(Control\Server, self): Control\Server $mapServerControl
      * @param \Closure(Status\Server, self): Status\Server $mapServerStatus
@@ -74,7 +74,7 @@ final class Config
             }),
             null,
             static fn(HttpTransport $transport, self $config) => $transport,
-            static fn(Url $server) => AccessLayer\Connection::new($server)->unwrap(),
+            static fn(Url $server) => AccessLayer\Connection::new($server),
             static fn(AccessLayer\Connection $connection, self $config) => $connection,
             static fn(Control\Server $server, self $config) => $server,
             static fn(Status\Server $server, self $config) => $server,
@@ -334,7 +334,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Url): AccessLayer\Connection $sql
+     * @param \Closure(Url): Attempt<AccessLayer\Connection> $sql
      */
     #[\NoDiscard]
     public function openSQLConnectionVia(\Closure $sql): self
@@ -643,13 +643,17 @@ final class Config
 
     /**
      * @internal
+     *
+     * @return Attempt<AccessLayer\Connection>
      */
     #[\NoDiscard]
-    public function sql(Url $url): AccessLayer\Connection
+    public function sql(Url $url): Attempt
     {
-        return ($this->mapSql)(
-            ($this->sql)($url),
-            $this,
+        $map = $this->mapSql;
+        $self = $this;
+
+        return ($this->sql)($url)->map(
+            static fn($connection) => $map($connection, $self),
         );
     }
 
