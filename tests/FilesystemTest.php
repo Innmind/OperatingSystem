@@ -79,6 +79,9 @@ class FilesystemTest extends TestCase
         \mkdir('/tmp/some-dir/');
         $this->assertTrue($filesystem->contains(Path::of('/tmp/some-dir/')));
         \rmdir('/tmp/some-dir/');
+        \file_put_contents('/tmp/foo', 'data');
+        $this->assertFalse($filesystem->contains(Path::of('/tmp/foo/')));
+        \unlink('/tmp/foo');
     }
 
     public function testWatch()

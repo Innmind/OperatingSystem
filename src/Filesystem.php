@@ -6,6 +6,8 @@ namespace Innmind\OperatingSystem;
 use Innmind\Filesystem\{
     Adapter,
     File\Content,
+    Directory,
+    Name,
 };
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
@@ -76,16 +78,28 @@ final class Filesystem
     #[\NoDiscard]
     public function contains(Path $path): bool
     {
-        // todo find a way to not directly access the filesystem
-        if (!\file_exists($path->toString())) {
-            return false;
+        $dir = \rtrim(\dirname($path->toString()), '/').'/';
+        $name = \basename($path->toString());
+
+        $exists = $this
+            ->config
+            ->filesystem(Path::of($dir))
+            ->maybe();
+
+        // empty when the path === '/'
+        if ($name !== '') {
+            $exists = $exists
+                ->flatMap(static fn($adapter) => $adapter->get(Name::of($name)))
+                ->filter(static fn($file) => match (true) {
+                    $path->directory() && !($file instanceof Directory) => false,
+                    default => true,
+                });
         }
 
-        if ($path->directory() && !\is_dir($path->toString())) {
-            return false;
-        }
-
-        return true;
+        return $exists->match(
+            static fn() => true,
+            static fn() => false,
+        );
     }
 
     /**

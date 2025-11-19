@@ -15,6 +15,7 @@ use Innmind\Filesystem\{
     File\Content,
     Directory,
     CaseSensitivity,
+    Recover,
 };
 use Innmind\Url\Path;
 use Symfony\Component\Filesystem\Filesystem as FS;
@@ -62,6 +63,7 @@ class FactoryTest extends TestCase
         $adapter = $os
             ->filesystem()
             ->mount(Path::of($path))
+            ->recover(Recover::mount(...))
             ->unwrap();
         $adapter->add(
             $directory = Directory::named('0')

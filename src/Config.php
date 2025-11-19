@@ -10,6 +10,7 @@ use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\{
     Adapter as Filesystem,
     CaseSensitivity,
+    Exception\RecoverMount,
 };
 use Innmind\FileWatch\Watch;
 use Innmind\Server\Status\EnvironmentPath;
@@ -595,9 +596,21 @@ final class Config
     #[\NoDiscard]
     public function filesystem(Path $path): Attempt
     {
-        return ($this->filesystem)($path, $this)->map(
-            fn($adapter) => ($this->mapFilesystem)($adapter, $this),
+        $map = fn(Filesystem $adapter): Filesystem => ($this->mapFilesystem)(
+            $adapter,
+            $this,
         );
+
+        return ($this->filesystem)($path, $this)
+            ->mapError(static fn($e) => match (true) {
+                $e instanceof RecoverMount => new RecoverMount(
+                    static fn() => $e
+                        ->recover()
+                        ->map($map),
+                ),
+                default => $e,
+            })
+            ->map($map);
     }
 
     /**
