@@ -3,19 +3,16 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Server\Status\{
-    Server as ServerStatus,
-    ServerFactory,
-};
-use Innmind\Server\Control\Server as ServerControl;
+use Innmind\Server\Status;
+use Innmind\Server\Control;
 use Innmind\TimeContinuum\Clock;
 
 final class OperatingSystem
 {
     private Config $config;
     private ?Filesystem $filesystem = null;
-    private ?ServerStatus $status = null;
-    private ?ServerControl $control = null;
+    private ?Status\Server $status = null;
+    private ?Control\Server $control = null;
     private ?Ports $ports = null;
     private ?Sockets $sockets = null;
     private ?Remote $remote = null;
@@ -60,19 +57,15 @@ final class OperatingSystem
     }
 
     #[\NoDiscard]
-    public function status(): ServerStatus
+    public function status(): Status\Server
     {
         return $this->status ??= $this->config->serverStatus(
-            ServerFactory::build(
-                $this->clock(),
-                $this->control(),
-                $this->config->environmentPath(),
-            ),
+            $this->control(),
         );
     }
 
     #[\NoDiscard]
-    public function control(): ServerControl
+    public function control(): Control\Server
     {
         return $this->control ??= $this->config->serverControl();
     }

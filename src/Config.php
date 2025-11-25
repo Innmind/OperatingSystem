@@ -3,8 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Server\Control;
-use Innmind\Server\Status;
+use Innmind\Server\{
+    Control,
+    Status,
+    Status\EnvironmentPath,
+    Status\ServerFactory,
+};
 use Innmind\TimeContinuum\Clock;
 use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\{
@@ -13,7 +17,6 @@ use Innmind\Filesystem\{
     Exception\RecoverMount,
 };
 use Innmind\FileWatch\Watch;
-use Innmind\Server\Status\EnvironmentPath;
 use Innmind\Signals\Handler;
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
@@ -53,6 +56,7 @@ final class Config
         private \Closure $mapSql,
         private ?Control\Server $serverControl,
         private \Closure $mapServerControl,
+        private ?Status\Server $serverStatus,
         private \Closure $mapServerStatus,
         private \Closure $mapFileWatch,
         private \Closure $filesystem,
@@ -80,6 +84,7 @@ final class Config
             static fn(AccessLayer\Connection $connection, self $config) => $connection,
             null,
             static fn(Control\Server $server, self $config) => $server,
+            null,
             static fn(Status\Server $server, self $config) => $server,
             static fn(Watch $watch, self $config) => $watch,
             static fn(Path $path, self $config) => Filesystem::mount(
@@ -123,6 +128,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -157,6 +163,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -184,6 +191,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -219,6 +227,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -246,6 +255,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -273,6 +283,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -300,6 +311,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -334,6 +346,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -363,6 +376,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -397,6 +411,7 @@ final class Config
             ),
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -424,6 +439,7 @@ final class Config
             $this->mapSql,
             $server,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -458,6 +474,35 @@ final class Config
                 $previous($server, $config),
                 $config,
             ),
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useServerStatus(Status\Server $server): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $server,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -489,6 +534,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             static fn(Status\Server $server, self $config) => $map(
                 $previous($server, $config),
                 $config,
@@ -523,6 +569,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             static fn(Watch $watch, self $config) => $map(
                 $previous($watch, $config),
@@ -555,6 +602,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $filesystem,
@@ -586,6 +634,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -616,6 +665,7 @@ final class Config
             $this->mapSql,
             $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
             $this->mapFileWatch,
             $this->filesystem,
@@ -735,9 +785,16 @@ final class Config
      * @internal
      */
     #[\NoDiscard]
-    public function serverStatus(Status\Server $server): Status\Server
+    public function serverStatus(Control\Server $server): Status\Server
     {
-        return ($this->mapServerStatus)($server, $this);
+        return ($this->mapServerStatus)(
+            $this->serverStatus ?? ServerFactory::build(
+                $this->clock(),
+                $server,
+                $this->path,
+            ),
+            $this,
+        );
     }
 
     /**

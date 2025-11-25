@@ -5,6 +5,7 @@
 ### Added
 
 - `Innmind\OperatingSystem\Config::useServerControl()`
+- `Innmind\OperatingSystem\Config::useServerStatus()`
 
 ### Changed
 
