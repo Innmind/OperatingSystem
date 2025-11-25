@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Innmind\OperatingSystem\Config::useServerControl()`
+
 ### Changed
 
 - Requires PHP `8.4`

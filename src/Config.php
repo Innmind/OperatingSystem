@@ -51,6 +51,7 @@ final class Config
         private \Closure $mapHttpTransport,
         private \Closure $sql,
         private \Closure $mapSql,
+        private ?Control\Server $serverControl,
         private \Closure $mapServerControl,
         private \Closure $mapServerStatus,
         private \Closure $mapFileWatch,
@@ -77,6 +78,7 @@ final class Config
             static fn(HttpTransport $transport, self $config) => $transport,
             static fn(Url $server) => AccessLayer\Connection::new($server),
             static fn(AccessLayer\Connection $connection, self $config) => $connection,
+            null,
             static fn(Control\Server $server, self $config) => $server,
             static fn(Status\Server $server, self $config) => $server,
             static fn(Watch $watch, self $config) => $watch,
@@ -119,6 +121,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -152,6 +155,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -178,6 +182,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -212,6 +217,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -238,6 +244,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -264,6 +271,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -290,6 +298,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -323,6 +332,7 @@ final class Config
             ),
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -351,6 +361,7 @@ final class Config
             $this->mapHttpTransport,
             $sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -384,6 +395,34 @@ final class Config
                 $previous($connection, $config),
                 $config,
             ),
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->mapServerStatus,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useServerControl(Control\Server $server): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $server,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -414,6 +453,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             static fn(Control\Server $server, self $config) => $map(
                 $previous($server, $config),
                 $config,
@@ -447,6 +487,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             static fn(Status\Server $server, self $config) => $map(
                 $previous($server, $config),
@@ -480,6 +521,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             static fn(Watch $watch, self $config) => $map(
@@ -511,6 +553,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -541,6 +584,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -570,6 +614,7 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
             $this->mapServerStatus,
             $this->mapFileWatch,
@@ -674,9 +719,16 @@ final class Config
      * @internal
      */
     #[\NoDiscard]
-    public function serverControl(Control\Server $server): Control\Server
+    public function serverControl(): Control\Server
     {
-        return ($this->mapServerControl)($server, $this);
+        return ($this->mapServerControl)(
+            $this->serverControl ?? Control\Server::new(
+                $this->clock,
+                $this->io,
+                $this->halt(),
+            ),
+            $this,
+        );
     }
 
     /**

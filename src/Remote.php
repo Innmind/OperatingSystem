@@ -47,13 +47,11 @@ final class Remote
             $port = $server->authority()->port();
         }
 
-        return $this->config->serverControl(
-            Server::remote(
-                $this->server,
-                $server->authority()->userInformation()->user(),
-                $server->authority()->host(),
-                $port,
-            ),
+        return Server::remote(
+            $this->server,
+            $server->authority()->userInformation()->user(),
+            $server->authority()->host(),
+            $port,
         );
     }
 

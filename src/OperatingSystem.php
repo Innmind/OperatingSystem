@@ -74,13 +74,7 @@ final class OperatingSystem
     #[\NoDiscard]
     public function control(): ServerControl
     {
-        return $this->control ??= $this->config->serverControl(
-            ServerControl::new(
-                $this->clock(),
-                $this->config->io(),
-                $this->config->halt(),
-            ),
-        );
+        return $this->control ??= $this->config->serverControl();
     }
 
     #[\NoDiscard]
