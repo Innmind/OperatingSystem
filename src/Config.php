@@ -58,6 +58,7 @@ final class Config
         private \Closure $mapServerControl,
         private ?Status\Server $serverStatus,
         private \Closure $mapServerStatus,
+        private ?Watch $watch,
         private \Closure $mapFileWatch,
         private \Closure $filesystem,
         private \Closure $mapFilesystem,
@@ -86,6 +87,7 @@ final class Config
             static fn(Control\Server $server, self $config) => $server,
             null,
             static fn(Status\Server $server, self $config) => $server,
+            null,
             static fn(Watch $watch, self $config) => $watch,
             static fn(Path $path, self $config) => Filesystem::mount(
                 $path,
@@ -130,6 +132,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -165,6 +168,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -193,6 +197,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -229,6 +234,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -257,6 +263,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -285,6 +292,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -313,6 +321,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -348,6 +357,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -378,6 +388,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -413,6 +424,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -441,6 +453,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -476,6 +489,7 @@ final class Config
             ),
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -504,6 +518,7 @@ final class Config
             $this->mapServerControl,
             $server,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -539,6 +554,36 @@ final class Config
                 $previous($server, $config),
                 $config,
             ),
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useFileWatch(Watch $watch): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -571,6 +616,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             static fn(Watch $watch, self $config) => $map(
                 $previous($watch, $config),
                 $config,
@@ -604,6 +650,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $filesystem,
             $this->mapFilesystem,
@@ -636,6 +683,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             static fn(Filesystem $filesystem, self $config) => $map(
@@ -667,6 +715,7 @@ final class Config
             $this->mapServerControl,
             $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -801,9 +850,12 @@ final class Config
      * @internal
      */
     #[\NoDiscard]
-    public function fileWatch(Watch $watch): Watch
+    public function fileWatch(Control\Server\Processes $processes): Watch
     {
-        return ($this->mapFileWatch)($watch, $this);
+        return ($this->mapFileWatch)(
+            $this->watch ?? Watch::of($processes, $this->halt()),
+            $this,
+        );
     }
 
     /**

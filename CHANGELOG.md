@@ -6,6 +6,7 @@
 
 - `Innmind\OperatingSystem\Config::useServerControl()`
 - `Innmind\OperatingSystem\Config::useServerStatus()`
+- `Innmind\OperatingSystem\Config::useFileWatch()`
 
 ### Changed
 

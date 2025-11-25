@@ -13,7 +13,6 @@ use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\{
     Ping,
-    Factory,
     Watch,
 };
 use Innmind\Immutable\{
@@ -32,9 +31,7 @@ final class Filesystem
 
     private function __construct(Processes $processes, Config $config)
     {
-        $this->watch = $config->fileWatch(
-            Factory::build($processes, $config->halt()),
-        );
+        $this->watch = $config->fileWatch($processes);
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
