@@ -105,19 +105,11 @@ final class Filesystem
     #[\NoDiscard]
     public function require(Path $path): Maybe
     {
-        $path = $path->toString();
-
-        if (!\file_exists($path) || \is_dir($path)) {
-            /** @var Maybe<mixed> */
-            return Maybe::nothing();
-        }
-
-        /**
-         * @psalm-suppress UnresolvableInclude
-         * @psalm-suppress MixedArgument
-         * @var Maybe<mixed>
-         */
-        return Maybe::just(require $path);
+        return $this
+            ->config
+            ->io()
+            ->files()
+            ->require($path);
     }
 
     #[\NoDiscard]
