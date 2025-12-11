@@ -46,7 +46,7 @@ class RemoteTest extends TestCase
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
         $this->assertInstanceOf(Server::class, $remoteServer);
-        $remoteServer
+        $_ = $remoteServer
             ->processes()
             ->execute(Command::foreground('ls'))
             ->unwrap();
@@ -62,7 +62,7 @@ class RemoteTest extends TestCase
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps:42/'));
 
         $this->assertInstanceOf(Server::class, $remoteServer);
-        $remoteServer
+        $_ = $remoteServer
             ->processes()
             ->execute(Command::foreground('ls'))
             ->unwrap();
@@ -78,7 +78,10 @@ class RemoteTest extends TestCase
         $remoteServer = $remote->ssh(Url::of('ssh://user@my-vps/'));
 
         $this->assertInstanceOf(Server::class, $remoteServer);
-        $remoteServer->processes()->execute(Command::foreground('ls'));
+        $_ = $remoteServer
+            ->processes()
+            ->execute(Command::foreground('ls'))
+            ->unwrap();
     }
 
     public function testSocket()
