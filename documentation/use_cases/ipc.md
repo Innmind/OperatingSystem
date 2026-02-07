@@ -11,7 +11,7 @@ The later is the safest of the two (but not exempt of problems) and you will fin
     ```php
     use Innmind\IO\Sockets\Unix\Address;
     use Innmind\Url\Path;
-    use Innmind\TimeContinuum\Period;
+    use Innmind\Time\Period;
     use Innmind\Immutable\{
         Sequence,
         Str,

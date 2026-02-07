@@ -17,6 +17,7 @@ nav:
     - Logging all operations: advanced/logging.md
     - Extensions: advanced/extensions.md
   - Upgrade:
+    - upgrade/v6-to-v7.md
     - upgrade/v5-to-v6.md
 
 theme:

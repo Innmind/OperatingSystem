@@ -153,7 +153,7 @@ $os->process()->id()->unwrap();
 ### Want to pause the current process ?
 
 ```php
-use Innmind\TimeContinuum\Period;
+use Innmind\Time\Period;
 
 $os->process()->halt(Period::minute(1));
 ```
@@ -165,5 +165,5 @@ use Innmind\Signals\Signal;
 
 $os->process()->signals()->listen(Signal::terminate, function() {
     // handle the signal here
-});
+})->unwrap();
 ```

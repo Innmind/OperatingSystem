@@ -82,7 +82,7 @@ $installMariadb($os->remote()->ssh(Url::of('ssh://user@replication2')));
 
 ```php
 use Innmind\Server\Status\Server\Process;
-use Innmind\TimeContinuum\Format;
+use Innmind\Time\Format;
 
 $os->status()->processes()->all()->foreach(function(Process $process): void {
     \printf(
