@@ -12,11 +12,8 @@ use Innmind\Immutable\Attempt;
 
 final class Sockets
 {
-    private Config $config;
-
-    private function __construct(Config $config)
+    private function __construct(private Config $config)
     {
-        $this->config = $config;
     }
 
     /**

@@ -8,14 +8,15 @@ use Innmind\Signals\{
     Signal,
     Info,
 };
+use Innmind\Immutable\{
+    Attempt,
+    SideEffect,
+};
 
 final class Signals
 {
-    private Handler $handler;
-
-    private function __construct(Handler $handler)
+    private function __construct(private Handler $handler)
     {
-        $this->handler = $handler;
     }
 
     /**
@@ -28,17 +29,23 @@ final class Signals
 
     /**
      * @param callable(Signal, Info): void $listener
+     *
+     * @return Attempt<SideEffect>
      */
-    public function listen(Signal $signal, callable $listener): void
+    #[\NoDiscard]
+    public function listen(Signal $signal, callable $listener): Attempt
     {
-        $this->handler->listen($signal, $listener);
+        return $this->handler->listen($signal, $listener);
     }
 
     /**
      * @param callable(Signal, Info): void $listener
+     *
+     * @return Attempt<SideEffect>
      */
-    public function remove(callable $listener): void
+    #[\NoDiscard]
+    public function remove(callable $listener): Attempt
     {
-        $this->handler->remove($listener);
+        return $this->handler->remove($listener);
     }
 }

@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Server\Control\{
-    Server,
-    Servers,
-};
+use Innmind\Server\Control\Server;
 use Innmind\IO\{
     Sockets\Clients\Client,
     Sockets\Internet\Transport,
@@ -22,14 +19,11 @@ use Formal\AccessLayer\Connection;
 
 final class Remote
 {
-    private Server $server;
-    private Config $config;
-    private ?HttpTransport $http = null;
-
-    private function __construct(Server $server, Config $config)
-    {
-        $this->server = $server;
-        $this->config = $config;
+    private function __construct(
+        private Server $server,
+        private Config $config,
+        private ?HttpTransport $http = null,
+    ) {
     }
 
     /**
@@ -50,13 +44,11 @@ final class Remote
             $port = $server->authority()->port();
         }
 
-        return $this->config->serverControl(
-            Servers\Remote::of(
-                $this->server,
-                $server->authority()->userInformation()->user(),
-                $server->authority()->host(),
-                $port,
-            ),
+        return Server::remote(
+            $this->server,
+            $server->authority()->userInformation()->user(),
+            $server->authority()->host(),
+            $port,
         );
     }
 
@@ -80,8 +72,11 @@ final class Remote
         return $this->http ??= $this->config->httpTransport();
     }
 
+    /**
+     * @return Attempt<Connection>
+     */
     #[\NoDiscard]
-    public function sql(Url $server): Connection
+    public function sql(Url $server): Attempt
     {
         return $this->config->sql($server);
     }

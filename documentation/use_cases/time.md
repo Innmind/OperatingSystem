@@ -8,20 +8,20 @@ Directly accessing time in a PHP code is straightforward (either via `DateTime` 
 ## Accessing time
 
 ```php
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 
-$isItMonday = function(PointInTime $point): bool {
+$isItMonday = function(Point $point): bool {
     return $point->day()->ofWeek()->toInt() === 1; // 0 for sunday
 };
 
 $now = $os->clock()->now();
-$now instanceof PointInTime; // true
+$now instanceof Point; // true
 $isItMonday($now);
 ```
 
-To access the time you need to go through the system clock. The `PointInTime` objects are immutable it prevents you from having side effects.
+To access the time you need to go through the system clock. The `Point` objects are immutable it prevents you from having side effects.
 
-For such example you could write unit tests by manually instaciating instances of `PointInTime` and verify that the function works as expected for every day of the week.
+For such example you could write unit tests by manually instaciating instances of `Point` and verify that the function works as expected for every day of the week.
 
 ## Haltering the time in your app
 
@@ -29,16 +29,16 @@ In some cases you may want your program to wait for a certain amount of time bef
 
 ```php
 use Innmind\OperatingSystem\CurrentProcess;
-use Innmind\TimeContinuum\Period;
+use Innmind\Time\Period;
 
 $crawl = function(CurrentProcess $process, string ...$urls): void {
     foreach ($urls as $url) {
         // crawl the $url and do something with the result
 
         // here for the sake of simplicity we specify 1 second but it can be
-        // any instance of Innmind\TimeContinuum\Period and you could build
+        // any instance of Innmind\Time\Period and you could build
         // it from a robots.txt Crawler-Delay directive
-        $process->halt(Period::second(1));
+        $process->halt(Period::second(1))->unwrap();
     }
 };
 $crawl($os->process(), 'http://google.com', 'http://github.com');

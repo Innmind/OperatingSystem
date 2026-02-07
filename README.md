@@ -31,7 +31,7 @@ $os = Factory::build();
 
 ### Want to access the system clock ?
 
-`$os->clock()` will return an instance of [`Innmind\TimeContinuum\Clock`](https://github.com/innmind/timecontinuum#usage).
+`$os->clock()` will return an instance of [`Innmind\Time\Clock`](https://github.com/innmind/time#usage).
 
 ### Want to access the filesystem ?
 
@@ -153,7 +153,7 @@ $os->process()->id()->unwrap();
 ### Want to pause the current process ?
 
 ```php
-use Innmind\TimeContinuum\Period;
+use Innmind\Time\Period;
 
 $os->process()->halt(Period::minute(1));
 ```
@@ -165,5 +165,5 @@ use Innmind\Signals\Signal;
 
 $os->process()->signals()->listen(Signal::terminate, function() {
     // handle the signal here
-});
+})->unwrap();
 ```

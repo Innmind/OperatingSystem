@@ -16,7 +16,7 @@ The use case is not very common as you need to define a protocol and implement s
 use Innmind\Url\Authority\Port;
 use Innmind\IO\Sockets\Internet\Transport;
 use Innmind\IP\IPv4;
-use Innmind\TimeContinuum\Period;
+use Innmind\Time\Period;
 
 $server = $os
     ->ports()

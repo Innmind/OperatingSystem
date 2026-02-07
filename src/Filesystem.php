@@ -6,12 +6,13 @@ namespace Innmind\OperatingSystem;
 use Innmind\Filesystem\{
     Adapter,
     File\Content,
+    Directory,
+    Name,
 };
 use Innmind\Url\Path;
 use Innmind\Server\Control\Server\Processes;
 use Innmind\FileWatch\{
     Ping,
-    Factory,
     Watch,
 };
 use Innmind\Immutable\{
@@ -30,9 +31,7 @@ final class Filesystem
 
     private function __construct(Processes $processes, Config $config)
     {
-        $this->watch = $config->fileWatch(
-            Factory::build($processes, $config->halt()),
-        );
+        $this->watch = $config->fileWatch($processes);
         $this->config = $config;
         /** @var \WeakMap<Adapter, string> */
         $this->mounted = new \WeakMap;
@@ -76,15 +75,28 @@ final class Filesystem
     #[\NoDiscard]
     public function contains(Path $path): bool
     {
-        if (!\file_exists($path->toString())) {
-            return false;
+        $dir = \rtrim(\dirname($path->toString()), '/').'/';
+        $name = \basename($path->toString());
+
+        $exists = $this
+            ->config
+            ->filesystem(Path::of($dir))
+            ->maybe();
+
+        // empty when the path === '/'
+        if ($name !== '') {
+            $exists = $exists
+                ->flatMap(static fn($adapter) => $adapter->get(Name::of($name)))
+                ->filter(static fn($file) => match (true) {
+                    $path->directory() && !($file instanceof Directory) => false,
+                    default => true,
+                });
         }
 
-        if ($path->directory() && !\is_dir($path->toString())) {
-            return false;
-        }
-
-        return true;
+        return $exists->match(
+            static fn() => true,
+            static fn() => false,
+        );
     }
 
     /**
@@ -93,19 +105,11 @@ final class Filesystem
     #[\NoDiscard]
     public function require(Path $path): Maybe
     {
-        $path = $path->toString();
-
-        if (!\file_exists($path) || \is_dir($path)) {
-            /** @var Maybe<mixed> */
-            return Maybe::nothing();
-        }
-
-        /**
-         * @psalm-suppress UnresolvableInclude
-         * @psalm-suppress MixedArgument
-         * @var Maybe<mixed>
-         */
-        return Maybe::just(require $path);
+        return $this
+            ->config
+            ->io()
+            ->files()
+            ->require($path);
     }
 
     #[\NoDiscard]

@@ -8,6 +8,7 @@ use Innmind\Signals\{
     Handler,
     Signal
 };
+use Innmind\Immutable\SideEffect;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class SignalsTest extends TestCase
@@ -20,16 +21,21 @@ class SignalsTest extends TestCase
 
         $this->fork();
 
-        $this->assertNull($signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
-            $this->assertSame(Signal::child, $signal);
-            $order[] = 'first';
-            ++$count;
-        }));
-        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $signals
+                ->listen(Signal::child, function($signal) use (&$order, &$count): void {
+                    $this->assertSame(Signal::child, $signal);
+                    $order[] = 'first';
+                    ++$count;
+                })
+                ->unwrap(),
+        );
+        $_ = $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
             $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
-        });
+        })->unwrap();
 
         \sleep(2); // wait for child to stop
 
@@ -50,13 +56,16 @@ class SignalsTest extends TestCase
             $order[] = 'first';
             ++$count;
         };
-        $signals->listen(Signal::child, $first);
-        $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
+        $_ = $signals->listen(Signal::child, $first)->unwrap();
+        $_ = $signals->listen(Signal::child, function($signal) use (&$order, &$count): void {
             $this->assertSame(Signal::child, $signal);
             $order[] = 'second';
             ++$count;
-        });
-        $this->assertNull($signals->remove($first));
+        })->unwrap();
+        $this->assertInstanceOf(
+            SideEffect::class,
+            $signals->remove($first)->unwrap(),
+        );
 
         \sleep(2); // wait for child to stop
 

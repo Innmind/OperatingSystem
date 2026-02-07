@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `Innmind\OperatingSystem\Config::useServerControl()`
+- `Innmind\OperatingSystem\Config::useServerStatus()`
+- `Innmind\OperatingSystem\Config::useFileWatch()`
+
+### Changed
+
+- Requires PHP `8.4`
+- `Innmind\OperatingSystem\Remote::sql()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\Filesystem::mount()` now longer automatically create the directory
+- `Innmind\OperatingSystem\CurrentProcess\Signals::listen()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\CurrentProcess\Signals::remove()` now returns an `Innmind\Immutable\Attempt`
+- Requires `innmind/time:~1.0`
+
 ## 6.2.0 - 2025-08-10
 
 ### Added

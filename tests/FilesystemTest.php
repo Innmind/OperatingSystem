@@ -9,7 +9,7 @@ use Innmind\OperatingSystem\{
     Factory,
 };
 use Innmind\Filesystem\{
-    Adapter\Filesystem as FilesystemAdapter,
+    Adapter,
     File\Content,
 };
 use Innmind\Url\Path;
@@ -40,7 +40,7 @@ class FilesystemTest extends TestCase
 
         $adapter = $filesystem->mount(Path::of('/tmp/'))->unwrap();
 
-        $this->assertInstanceOf(FilesystemAdapter::class, $adapter);
+        $this->assertInstanceOf(Adapter::class, $adapter);
     }
 
     public function testMountingTheSamePathTwiceReturnsTheSameAdapter()
@@ -79,6 +79,19 @@ class FilesystemTest extends TestCase
         \mkdir('/tmp/some-dir/');
         $this->assertTrue($filesystem->contains(Path::of('/tmp/some-dir/')));
         \rmdir('/tmp/some-dir/');
+        \file_put_contents('/tmp/foo', 'data');
+        $this->assertFalse($filesystem->contains(Path::of('/tmp/foo/')));
+        \unlink('/tmp/foo');
+    }
+
+    public function testContainsRootDirectory()
+    {
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
+        );
+
+        $this->assertTrue($filesystem->contains(Path::of('/')));
     }
 
     public function testWatch()

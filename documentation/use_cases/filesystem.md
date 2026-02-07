@@ -119,6 +119,25 @@ $os
 
 See [processes](processes.md) section on how to execute commands on your operating system.
 
+### Automatically create the mounted folder
+
+By default when mounting a folder if it doesn't exist it will fail. But you can instruct to automatically create the folder in such case.
+
+```php
+use Innmind\Filesystem\{
+    Adapter,
+    Recover,
+};
+use Innmind\Url\Path;
+
+$adapter = $os
+    ->filesystem()
+    ->mount(Path::of('/some/folder/'))
+    ->recover(Recover::mount(...))
+    ->unwrap();
+$adapter instanceof Adapter; // true
+```
+
 ### Mounting the `tmp` folder
 
 Sometimes you want to use the `tmp` folder to write down files such as cache that can be safely lost in case of a system reboot. You can easily mount this folder as any other folder like so:
