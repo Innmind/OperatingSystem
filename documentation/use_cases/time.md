@@ -36,7 +36,7 @@ $crawl = function(CurrentProcess $process, string ...$urls): void {
         // crawl the $url and do something with the result
 
         // here for the sake of simplicity we specify 1 second but it can be
-        // any instance of Innmind\TimeContinuum\Period and you could build
+        // any instance of Innmind\Time\Period and you could build
         // it from a robots.txt Crawler-Delay directive
         $process->halt(Period::second(1))->unwrap();
     }
