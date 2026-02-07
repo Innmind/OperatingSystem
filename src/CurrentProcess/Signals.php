@@ -35,6 +35,7 @@ final class Signals
      *
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function listen(Signal $signal, callable $listener): Attempt
     {
         return $this->handler->listen($signal, $listener);
@@ -45,6 +46,7 @@ final class Signals
      *
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function remove(callable $listener): Attempt
     {
         return $this->handler->remove($listener);
