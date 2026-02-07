@@ -89,12 +89,13 @@ class CurrentProcessTest extends TestCase
                 );
                 $async = OperatingSystem::new($config);
                 $called = 0;
-                $async
+                $_ = $async
                     ->process()
                     ->signals()
                     ->listen($signal, static function() use (&$called) {
                         ++$called;
-                    });
+                    })
+                    ->unwrap();
                 $interceptor->dispatch($signal);
 
                 $this->assertSame(1, $called);
