@@ -6,11 +6,13 @@ namespace Innmind\OperatingSystem\Config;
 use Innmind\OperatingSystem\Config;
 use Innmind\Server\Control;
 use Innmind\Server\Status;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\FileWatch\Watch;
 use Innmind\Filesystem\Adapter as Filesystem;
 use Innmind\HttpTransport\Transport;
-use Innmind\TimeWarp\Halt;
 use Formal\AccessLayer\Connection;
 use Psr\Log\LoggerInterface;
 

@@ -5,7 +5,7 @@ namespace Innmind\OperatingSystem;
 
 use Innmind\Server\Status;
 use Innmind\Server\Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 
 final class OperatingSystem
 {

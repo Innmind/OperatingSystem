@@ -9,7 +9,10 @@ use Innmind\Server\{
     Status\EnvironmentPath,
     Status\ServerFactory,
 };
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\{
     Adapter as Filesystem,
@@ -18,7 +21,6 @@ use Innmind\Filesystem\{
 };
 use Innmind\FileWatch\Watch;
 use Innmind\Signals\Handler;
-use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Url\{
     Url,

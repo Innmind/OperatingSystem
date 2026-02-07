@@ -8,7 +8,7 @@ use Innmind\OperatingSystem\{
     OperatingSystem,
     Config,
 };
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 use Innmind\Filesystem\{
     Adapter,
     File,
