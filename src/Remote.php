@@ -19,14 +19,11 @@ use Formal\AccessLayer\Connection;
 
 final class Remote
 {
-    private Server $server;
-    private Config $config;
-    private ?HttpTransport $http = null;
-
-    private function __construct(Server $server, Config $config)
-    {
-        $this->server = $server;
-        $this->config = $config;
+    private function __construct(
+        private Server $server,
+        private Config $config,
+        private ?HttpTransport $http = null,
+    ) {
     }
 
     /**

@@ -15,11 +15,8 @@ use Innmind\Immutable\{
 
 final class Signals
 {
-    private Handler $handler;
-
-    private function __construct(Handler $handler)
+    private function __construct(private Handler $handler)
     {
-        $this->handler = $handler;
     }
 
     /**

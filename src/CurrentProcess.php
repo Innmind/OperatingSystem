@@ -18,14 +18,11 @@ use Innmind\Immutable\{
 
 final class CurrentProcess
 {
-    private Halt $halt;
-    private Handler $handler;
-    private ?Signals $signals = null;
-
-    private function __construct(Halt $halt, Handler $handler)
-    {
-        $this->halt = $halt;
-        $this->handler = $handler;
+    private function __construct(
+        private Halt $halt,
+        private Handler $handler,
+        private ?Signals $signals = null,
+    ) {
     }
 
     /**
