@@ -7,7 +7,7 @@ use Innmind\OperatingSystem\{
     Config,
     Factory,
 };
-use Innmind\HttpTransport\ExponentialBackoff;
+use Innmind\HttpTransport\Transport;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ResilientTest extends TestCase
@@ -25,6 +25,6 @@ class ResilientTest extends TestCase
             Config\Resilient::new(),
         );
 
-        $this->assertInstanceOf(ExponentialBackoff::class, $os->remote()->http());
+        $this->assertInstanceOf(Transport::class, $os->remote()->http());
     }
 }

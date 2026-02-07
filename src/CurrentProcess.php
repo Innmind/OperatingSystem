@@ -6,8 +6,10 @@ namespace Innmind\OperatingSystem;
 use Innmind\OperatingSystem\CurrentProcess\Signals;
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
-use Innmind\TimeContinuum\Period;
-use Innmind\TimeWarp\Halt;
+use Innmind\Time\{
+    Period,
+    Halt,
+};
 use Innmind\Signals\Handler;
 use Innmind\Immutable\{
     Attempt,
@@ -16,14 +18,11 @@ use Innmind\Immutable\{
 
 final class CurrentProcess
 {
-    private Halt $halt;
-    private Handler $handler;
-    private ?Signals $signals = null;
-
-    private function __construct(Halt $halt, Handler $handler)
-    {
-        $this->halt = $halt;
-        $this->handler = $handler;
+    private function __construct(
+        private Halt $halt,
+        private Handler $handler,
+        private ?Signals $signals = null,
+    ) {
     }
 
     /**

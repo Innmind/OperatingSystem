@@ -8,16 +8,16 @@ use Innmind\OperatingSystem\{
     OperatingSystem,
     Config,
 };
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 use Innmind\Filesystem\{
-    Adapter\Filesystem,
+    Adapter,
     File,
     File\Content,
     Directory,
     CaseSensitivity,
+    Recover,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Attempt;
 use Symfony\Component\Filesystem\Filesystem as FS;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -53,26 +53,26 @@ class FactoryTest extends TestCase
 
         $os = Factory::build(
             Config::new()->mountFilesystemVia(
-                static fn($path, $config) => Attempt::of(
-                    static fn() => Filesystem::mount(
-                        $path,
-                        $config->io(),
-                    )->withCaseSensitivity(CaseSensitivity::insensitive),
+                static fn($path, $config) => Adapter::mount(
+                    $path,
+                    CaseSensitivity::insensitive,
+                    $config->io(),
                 ),
             ),
         );
         $adapter = $os
             ->filesystem()
             ->mount(Path::of($path))
+            ->recover(Recover::mount(...))
             ->unwrap();
-        $adapter->add(
+        $_ = $adapter->add(
             $directory = Directory::named('0')
                 ->add($file = File::named('L', Content::none()))
                 ->remove($file->name())
                 ->add($file = File::named('l', Content::none()))
                 ->remove($file->name())
                 ->add($file),
-        );
+        )->unwrap();
 
         $this->assertTrue(
             $adapter

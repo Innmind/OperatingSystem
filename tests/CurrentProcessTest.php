@@ -11,8 +11,10 @@ use Innmind\OperatingSystem\{
 };
 use Innmind\Server\Control\Server\Process\Pid;
 use Innmind\Server\Status\Server\Memory\Bytes;
-use Innmind\TimeContinuum\Period;
-use Innmind\TimeWarp\Halt;
+use Innmind\Time\{
+    Period,
+    Halt,
+};
 use Innmind\Signals\{
     Handler,
     Signal,
@@ -33,7 +35,7 @@ class CurrentProcessTest extends TestCase
     public function testId()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 
@@ -66,7 +68,7 @@ class CurrentProcessTest extends TestCase
     public function testSignals()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 
@@ -82,16 +84,20 @@ class CurrentProcessTest extends TestCase
                 $config = Config::new();
                 $interceptor = Interceptor::new();
                 $config = $config->handleSignalsVia(
-                    $config->signalsHandler()->async($interceptor),
+                    Handler::async(
+                        $config->signalsHandler(),
+                        $interceptor,
+                    ),
                 );
                 $async = OperatingSystem::new($config);
                 $called = 0;
-                $async
+                $_ = $async
                     ->process()
                     ->signals()
                     ->listen($signal, static function() use (&$called) {
                         ++$called;
-                    });
+                    })
+                    ->unwrap();
                 $interceptor->dispatch($signal);
 
                 $this->assertSame(1, $called);
@@ -101,7 +107,7 @@ class CurrentProcessTest extends TestCase
     public function testMemory()
     {
         $process = CurrentProcess::of(
-            Halt\Usleep::new(),
+            Halt::new(),
             Handler::main(),
         );
 

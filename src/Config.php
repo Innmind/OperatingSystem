@@ -3,21 +3,24 @@ declare(strict_types = 1);
 
 namespace Innmind\OperatingSystem;
 
-use Innmind\Server\Control;
-use Innmind\Server\Status;
-use Innmind\TimeContinuum\Clock;
-use Innmind\HttpTransport\{
-    Transport as HttpTransport,
-    Curl,
+use Innmind\Server\{
+    Control,
+    Status,
+    Status\EnvironmentPath,
+    Status\ServerFactory,
 };
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
+use Innmind\HttpTransport\Transport as HttpTransport;
 use Innmind\Filesystem\{
     Adapter as Filesystem,
-    CaseSensitivity
+    CaseSensitivity,
+    Exception\RecoverMount,
 };
 use Innmind\FileWatch\Watch;
-use Innmind\Server\Status\EnvironmentPath;
 use Innmind\Signals\Handler;
-use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Url\{
     Url,
@@ -34,7 +37,7 @@ final class Config
      * @param \Closure(Clock, self): Clock $mapClock
      * @param \Closure(Halt, self): Halt $mapHalt
      * @param \Closure(HttpTransport, self): HttpTransport $mapHttpTransport
-     * @param \Closure(Url): AccessLayer\Connection $sql
+     * @param \Closure(Url): Attempt<AccessLayer\Connection> $sql
      * @param \Closure(AccessLayer\Connection, self): AccessLayer\Connection $mapSql
      * @param \Closure(Control\Server, self): Control\Server $mapServerControl
      * @param \Closure(Status\Server, self): Status\Server $mapServerStatus
@@ -53,8 +56,11 @@ final class Config
         private \Closure $mapHttpTransport,
         private \Closure $sql,
         private \Closure $mapSql,
+        private ?Control\Server $serverControl,
         private \Closure $mapServerControl,
+        private ?Status\Server $serverStatus,
         private \Closure $mapServerStatus,
+        private ?Watch $watch,
         private \Closure $mapFileWatch,
         private \Closure $filesystem,
         private \Closure $mapFilesystem,
@@ -69,7 +75,7 @@ final class Config
             Clock::live(),
             static fn(Clock $clock) => $clock,
             IO::fromAmbientAuthority(),
-            Halt\Usleep::new(),
+            Halt::new(),
             static fn(Halt $halt, self $config) => $halt,
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
                 false => '',
@@ -77,18 +83,18 @@ final class Config
             }),
             null,
             static fn(HttpTransport $transport, self $config) => $transport,
-            static fn(Url $server) => AccessLayer\Connection\Lazy::of(
-                static fn() => AccessLayer\Connection\PDO::of($server),
-            ),
+            static fn(Url $server) => AccessLayer\Connection::new($server),
             static fn(AccessLayer\Connection $connection, self $config) => $connection,
+            null,
             static fn(Control\Server $server, self $config) => $server,
+            null,
             static fn(Status\Server $server, self $config) => $server,
+            null,
             static fn(Watch $watch, self $config) => $watch,
-            static fn(Path $path, self $config) => Attempt::of(
-                static fn() => Filesystem\Filesystem::mount(
-                    $path,
-                    $config->io(),
-                )->withCaseSensitivity(CaseSensitivity::sensitive),
+            static fn(Path $path, self $config) => Filesystem::mount(
+                $path,
+                CaseSensitivity::sensitive,
+                $config->io(),
             ),
             static fn(Filesystem $filesystem, self $config) => $filesystem,
             Handler::main(),
@@ -124,8 +130,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -157,8 +166,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -183,8 +195,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -217,8 +232,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -243,8 +261,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -269,8 +290,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -295,8 +319,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -328,8 +355,11 @@ final class Config
             ),
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -340,7 +370,7 @@ final class Config
     /**
      * @psalm-mutation-free
      *
-     * @param \Closure(Url): AccessLayer\Connection $sql
+     * @param \Closure(Url): Attempt<AccessLayer\Connection> $sql
      */
     #[\NoDiscard]
     public function openSQLConnectionVia(\Closure $sql): self
@@ -356,8 +386,11 @@ final class Config
             $this->mapHttpTransport,
             $sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -389,8 +422,40 @@ final class Config
                 $previous($connection, $config),
                 $config,
             ),
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useServerControl(Control\Server $server): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $server,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -419,11 +484,43 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             static fn(Control\Server $server, self $config) => $map(
                 $previous($server, $config),
                 $config,
             ),
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useServerStatus(Status\Server $server): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $server,
+            $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -452,11 +549,43 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             static fn(Status\Server $server, self $config) => $map(
                 $previous($server, $config),
                 $config,
             ),
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     */
+    #[\NoDiscard]
+    public function useFileWatch(Watch $watch): self
+    {
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -485,8 +614,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             static fn(Watch $watch, self $config) => $map(
                 $previous($watch, $config),
                 $config,
@@ -516,8 +648,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $filesystem,
             $this->mapFilesystem,
@@ -546,8 +681,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             static fn(Filesystem $filesystem, self $config) => $map(
@@ -575,8 +713,11 @@ final class Config
             $this->mapHttpTransport,
             $this->sql,
             $this->mapSql,
+            $this->serverControl,
             $this->mapServerControl,
+            $this->serverStatus,
             $this->mapServerStatus,
+            $this->watch,
             $this->mapFileWatch,
             $this->filesystem,
             $this->mapFilesystem,
@@ -601,9 +742,21 @@ final class Config
     #[\NoDiscard]
     public function filesystem(Path $path): Attempt
     {
-        return ($this->filesystem)($path, $this)->map(
-            fn($adapter) => ($this->mapFilesystem)($adapter, $this),
+        $map = fn(Filesystem $adapter): Filesystem => ($this->mapFilesystem)(
+            $adapter,
+            $this,
         );
+
+        return ($this->filesystem)($path, $this)
+            ->mapError(static fn($e) => match (true) {
+                $e instanceof RecoverMount => new RecoverMount(
+                    static fn() => $e
+                        ->recover()
+                        ->map($map),
+                ),
+                default => $e,
+            })
+            ->map($map);
     }
 
     /**
@@ -639,7 +792,7 @@ final class Config
     #[\NoDiscard]
     public function httpTransport(): HttpTransport
     {
-        $transport = $this->httpTransport ?? Curl::of(
+        $transport = $this->httpTransport ?? HttpTransport::curl(
             $this->clock,
             $this->io,
         );
@@ -649,12 +802,32 @@ final class Config
 
     /**
      * @internal
+     *
+     * @return Attempt<AccessLayer\Connection>
      */
     #[\NoDiscard]
-    public function sql(Url $url): AccessLayer\Connection
+    public function sql(Url $url): Attempt
     {
-        return ($this->mapSql)(
-            ($this->sql)($url),
+        $map = $this->mapSql;
+        $self = $this;
+
+        return ($this->sql)($url)->map(
+            static fn($connection) => $map($connection, $self),
+        );
+    }
+
+    /**
+     * @internal
+     */
+    #[\NoDiscard]
+    public function serverControl(): Control\Server
+    {
+        return ($this->mapServerControl)(
+            $this->serverControl ?? Control\Server::new(
+                $this->clock,
+                $this->io,
+                $this->halt(),
+            ),
             $this,
         );
     }
@@ -663,27 +836,28 @@ final class Config
      * @internal
      */
     #[\NoDiscard]
-    public function serverControl(Control\Server $server): Control\Server
+    public function serverStatus(Control\Server $server): Status\Server
     {
-        return ($this->mapServerControl)($server, $this);
+        return ($this->mapServerStatus)(
+            $this->serverStatus ?? ServerFactory::build(
+                $this->clock(),
+                $server,
+                $this->path,
+            ),
+            $this,
+        );
     }
 
     /**
      * @internal
      */
     #[\NoDiscard]
-    public function serverStatus(Status\Server $server): Status\Server
+    public function fileWatch(Control\Server\Processes $processes): Watch
     {
-        return ($this->mapServerStatus)($server, $this);
-    }
-
-    /**
-     * @internal
-     */
-    #[\NoDiscard]
-    public function fileWatch(Watch $watch): Watch
-    {
-        return ($this->mapFileWatch)($watch, $this);
+        return ($this->mapFileWatch)(
+            $this->watch ?? Watch::of($processes, $this->halt()),
+            $this,
+        );
     }
 
     /**

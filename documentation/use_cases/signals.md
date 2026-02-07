@@ -14,7 +14,7 @@ use Innmind\IO\{
     Sockets\Internet\Transport,
     Frame,
 };
-use Innmind\TimeContinuum\Period;
+use Innmind\Time\Period;
 use Innmind\Signals\Signal;
 use Innmind\Immutable\{
     Sequence,
@@ -31,7 +31,8 @@ $os
     ->signals()
     ->listen(Signal::terminate, function() use (&$signaled) {
         $signaled = false;
-    });
+    })
+    ->unwrap();
 
 $receivedData = $client
     ->timeoutAfter(Period::second(1))
@@ -66,8 +67,8 @@ $prevent = function() {
     echo 'Process cannot be interrupted in the middle of a backup';
 };
 
-$os->process()->signals()->listen(Signal::terminate, $prevent);
-$os->process()->signals()->listen(Signal::interrupt, $prevent);
+$os->process()->signals()->listen(Signal::terminate, $prevent)->unwrap();
+$os->process()->signals()->listen(Signal::interrupt, $prevent)->unwrap();
 
 // perform the backup here that can't be stopped to prevent data corruption
 

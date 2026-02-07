@@ -31,6 +31,6 @@ class PortsTest extends TestCase
         );
 
         $this->assertInstanceOf(Server::class, $socket);
-        $socket->close();
+        $_ = $socket->close()->unwrap();
     }
 }
