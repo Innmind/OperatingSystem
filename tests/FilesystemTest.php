@@ -84,6 +84,16 @@ class FilesystemTest extends TestCase
         \unlink('/tmp/foo');
     }
 
+    public function testContainsRootDirectory()
+    {
+        $filesystem = Filesystem::of(
+            Factory::build()->control()->processes(),
+            Config::new(),
+        );
+
+        $this->assertTrue($filesystem->contains(Path::of('/')));
+    }
+
     public function testWatch()
     {
         $filesystem = Filesystem::of(
