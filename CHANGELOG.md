@@ -13,6 +13,8 @@
 - Requires PHP `8.4`
 - `Innmind\OperatingSystem\Remote::sql()` now returns an `Innmind\Immutable\Attempt`
 - `Innmind\OperatingSystem\Filesystem::mount()` now longer automatically create the directory
+- `Innmind\OperatingSystem\CurrentProcess\Signals::listen()` now returns an `Innmind\Immutable\Attempt`
+- `Innmind\OperatingSystem\CurrentProcess\Signals::remove()` now returns an `Innmind\Immutable\Attempt`
 
 ## 6.2.0 - 2025-08-10
 

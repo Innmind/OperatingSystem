@@ -33,7 +33,7 @@ class SocketsTest extends TestCase
             static fn($server) => $server,
             static fn() => null,
         ));
-        $socket->close();
+        $_ = $socket->close()->unwrap();
     }
 
     public function testTakeOver()
@@ -51,7 +51,7 @@ class SocketsTest extends TestCase
 
         $this->assertInstanceOf(Server::class, $socket2);
         $this->assertNotSame($socket, $socket2);
-        $socket2->close();
+        $_ = $socket2->close()->unwrap();
     }
 
     public function testConnectTo()
@@ -68,7 +68,7 @@ class SocketsTest extends TestCase
         );
 
         $this->assertInstanceOf(Client::class, $client);
-        $client->close();
-        $server->close();
+        $_ = $client->close()->unwrap();
+        $_ = $server->close()->unwrap();
     }
 }

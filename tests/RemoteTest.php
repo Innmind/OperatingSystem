@@ -104,8 +104,8 @@ class RemoteTest extends TestCase
         );
 
         $this->assertInstanceOf(Client::class, $socket);
-        $server->close();
-        $socket->close();
+        $_ = $server->close()->unwrap();
+        $_ = $socket->close()->unwrap();
     }
 
     public function testHttp(): BlackBox\Proof

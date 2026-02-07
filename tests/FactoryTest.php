@@ -65,14 +65,14 @@ class FactoryTest extends TestCase
             ->mount(Path::of($path))
             ->recover(Recover::mount(...))
             ->unwrap();
-        $adapter->add(
+        $_ = $adapter->add(
             $directory = Directory::named('0')
                 ->add($file = File::named('L', Content::none()))
                 ->remove($file->name())
                 ->add($file = File::named('l', Content::none()))
                 ->remove($file->name())
                 ->add($file),
-        );
+        )->unwrap();
 
         $this->assertTrue(
             $adapter

@@ -82,7 +82,10 @@ class CurrentProcessTest extends TestCase
                 $config = Config::new();
                 $interceptor = Interceptor::new();
                 $config = $config->handleSignalsVia(
-                    $config->signalsHandler()->async($interceptor),
+                    Handler::async(
+                        $config->signalsHandler(),
+                        $interceptor,
+                    ),
                 );
                 $async = OperatingSystem::new($config);
                 $called = 0;

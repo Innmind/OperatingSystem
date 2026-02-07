@@ -8,6 +8,10 @@ use Innmind\Signals\{
     Signal,
     Info,
 };
+use Innmind\Immutable\{
+    Attempt,
+    SideEffect,
+};
 
 final class Signals
 {
@@ -28,17 +32,21 @@ final class Signals
 
     /**
      * @param callable(Signal, Info): void $listener
+     *
+     * @return Attempt<SideEffect>
      */
-    public function listen(Signal $signal, callable $listener): void
+    public function listen(Signal $signal, callable $listener): Attempt
     {
-        $this->handler->listen($signal, $listener);
+        return $this->handler->listen($signal, $listener);
     }
 
     /**
      * @param callable(Signal, Info): void $listener
+     *
+     * @return Attempt<SideEffect>
      */
-    public function remove(callable $listener): void
+    public function remove(callable $listener): Attempt
     {
-        $this->handler->remove($listener);
+        return $this->handler->remove($listener);
     }
 }
