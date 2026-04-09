@@ -24,7 +24,7 @@
         "innmind/signals": "~5.0",
         "innmind/file-watch": "~6.0",
         "formal/access-layer": "~5.0",
-        "innmind/io": "~4.0",
+        "innmind/io": "^4.1.1",
         "innmind/immutable": "~6.0"
     },
     "autoload": {
