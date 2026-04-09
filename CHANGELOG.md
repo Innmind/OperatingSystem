@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+### Added
+
+- `Innmind\OperatingSystem\Config\Resilient::withHttpRetries()`
 
 ### Fixed
 
