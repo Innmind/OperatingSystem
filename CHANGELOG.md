@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.1.0 - 2026-04-09
+
+### Added
+
+- `Innmind\OperatingSystem\Config\Resilient::withHttpRetries()`
+
+### Fixed
+
+- Using a version of `innmind/io` that failed to take over a socket
+
 ## 7.0.0 - 2026-02-07
 
 ### Added
