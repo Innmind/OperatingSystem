@@ -24,10 +24,13 @@ final class Resilient
     #[\NoDiscard]
     public function __invoke(Config $config): Config
     {
+        $retries = $this->retries;
+
         return $config
             ->mapHttpTransport(static fn($transport, $config) => Transport::exponentialBackoff(
                 $transport,
                 $config->halt(),
+                $retries,
             ));
     }
 
