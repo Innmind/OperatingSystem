@@ -2,7 +2,10 @@
     "name": "innmind/operating-system",
     "type": "library",
     "description": "Abstraction for the whole system the script is operating in",
-    "keywords": ["operating system", "abstraction"],
+    "keywords": [
+        "operating system",
+        "abstraction"
+    ],
     "homepage": "http://github.com/Innmind/OperatingSystem",
     "license": "MIT",
     "authors": [
