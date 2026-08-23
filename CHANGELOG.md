@@ -7,6 +7,18 @@
 - `Innmind\OperatingSystem\Config::mapIO()`
 - `Innmind\OperatingSystem\Config::mapSignalsHandler()`
 
+### Changed
+
+- Requires `innmind/time:~1.3`
+- Requires `innmind/server-status:~6.1`
+- Requires `innmind/server-control:~7.2`
+- Requires `innmind/filesystem:~9.1`
+- Requires `innmind/http-transport:~9.3`
+- Requires `innmind/signals:~5.2`
+- Requires `innmind/file-watch:~6.1`
+- Requires `formal/access-layer:~5.2`
+- Requires `innmind/io:~4.2`
+
 ## 7.2.0 - 2026-08-16
 
 ### Changed
