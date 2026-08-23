@@ -45,6 +45,7 @@ final class Config
      * @param \Closure(Watch, self): Watch $mapFileWatch
      * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
      * @param \Closure(Filesystem, self): Filesystem $mapFilesystem
+     * @param \Closure(Handler, self): Handler $mapSignals
      */
     private function __construct(
         private Clock $clock,
@@ -67,6 +68,7 @@ final class Config
         private \Closure $filesystem,
         private \Closure $mapFilesystem,
         private Handler $signals,
+        private \Closure $mapSignals,
     ) {
     }
 
@@ -101,6 +103,7 @@ final class Config
             ),
             static fn(Filesystem $filesystem, self $config) => $filesystem,
             Handler::main(),
+            static fn(Handler $signals, self $config) => $signals,
         );
     }
 
@@ -143,6 +146,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -180,6 +184,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -210,6 +215,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -248,6 +254,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -278,6 +285,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -316,6 +324,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -346,6 +355,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -376,6 +386,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -413,6 +424,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -445,6 +457,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -482,6 +495,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -512,6 +526,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -549,6 +564,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -579,6 +595,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -616,6 +633,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -646,6 +664,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -683,6 +702,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -715,6 +735,7 @@ final class Config
             $filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -752,6 +773,7 @@ final class Config
                 $config,
             ),
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -782,6 +804,45 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $handler,
+            $this->mapSignals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Handler, self): Handler $map
+     */
+    #[\NoDiscard]
+    public function mapSignalsHandler(\Closure $map): self
+    {
+        $previous = $this->mapSignals;
+
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->mapIO,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+            static fn(Handler $signals, self $config) => $map(
+                $previous($signals, $config),
+                $config,
+            ),
         );
     }
 
@@ -926,6 +987,6 @@ final class Config
     #[\NoDiscard]
     public function signalsHandler(): Handler
     {
-        return $this->signals;
+        return ($this->mapSignals)($this->signals, $this);
     }
 }
