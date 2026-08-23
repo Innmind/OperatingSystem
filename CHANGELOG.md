@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `Innmind\OperatingSystem\Config::mapIO()`
+- `Innmind\OperatingSystem\Config::mapSignalsHandler()`
+
 ## 7.2.0 - 2026-08-16
 
 ### Changed

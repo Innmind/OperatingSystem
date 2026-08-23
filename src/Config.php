@@ -35,6 +35,7 @@ final class Config
      * @psalm-mutation-free
      *
      * @param \Closure(Clock, self): Clock $mapClock
+     * @param \Closure(IO, self): IO $mapIO
      * @param \Closure(Halt, self): Halt $mapHalt
      * @param \Closure(HttpTransport, self): HttpTransport $mapHttpTransport
      * @param \Closure(Url): Attempt<AccessLayer\Connection> $sql
@@ -44,11 +45,13 @@ final class Config
      * @param \Closure(Watch, self): Watch $mapFileWatch
      * @param \Closure(Path, self): Attempt<Filesystem> $filesystem
      * @param \Closure(Filesystem, self): Filesystem $mapFilesystem
+     * @param \Closure(Handler, self): Handler $mapSignals
      */
     private function __construct(
         private Clock $clock,
         private \Closure $mapClock,
         private IO $io,
+        private \Closure $mapIO,
         private Halt $halt,
         private \Closure $mapHalt,
         private EnvironmentPath $path,
@@ -65,6 +68,7 @@ final class Config
         private \Closure $filesystem,
         private \Closure $mapFilesystem,
         private Handler $signals,
+        private \Closure $mapSignals,
     ) {
     }
 
@@ -75,6 +79,7 @@ final class Config
             Clock::live(),
             static fn(Clock $clock) => $clock,
             IO::fromAmbientAuthority(),
+            static fn(IO $io, self $config) => $io,
             Halt::new(),
             static fn(Halt $halt, self $config) => $halt,
             EnvironmentPath::of(match ($path = \getenv('PATH')) {
@@ -98,6 +103,7 @@ final class Config
             ),
             static fn(Filesystem $filesystem, self $config) => $filesystem,
             Handler::main(),
+            static fn(Handler $signals, self $config) => $signals,
         );
     }
 
@@ -123,6 +129,7 @@ final class Config
             $clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -139,6 +146,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -159,6 +167,7 @@ final class Config
                 $config,
             ),
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -175,6 +184,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -188,6 +198,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $halt,
             $this->mapHalt,
             $this->path,
@@ -204,6 +215,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -222,6 +234,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             static fn(Halt $halt, self $config) => $map(
                 $previous($halt, $config),
@@ -241,6 +254,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -254,6 +268,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -270,6 +285,46 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(IO, self): IO $map
+     */
+    #[\NoDiscard]
+    public function mapIO(\Closure $map): self
+    {
+        $previous = $this->mapIO;
+
+        /** @psalm-suppress ImpureFunctionCall */
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            static fn(IO $io, self $config) => $map(
+                $previous($io, $config),
+                $config,
+            ),
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -283,6 +338,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $path,
@@ -299,6 +355,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -312,6 +369,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -328,6 +386,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -345,6 +404,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -364,6 +424,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -379,6 +440,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -395,6 +457,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -412,6 +475,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -431,6 +495,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -444,6 +509,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -460,6 +526,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -477,6 +544,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -496,6 +564,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -509,6 +578,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -525,6 +595,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -542,6 +613,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -561,6 +633,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -574,6 +647,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -590,6 +664,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -607,6 +682,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -626,6 +702,7 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -641,6 +718,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -657,6 +735,7 @@ final class Config
             $filesystem,
             $this->mapFilesystem,
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -674,6 +753,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -693,6 +773,7 @@ final class Config
                 $config,
             ),
             $this->signals,
+            $this->mapSignals,
         );
     }
 
@@ -706,6 +787,7 @@ final class Config
             $this->clock,
             $this->mapClock,
             $this->io,
+            $this->mapIO,
             $this->halt,
             $this->mapHalt,
             $this->path,
@@ -722,6 +804,45 @@ final class Config
             $this->filesystem,
             $this->mapFilesystem,
             $handler,
+            $this->mapSignals,
+        );
+    }
+
+    /**
+     * @psalm-mutation-free
+     *
+     * @param \Closure(Handler, self): Handler $map
+     */
+    #[\NoDiscard]
+    public function mapSignalsHandler(\Closure $map): self
+    {
+        $previous = $this->mapSignals;
+
+        return new self(
+            $this->clock,
+            $this->mapClock,
+            $this->io,
+            $this->mapIO,
+            $this->halt,
+            $this->mapHalt,
+            $this->path,
+            $this->httpTransport,
+            $this->mapHttpTransport,
+            $this->sql,
+            $this->mapSql,
+            $this->serverControl,
+            $this->mapServerControl,
+            $this->serverStatus,
+            $this->mapServerStatus,
+            $this->watch,
+            $this->mapFileWatch,
+            $this->filesystem,
+            $this->mapFilesystem,
+            $this->signals,
+            static fn(Handler $signals, self $config) => $map(
+                $previous($signals, $config),
+                $config,
+            ),
         );
     }
 
@@ -765,7 +886,7 @@ final class Config
     #[\NoDiscard]
     public function io(): IO
     {
-        return $this->io;
+        return ($this->mapIO)($this->io, $this);
     }
 
     /**
@@ -866,6 +987,6 @@ final class Config
     #[\NoDiscard]
     public function signalsHandler(): Handler
     {
-        return $this->signals;
+        return ($this->mapSignals)($this->signals, $this);
     }
 }
